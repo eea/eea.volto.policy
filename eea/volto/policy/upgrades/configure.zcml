@@ -15,4 +15,16 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+    source="1.0"
+    destination="2.0"
+    profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeDepends
+       title="Import changed steps from eea.volto.policy default profile: browserlayer"
+       import_steps="browserlayer"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

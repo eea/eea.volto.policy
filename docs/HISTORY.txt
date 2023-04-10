@@ -1,8 +1,12 @@
 Changelog
 =========
 
-1.8-dev0 - (unreleased)
+2.0 - (2023-04-10)
 ---------------------------
+* Bug fix: RestAPI fix DateTime timezone for publication fields serializer/deserializer
+  [avoinea refs #250368]
+* Cleanup: Drop Python2/Plone4 support
+  [avoinea refs #250368]
 
 1.7 - (2021-11-23)
 ---------------------------
