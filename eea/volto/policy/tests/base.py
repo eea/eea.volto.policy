@@ -55,7 +55,7 @@ class EEAFixture(PloneSandboxLayer):
             setuphandlers.setupPortalContent(portal)
 
         # Create testing environment
-        portal.invokeFactory("Folder", "sandbox", title="Sandbox")
+        portal.invokeFactory("Document", "sandbox", title="Sandbox")
 
 
     def tearDownZope(self, app):
