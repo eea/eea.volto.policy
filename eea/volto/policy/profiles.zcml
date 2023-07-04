@@ -25,6 +25,14 @@
       post_handler=".setuphandlers.uninstall"
       />
 
+  <genericsetup:registerProfile
+      name="volto_policy__23"
+      title="Upgrade profile for eea.volto.policy 2.3"
+      description=""
+      directory="profiles/upgrades/to_23"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <utility
       factory=".setuphandlers.HiddenProfiles"
       name="eea.volto.policy-hiddenprofiles"

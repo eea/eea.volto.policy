@@ -27,4 +27,15 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+    source="2.2"
+    destination="2.3"
+    profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeDepends
+      title="Update image scales"
+      import_profile="eea.volto.policy:volto_policy__23"
+      />
+  </genericsetup:upgradeSteps>
+
 </configure>
