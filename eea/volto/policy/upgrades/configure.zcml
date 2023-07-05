@@ -36,6 +36,10 @@
       title="Update image scales"
       import_profile="eea.volto.policy:volto_policy__23"
       />
+    <genericsetup:upgradeStep
+      title="Upgrade Catalog"
+      handler=".upgrade_catalog"
+    />
   </genericsetup:upgradeSteps>
 
 </configure>
