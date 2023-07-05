@@ -3,98 +3,20 @@
   <record name="plone.allowed_sizes"
           interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
           field="allowed_sizes">
-    <value purge="false">
+    <value>
       <element>icon 32:32</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>tile 64:64</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>thumb 128:128</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>mini 200:65536</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>preview 400:65536</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>teaser 600:65536</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>large 800:65536</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>larger 1000:65536</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>great 1200:65536</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>tiny 24:24</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>small 48:48</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>medium 60:60</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-    <value purge="false">
       <element>big 80:80</element>
-    </value>
-  </record>
-  <record name="plone.allowed_sizes"
-          interface="Products.CMFPlone.interfaces.controlpanel.IImagingSchema"
-          field="allowed_sizes">
-     <value purge="false">
       <element>huge 1920:65536</element>
     </value>
   </record>
