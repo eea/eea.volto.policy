@@ -42,6 +42,7 @@ setup(
         install_requires=[
         'setuptools',
         "plone.volto",
+        'plone.base'
         # -*- Extra requirements: -*-
     ],
     extras_require={
