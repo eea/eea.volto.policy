@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<object meta_type="Plone Catalog Tool" name="portal_catalog">
+  <column value="image_scales" />
+</object>
