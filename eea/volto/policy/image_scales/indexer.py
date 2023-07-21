@@ -1,3 +1,7 @@
+"""
+Indexer
+"""
+
 from persistent.dict import PersistentDict
 from plone.base.interfaces import IImageScalesAdapter
 from plone.dexterity.interfaces import IDexterityContent

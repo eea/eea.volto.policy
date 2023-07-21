@@ -1,3 +1,6 @@
+"""
+ImageScales
+"""
 from Acquisition import aq_inner
 from plone.base.interfaces import IImageScalesAdapter
 from plone.base.interfaces import IImageScalesFieldAdapter
@@ -12,7 +15,11 @@ from zope.schema import getFields
 
 @implementer(IImageScalesAdapter)
 @adapter(IDexterityContent, Interface)
-class ImageScales:
+class ImageScales(object):
+    """
+    Adapter for getting image scales
+    """
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
