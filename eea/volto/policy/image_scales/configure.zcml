@@ -11,5 +11,6 @@
 
   <!-- adapters -->
   <adapter factory=".adapters.ImageScales" />
+  <adapter factory=".adapters.ImageFieldScales" />
 
 </configure>
