@@ -1,3 +1,4 @@
+# pylint: disable=ungrouped-imports
 """
 ImageScales
 """
@@ -17,9 +18,12 @@ from zope.component import getUtility
 from zope.interface.interfaces import ComponentLookupError
 
 try:
-    from plone.base.interfaces import IImageScalesFieldAdapter
-    from plone.base.interfaces import IImageScalesAdapter
-    from plone.base.interfaces import IImagingSchema
+    from plone.base.interfaces import (
+        IImageScalesFieldAdapter,
+        IImageScalesAdapter,
+        IImagingSchema,
+    )
+
 except ImportError:
     # BBB Plone 5
     IImageScalesFieldAdapter = Interface
@@ -29,7 +33,7 @@ except ImportError:
 
 @implementer(IImageScalesAdapter)
 @adapter(IDexterityContent, Interface)
-class ImageScales:
+class ImageScales(object):
     """
     Adapter for getting image scales
     """
@@ -55,6 +59,9 @@ class ImageScales:
 
 
 def _split_scale_info(allowed_size):
+    """
+    get desired attr(name,width,height) from scale names
+    """
     name, dims = allowed_size.split(" ")
     width, height = list(map(int, dims.split(":")))
     return name, width, height
@@ -74,7 +81,7 @@ def _get_scale_infos():
 
 @implementer(IImageScalesFieldAdapter)
 @adapter(INamedImageField, IDexterityContent, Interface)
-class ImageFieldScales:
+class ImageFieldScales(object):
     """
     Image scale serializer
     """
@@ -87,7 +94,7 @@ class ImageFieldScales:
     def __call__(self):
         image = self.field.get(self.context)
         if not image:
-            return
+            return None
 
         # Get the @@images view once and store it, so all methods can use it.
         try:
@@ -102,12 +109,6 @@ class ImageFieldScales:
         url = self.get_original_image_url(self.field.__name__, width, height)
         scales = self.get_scales(self.field, width, height)
 
-        # Return a list with one dictionary.  Why a list?
-        # Some people feel a need in custom code to support a different adapter for
-        # RelationList fields.  Such a field may point to three images.
-        # In that case the adapter could return information for all three images,
-        # so a list of three dictionaries.  The default case should use the same
-        # structure.
         return [
             {
                 "filename": image.filename,
@@ -171,6 +172,9 @@ class ImageFieldScales:
         return scale.url if scale else None
 
     def _scale_view_from_url(self, url):
+        """
+        flatten to scale url
+        """
         # The "download" information for scales is the path to
         # "@@images/foo-scale" only.
         # The full URL to the scale is rendered by the scaling adapter at
