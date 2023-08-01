@@ -104,7 +104,7 @@ class ImageFieldScales(object):
         except ComponentLookupError:
             # Seen in plone.app.caching.tests.test_profile_with_caching_proxy.
             # If we cannot find the images view, there is nothing for us to do.
-            return
+            return None
         width, height = image.getImageSize()
         url = self.get_original_image_url(self.field.__name__, width, height)
         scales = self.get_scales(self.field, width, height)
