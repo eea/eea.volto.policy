@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module where all interfaces, events and exceptions live."""
+import json
 from plone import schema
 from plone.volto.interfaces import IVoltoSettings
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
@@ -7,8 +8,6 @@ from zope.interface import Interface
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from eea.volto.policy import EEAMessageFactory as _
-
-import json
 
 
 class IEeaVoltoPolicyLayer(IDefaultBrowserLayer):
