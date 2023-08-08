@@ -8,13 +8,12 @@ from plone.dexterity.interfaces import IDexterityContent
 from plone.indexer.decorator import indexer
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
-from zope.interface import Interface
 
 try:
     from plone.base.interfaces import IImageScalesAdapter
 except ImportError:
     # BBB Plone 5
-    IImageScalesAdapter = Interface
+    from eea.volto.policy.interfaces import IImageScalesAdapter
 
 
 @indexer(IDexterityContent)

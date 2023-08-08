@@ -26,9 +26,11 @@ try:
 
 except ImportError:
     # BBB Plone 5
-    IImageScalesFieldAdapter = Interface
-    IImageScalesAdapter = Interface
-    IImagingSchema = None
+    from eea.volto.policy.interfaces import (
+        IImageScalesAdapter,
+        IImageScalesFieldAdapter,
+        IImagingSchema,
+    )
 
 
 @implementer(IImageScalesAdapter)
