@@ -1,0 +1,57 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone">
+
+    <include package="plone.contentrules" file="meta.zcml" />
+    <include package="plone.app.contentrules" />
+
+    <adapter factory=".actions.RetractAndRenameOldVersionExecutor" />
+
+    <browser:page
+        for="plone.app.contentrules.browser.interfaces.IRuleActionAdding"
+        name="eea.dexterity.indicators.retract_and_rename_old_version"
+        class=".actions.RetractAndRenameOldVersionAddForm"
+        permission="plone.app.contentrules.ManageContentRules"
+      />
+
+    <plone:ruleAction
+        name="eea.dexterity.indicators.retract_and_rename_old_version"
+        title="IMSv4: Retract and rename old Indicator"
+        description="IMSv4: Retract and rename old Indicator"
+        for="zope.interface.Interface"
+        event="zope.interface.Interface"
+        addview="eea.dexterity.indicators.retract_and_rename_old_version"
+        schema=".actions.IRetractAndRenameOldVersionAction"
+        factory=".actions.RetractAndRenameOldVersionAction"
+        />
+
+    <adapter factory=".actions.EnableDisableDiscussionActionExecutor" />
+
+    <browser:page
+        for="plone.app.contentrules.browser.interfaces.IRuleActionAdding"
+        name="eea.dexterity.indicators.EnableDisableDiscussion"
+        class=".actions.EnableDisableDiscussionAddForm"
+        permission="plone.app.contentrules.ManageContentRules"
+      />
+
+    <browser:page
+        for=".actions.IEnableDisableDiscussionAction"
+        name="edit"
+        class=".actions.EnableDisableDiscussionEditForm"
+        permission="plone.app.contentrules.ManageContentRules"
+      />
+
+    <plone:ruleAction
+        name="eea.dexterity.indicators.enable_disable_discussion"
+        title="Enable/disable discussions"
+        description="Enable and disable discussions"
+        for="*"
+        event="*"
+        addview="eea.dexterity.indicators.EnableDisableDiscussion"
+        editview="edit"
+        schema=".actions.IEnableDisableDiscussionAction"
+        factory=".actions.EnableDisableDiscussionAction"
+        />
+
+</configure>
