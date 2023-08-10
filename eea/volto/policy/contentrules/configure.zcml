@@ -3,34 +3,27 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:plone="http://namespaces.plone.org/plone">
 
-    <adapter factory=".set_effective_date.SetEffectiveDateActionExecutor" />
+    <include package="plone.contentrules" file="meta.zcml" />
+    <include package="plone.app.contentrules" />
+
+    <adapter factory=".actions.SetPublicationDateToNullExecutor" />
 
     <browser:page
-      name="eea.volto.policy.contentrules.set_effective_date"
-      for="plone.app.contentrules.browser.interfaces.IRuleActionAdding"
-      class=".set_effective_date.SetEffectiveDateAddForm"
-      permission="plone.app.contentrules.ManageContentRules"
-      />
-
-    <browser:page
-      name="edit"
-      for="eea.volto.policy.contentrules.set_effective_date.ISetEffectiveDateAction"
-      class=".set_effective_date.SetEffectiveDateEditForm"
-      permission="plone.app.contentrules.ManageContentRules"
+        for="plone.app.contentrules.browser.interfaces.IRuleActionAdding"
+        name="eea.volto.policy.set_publication_date_to_null"
+        class=".actions.SetPublicationDateToNullAddForm"
+        permission="plone.app.contentrules.ManageContentRules"
       />
 
     <plone:ruleAction
-      name="eea.volto.policy.contentrules.set_effective_date"
-      title="Set effective/publishing date"
-      description="Set effective/publishing date if missing; add entry in workflow history (optional)"
-      for="*"
-      event="zope.component.interfaces.IObjectEvent"
-      addview="eea.volto.policy.contentrules.set_effective_date"
-      editview="edit"
-      schema=".set_effective_date.ISetEffectiveDateAction"
-      factory=".set_effective_date.SetEffectiveDateAction"
-      />
-
-
+        name="eea.volto.policy.set_publication_date_to_null"
+        title="IMSv4: Retract and rename old Indicator"
+        description="IMSv4: Retract and rename old Indicator"
+        for="zope.interface.Interface"
+        event="zope.interface.Interface"
+        addview="eea.volto.policy.set_publication_date_to_null"
+        schema=".actions.ISetPublicationDateToNullAction"
+        factory=".actions.SetPublicationDateToNullAction"
+        />
 
 </configure>
