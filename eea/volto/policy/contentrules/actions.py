@@ -55,7 +55,6 @@ class SetPublicationDateToNullExecutor(object):
             # Bypass user roles in order to rename old version
             oldSecurityManager = getSecurityManager()
             newSecurityManager(None, SpecialUsers.system)
-
             obj.setEffectiveDate(None)
 
             # Switch back to the current user

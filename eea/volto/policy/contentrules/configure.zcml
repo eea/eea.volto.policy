@@ -17,8 +17,8 @@
 
     <plone:ruleAction
         name="eea.volto.policy.set_publication_date_to_null"
-        title="IMSv4: Retract and rename old Indicator"
-        description="IMSv4: Retract and rename old Indicator"
+        title="Set Publication Date to null"
+        description="Set Publication Date to null"
         for="zope.interface.Interface"
         event="zope.interface.Interface"
         addview="eea.volto.policy.set_publication_date_to_null"
