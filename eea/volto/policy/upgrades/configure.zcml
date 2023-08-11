@@ -27,4 +27,16 @@
 
   </genericsetup:upgradeSteps>
 
+  <genericsetup:upgradeSteps
+    source="2.0"
+    destination="2.1"
+    profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeDepends
+       title="Add content rule to unset publication date when private"
+       import_steps="contentrules"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentrules>
+ <rule name="rule-1" title="Unset Publication Date When Private" cascading="False" description=""
+    enabled="True" event="Products.CMFCore.interfaces.IActionSucceededEvent"
+    stop-after="False">
+  <conditions>
+   <condition type="plone.conditions.WorkflowState">
+    <property name="wf_states">
+     <element>private</element>
+    </property>
+   </condition>
+  </conditions>
+  <actions>
+   <action type="eea.volto.policy.set_publication_date_to_null"/>
+  </actions>
+ </rule>
+ <assignment name="rule-1" bubbles="True" enabled="True" location=""/>
+</contentrules>
