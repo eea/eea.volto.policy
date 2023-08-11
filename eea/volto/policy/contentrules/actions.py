@@ -2,23 +2,16 @@
 """
 
 import logging
-from time import time
-
 from AccessControl import SpecialUsers, getSecurityManager
 from AccessControl.SecurityManagement import (
     newSecurityManager,
     setSecurityManager,
 )
-from DateTime import DateTime
 from OFS.SimpleItem import SimpleItem
-from plone import api
 from plone.app.contentrules.browser.formhelper import (
-    AddForm,
-    EditForm,
     NullAddForm,
 )
 from plone.contentrules.rule.interfaces import IExecutable, IRuleElementData
-from zope import schema
 from zope.component import adapter
 from zope.interface import Interface, implementer
 
