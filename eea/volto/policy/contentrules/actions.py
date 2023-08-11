@@ -64,5 +64,3 @@ class SetPublicationDateToNullAddForm(NullAddForm):
     def create(self):
         """Create content-rule"""
         return SetPublicationDateToNullAction()
-
-
