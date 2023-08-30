@@ -26,17 +26,24 @@
       />
 
   </genericsetup:upgradeSteps>
+    destination="3.0"
+    profile="eea.volto.policy:default">
 
-  <genericsetup:upgradeSteps
-    source="2.0"
-    destination="2.1"
+    <genericsetup:upgradeDepends
+      title="Add image_scales to catalog and update list of scales to registry"
+      import_steps="catalog plone.app.registry"
+      />
+  </genericsetup:upgradeSteps>
+
+ <genericsetup:upgradeSteps
+    source="3.0"
+    destination="3.1"
     profile="eea.volto.policy:default">
 
     <genericsetup:upgradeDepends
        title="Add content rule to unset publication date when private"
        import_steps="contentrules"
       />
-
+   
   </genericsetup:upgradeSteps>
-
 </configure>
