@@ -26,6 +26,9 @@
       />
 
   </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+    source="2.0"
     destination="3.0"
     profile="eea.volto.policy:default">
 
