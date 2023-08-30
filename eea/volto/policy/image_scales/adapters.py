@@ -17,7 +17,7 @@ from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.interface.interfaces import ComponentLookupError
 
-from eea.volto.policy.interfaces import (
+from eea.volto.policy.image_scales.interfaces import (
     IImageScalesAdapter,
     IImageScalesFieldAdapter,
     IImagingSchema,

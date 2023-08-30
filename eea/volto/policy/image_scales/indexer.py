@@ -9,7 +9,7 @@ from plone.indexer.decorator import indexer
 from zope.component import queryMultiAdapter
 from zope.globalrequest import getRequest
 
-from eea.volto.policy.interfaces import IImageScalesAdapter
+from eea.volto.policy.image_scales.interfaces import IImageScalesAdapter
 
 
 @indexer(IDexterityContent)
