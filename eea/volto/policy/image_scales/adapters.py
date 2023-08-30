@@ -17,20 +17,11 @@ from zope.component import getMultiAdapter
 from zope.component import getUtility
 from zope.interface.interfaces import ComponentLookupError
 
-try:
-    from plone.base.interfaces import (
-        IImageScalesFieldAdapter,
-        IImageScalesAdapter,
-        IImagingSchema,
-    )
-
-except ImportError:
-    # BBB Plone 5
-    from eea.volto.policy.interfaces import (
-        IImageScalesAdapter,
-        IImageScalesFieldAdapter,
-        IImagingSchema,
-    )
+from eea.volto.policy.interfaces import (
+    IImageScalesAdapter,
+    IImageScalesFieldAdapter,
+    IImagingSchema,
+)
 
 
 @implementer(IImageScalesAdapter)
