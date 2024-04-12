@@ -47,6 +47,19 @@
        title="Add content rule to unset publication date when private"
        import_steps="contentrules"
       />
-   
+
   </genericsetup:upgradeSteps>
+  
+  <genericsetup:upgradeSteps
+    source="3.1"
+    destination="3.2"
+    profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeStep
+      title="Upgrade Teaser Block to Grid Block"
+      handler="eea.volto.policy.upgrades.upgrade_teaser_block.upgrade_teaser_block"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>
