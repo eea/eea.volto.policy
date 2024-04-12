@@ -1,13 +1,9 @@
 """ Upgrade teaserBlock to gridBlock """
 
-from plone.protect.interfaces import IDisableCSRFProtection
-from plone.restapi.blocks import visit_blocks
-from Products.Five.browser import BrowserView
-from zope.interface import alsoProvides
-from zope.lifecycleevent import modified
-
 import logging
 import transaction
+from plone.restapi.blocks import visit_blocks
+from zope.lifecycleevent import modified
 
 logger = logging.getLogger("convert_teaser_to_grid_block")
 logger.setLevel(logging.INFO)
