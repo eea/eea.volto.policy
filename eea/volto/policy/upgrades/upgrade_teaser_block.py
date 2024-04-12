@@ -35,7 +35,7 @@ def upgrade_teaser_block(portal):
     ):
         obj = brain.getObject()
         blocks = obj.blocks
-        logger.info("Processing %s",obj.absolute_url())
+        logger.info("Processing %s", obj.absolute_url())
         output += f"Processing {obj.absolute_url()}\n"
         # retrive block data from the item
         for block in visit_blocks(obj, blocks):
@@ -45,7 +45,7 @@ def upgrade_teaser_block(portal):
                 new_block = convert_teaser_to_grid_block(block)
                 block.clear()
                 block.update(new_block)
-                logger.info("%s - Updated",obj.absolute_url())
+                logger.info("%s - Updated", obj.absolute_url())
                 output += f"{obj.absolute_url()} - Updated \n"
 
         obj.blocks = blocks
