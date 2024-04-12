@@ -15,7 +15,6 @@
   <include package=".restapi" />
   <include package=".vocabularies" />
   <include package=".upgrades" />
-  
   <configure zcml:condition="not-installed Products.CMFPlone.image_scales">
     <include package=".image_scales" />
   </configure>
