@@ -25,14 +25,12 @@ def convert_teaser_to_grid_block(block_data):
 def upgrade_teaser_block(portal):
     """Upgrade all teaserGrid blocks to gridBlock"""
     i = 0
-    output = ""
     for brain in portal.portal_catalog(
         object_provides="plone.restapi.behaviors.IBlocks"
     ):
         obj = brain.getObject()
         blocks = obj.blocks
         logger.info("Processing %s", obj.absolute_url())
-        output += f"Processing {obj.absolute_url()}\n"
         # retrive block data from the item
         for block in visit_blocks(obj, blocks):
             # we have found a teaserGrid
@@ -42,7 +40,6 @@ def upgrade_teaser_block(portal):
                 block.clear()
                 block.update(new_block)
                 logger.info("%s - Updated", obj.absolute_url())
-                output += f"{obj.absolute_url()} - Updated \n"
 
         obj.blocks = blocks
         modified(obj)
@@ -51,4 +48,3 @@ def upgrade_teaser_block(portal):
             logger.info(i)
             transaction.commit()
     transaction.commit()
-    return output
