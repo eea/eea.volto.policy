@@ -6,7 +6,7 @@ import logging
 import transaction
 from Products.Five.browser import BrowserView
 from Products.statusmessages.interfaces import IStatusMessage
-from plone.base.interfaces.siteroot import IPloneSiteRoot
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from plone import api
 from plone.protect.interfaces import IDisableCSRFProtection
 from plone.restapi.blocks import visit_blocks
