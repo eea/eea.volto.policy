@@ -11,7 +11,7 @@ logger = logging.getLogger("eea.volto.policy")
 
 
 @implementer(INonInstallable)
-class HiddenProfiles(object):
+class HiddenProfiles:
     """ Hidden profiles
     """
 

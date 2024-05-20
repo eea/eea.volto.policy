@@ -7,6 +7,7 @@ from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import setRoles
+import eea.volto.policy
 
 
 class EEAFixture(PloneSandboxLayer):
@@ -15,7 +16,6 @@ class EEAFixture(PloneSandboxLayer):
     def setUpZope(self, app, configurationContext):
         """ Setup Zope
         """
-        import eea.volto.policy
         self.loadZCML(package=eea.volto.policy)
         z2.installProduct(app, 'eea.volto.policy')
 

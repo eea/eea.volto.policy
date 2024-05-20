@@ -34,7 +34,7 @@ class SetPublicationDateToNullAction(SimpleItem):
 
 @implementer(IExecutable)
 @adapter(Interface, ISetPublicationDateToNullAction, Interface)
-class SetPublicationDateToNullExecutor(object):
+class SetPublicationDateToNullExecutor:
     """Set Publication Date to null executor"""
 
     def __init__(self, context, element, event):

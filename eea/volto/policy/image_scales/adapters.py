@@ -26,7 +26,7 @@ from eea.volto.policy.image_scales.interfaces import (
 
 @implementer(IImageScalesAdapter)
 @adapter(IDexterityContent, Interface)
-class ImageScales(object):
+class ImageScales:
     """
     Adapter for getting image scales
     """
@@ -74,7 +74,7 @@ def _get_scale_infos():
 
 @implementer(IImageScalesFieldAdapter)
 @adapter(INamedImageField, IDexterityContent, Interface)
-class ImageFieldScales(object):
+class ImageFieldScales:
     """
     Image scale serializer
     """

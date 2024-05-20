@@ -6,17 +6,25 @@ from setuptools import setup, find_packages
 
 NAME = 'eea.volto.policy'
 PATH = NAME.split('.') + ['version.txt']
-VERSION = open(join(*PATH)).read().strip()
+VERSION = ""
+with open(join(*PATH), "r", encoding="utf-8") as version_file:
+    VERSION = version_file.read().strip()
+
+LONG_DESCRIPTION = ""
+with open("README.rst", "r", encoding="utf-8") as readme_file:
+    LONG_DESCRIPTION = readme_file.read()
+
+with open(os.path.join("docs", "HISTORY.txt"),
+          "r", encoding="utf-8") as hfile:
+    LONG_DESCRIPTION += "\n" + hfile.read()
+
 
 setup(
     name=NAME,
     version=VERSION,
     description="An add-on for Plone",
     long_description_content_type="text/x-rst",
-    long_description=(
-        open("README.rst").read() + "\n" +
-        open(os.path.join("docs", "HISTORY.txt")).read()
-    ),
+    long_description=LONG_DESCRIPTION,
     classifiers=[
         "Environment :: Web Environment",
         "Framework :: Plone",

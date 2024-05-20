@@ -1,0 +1,30 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser"
+  i18n_domain="eea">
+
+  <browser:page
+    name="teaser-layout-migrate"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+    class=".teaser.TeaserMigrateLayout"
+    permission="cmf.ManagePortal"
+    />
+
+  <browser:page
+    name="teaser-migrate"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+    class=".teaser.TeaserMigrateSite"
+    permission="cmf.ManagePortal"
+    />
+
+  <browser:page
+    name="teaser-migrate"
+    for="Products.CMFCore.interfaces.IContentish"
+    layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+    class=".teaser.TeaserMigrateContent"
+    permission="cmf.ManagePortal"
+    />
+
+</configure>

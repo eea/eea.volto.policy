@@ -10,6 +10,7 @@
   <include package="plone.volto" />
   <include file="profiles.zcml" />
 
+  <include package=".browser" />
   <include package=".behaviors" />
   <include package=".contentrules" />
   <include package=".restapi" />
