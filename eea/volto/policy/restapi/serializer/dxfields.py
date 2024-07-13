@@ -45,11 +45,4 @@ class EEAPrimaryFileFieldTarget(DefaultPrimaryFieldTarget):
     """
     def __call__(self):
         if self.field.__name__ == 'file':
-            return ""
-
-        namedfile = self.field.get(self.context)
-        if namedfile is None:
             return
-        return "/".join(
-            (self.context.absolute_url(), "@@download", self.field.__name__)
-        )
