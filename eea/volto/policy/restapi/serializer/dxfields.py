@@ -41,9 +41,11 @@ class DateTimeFieldSerializer(DefaultFieldSerializer):
 
 @adapter(INamedFileField, IDexterityContent, IEeaVoltoPolicyLayer)
 class EEAPrimaryFileFieldTarget(DefaultPrimaryFieldTarget):
+    """ EEAPrimaryFileFieldTarget adapter of PrimaryFileFieldTarget
+    """
     def __call__(self):
         if self.field.__name__ == 'file':
-            return
+            return ""
 
         namedfile = self.field.get(self.context)
         if namedfile is None:
