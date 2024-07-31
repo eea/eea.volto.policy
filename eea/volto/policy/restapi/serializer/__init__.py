@@ -46,7 +46,7 @@ class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
             "The content types that should be shown in the side navigation"
         ),
         required=False,
-        default=("Document"),
+        default=("Document",),
         missing_value=(),
         value_type=schema.Choice(
             source="plone.app.vocabularies.ReallyUserFriendlyTypes"
