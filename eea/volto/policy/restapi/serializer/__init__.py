@@ -1,8 +1,10 @@
 """ RestAPI serializer
 """
+
 from plone.app.layout.navigation.root import getNavigationRoot
 from plone.restapi.services.contextnavigation import get as original_get
-
+from zope.component import getUtility
+from plone.registry.interfaces import IRegistry
 from plone.restapi import bbb as restapi_bbb
 from plone import schema
 
@@ -10,8 +12,12 @@ from plone.base import PloneMessageFactory as _
 
 
 class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
-    """ Custom QueryBuilder for context navigation
-    """
+    """Custom QueryBuilder for context navigation"""
+
+    def getSideNavTypes(self, context):
+        registry = getUtility(IRegistry)
+        return registry.get("plone.side_nav_types", ())
+
     def __init__(self, context, data):
         super().__init__(context, data)
 
@@ -29,17 +35,20 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
         # EEA modification to always use the rootPath for query
         self.query["path"] = {"query": rootPath, "depth": depth, "navtree": 1}
 
+        self.query["portal_type"] = self.getSideNavTypes(context)
+
         topLevel = data.topLevel
         if topLevel and topLevel > 0:
             # EEA modification to use bottomLevel for depth of navtree_start
             self.query["path"]["navtree_start"] = depth + 1  # 4
 
+
 original_get.QueryBuilder = EEAContextNavigationQueryBuilder
 
 
 class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
-    """ Custom schema for context navigation
-    """
+    """Custom schema for context navigation"""
+
     side_nav_types = schema.Tuple(
         title=_("Displayed content types within the side navigation"),
         description=_(
@@ -52,5 +61,6 @@ class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
             source="plone.app.vocabularies.ReallyUserFriendlyTypes"
         ),
     )
+
 
 restapi_bbb.INavigationSchema = IEEAContextNavigationSchema
