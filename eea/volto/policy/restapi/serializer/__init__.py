@@ -1,17 +1,72 @@
-""" RestAPI serializer
-"""
+"""RestAPI serializer"""
 
 from plone.app.layout.navigation.root import getNavigationRoot
 from plone.restapi.services.contextnavigation import get as original_get
 from zope.component import getUtility
+from zope.schema.interfaces import IFromUnicode
 from plone.registry.interfaces import IRegistry
 from plone.restapi import bbb as restapi_bbb
 from plone.restapi.bbb import safe_hasattr
 from plone import schema
 from Products.CMFPlone.utils import normalizeString
 from plone import api
-
 from plone.base import PloneMessageFactory as _
+
+
+class IEEANavigationPortlet(original_get.INavigationPortlet):
+    """Custom schema for navigation portlet"""
+
+    portal_type = schema.Tuple(
+        title=_("Displayed content types"),
+        description=_("The content types that should be shown in the navigation"),
+        required=False,
+        default=(),
+        missing_value=(),
+        value_type=schema.Choice(
+            source="plone.app.vocabularies.ReallyUserFriendlyTypes"
+        ),
+    )
+
+
+class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
+    """Custom schema for context navigation"""
+
+    side_nav_types = schema.Tuple(
+        title=_("Displayed content types within the side navigation"),
+        description=_("The content types that should be shown in the side navigation"),
+        required=False,
+        default=("Document",),
+        missing_value=(),
+        value_type=schema.Choice(
+            source="plone.app.vocabularies.ReallyUserFriendlyTypes"
+        ),
+    )
+
+
+restapi_bbb.INavigationSchema = IEEAContextNavigationSchema
+
+
+def eea_extract_data(_obj_schema, raw_data, prefix):
+    """Custom extract data function for navigation portlet"""
+    obj_schema = IEEANavigationPortlet
+    obj_schema_names = list(obj_schema)
+    data = original_get.Data({})
+    for name in obj_schema_names:
+        field = obj_schema[name]
+        raw_value = raw_data.get(prefix + name, field.default)
+
+        if isinstance(field, schema.Tuple):
+            value = "," in raw_value and raw_value.split(",") or raw_value
+        else:
+            value = IFromUnicode(field).fromUnicode(raw_value)
+
+        data[name] = value
+
+    return data
+
+
+# Replace the original extract_data function
+original_get.extract_data = eea_extract_data
 
 
 class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
@@ -38,7 +93,7 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
         # EEA modification to always use the rootPath for query
         self.query["path"] = {"query": rootPath, "depth": depth, "navtree": 1}
 
-        self.query["portal_type"] = self.getSideNavTypes(context)
+        self.query["portal_type"] = data.portal_type or self.getSideNavTypes(context)
 
         topLevel = data.topLevel
         if topLevel and topLevel > 0:
@@ -113,6 +168,7 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
         res["items"].extend(self.createNavTree())
 
         return res
+
     def recurse(self, children, level, bottomLevel):
         res = []
 
@@ -154,7 +210,7 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
                 "normalized_id": node["normalized_id"],
                 "review_state": node["review_state"] or "",
                 "thumb": thumb,
-                "title":node.get("side_nav_title", node["Title"]),
+                "title": node.get("side_nav_title", node["Title"]),
                 "type": node["normalized_portal_type"],
             }
 
@@ -179,38 +235,21 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
 
         return res
 
+
 # Monkey patch the original NavigationPortletRenderer
 original_get.NavigationPortletRenderer = EEANavigationPortletRenderer
 
 
-class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
-    """Custom schema for context navigation"""
-
-    side_nav_types = schema.Tuple(
-        title=_("Displayed content types within the side navigation"),
-        description=_(
-            "The content types that should be shown in the side navigation"
-        ),
-        required=False,
-        default=("Document",),
-        missing_value=(),
-        value_type=schema.Choice(
-            source="plone.app.vocabularies.ReallyUserFriendlyTypes"
-        ),
-    )
-
-
-restapi_bbb.INavigationSchema = IEEAContextNavigationSchema
-
-
 class EEANavtreeStrategy(original_get.NavtreeStrategy):
     """Custom NavtreeStrategy for context navigation"""
+
     def decoratorFactory(self, node):
         new_node = super().decoratorFactory(node)
         if getattr(new_node["item"], "side_nav_title", False):
             new_node["side_nav_title"] = new_node["item"].side_nav_title
         # Add any additional custom logic here
         return new_node
+
 
 # Monkey patch the original NavtreeStrategy
 original_get.NavtreeStrategy = EEANavtreeStrategy
