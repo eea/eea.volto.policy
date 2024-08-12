@@ -98,7 +98,7 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
         topLevel = data.topLevel
         if topLevel and topLevel > 0:
             # EEA modification to use bottomLevel for depth of navtree_start
-            self.query["path"]["navtree_start"] = depth + 1  # 4
+            self.query["path"]["navtree_start"] = depth  
 
 
 original_get.QueryBuilder = EEAContextNavigationQueryBuilder
