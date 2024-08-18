@@ -97,7 +97,8 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
         self.query["path"] = {"query": rootPath, "depth": depth,
                               "navtree": 1}
 
-        self.query["portal_type"] = data.portal_type or self.getSideNavTypes(context)
+        self.query["portal_type"] = data.portal_type or self.getSideNavTypes(
+            context)
 
         topLevel = data.topLevel
         if topLevel and topLevel > 0:
@@ -138,7 +139,8 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
                 # cid = get_id(root)
                 root_url = original_get.get_url(root)
 
-            root_title = "Home" if root_is_portal else root.pretty_title_or_id()
+            root_title = "Home" if root_is_portal else \
+                root.pretty_title_or_id()
             root_type = (
                 "plone-site"
                 if root_is_portal
