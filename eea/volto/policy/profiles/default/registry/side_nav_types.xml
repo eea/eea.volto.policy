@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
 <registry>
-  <!-- Allow only Link and Folder types in the navigation -->
   <record name="plone.side_nav_types"
     interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema"
     field="side_nav_types">

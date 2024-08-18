@@ -135,8 +135,6 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
             if safe_hasattr(self.context, "getRemoteUrl"):
                 root_url = root.getRemoteUrl()
             else:
-                # cid, root_url = get_view_url(root)
-                # cid = get_id(root)
                 root_url = original_get.get_url(root)
 
             root_title = "Home" if root_is_portal else \
@@ -293,7 +291,6 @@ class EEANavtreeStrategy(original_get.NavtreeStrategy):
         new_node = super().decoratorFactory(node)
         if getattr(new_node["item"], "side_nav_title", False):
             new_node["side_nav_title"] = new_node["item"].side_nav_title
-        # Add any additional custom logic here
         return new_node
 
 

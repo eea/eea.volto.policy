@@ -6,7 +6,7 @@
 
   <plone:behavior
       name="eea.side_nav_title"
-      title="Side Navigation title"
+      title="EEA Side Navigation title"
       description="Used by the side navigation block"
       provides=".sidenavigation.IEEASideNavTitle"
       />
