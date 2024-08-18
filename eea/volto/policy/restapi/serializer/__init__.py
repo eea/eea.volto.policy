@@ -230,8 +230,8 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
 
             nodechildren = node["children"]
 
-            if (nodechildren and show_children and \
-                ((level <= bottomLevel) or (bottomLevel == 0))):
+            if (nodechildren and show_children and
+                    ((level <= bottomLevel) or (bottomLevel == 0))):
                 item["items"] = self.recurse(
                     nodechildren, level=level + 1, bottomLevel=bottomLevel
                 )
