@@ -1,3 +1,4 @@
+"""Side navigation behaviors"""
 from plone.app.dexterity import _
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model

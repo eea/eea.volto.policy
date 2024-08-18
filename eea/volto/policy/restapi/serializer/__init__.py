@@ -1,14 +1,14 @@
 """RestAPI serializer"""
 
-from plone.app.layout.navigation.root import getNavigationRoot
-from plone.restapi.services.contextnavigation import get as original_get
 from zope.component import getUtility
 from zope.schema.interfaces import IFromUnicode
+from Products.CMFPlone.utils import normalizeString
+from plone.app.layout.navigation.root import getNavigationRoot
+from plone.restapi.services.contextnavigation import get as original_get
 from plone.registry.interfaces import IRegistry
 from plone.restapi import bbb as restapi_bbb
 from plone.restapi.bbb import safe_hasattr
 from plone import schema
-from Products.CMFPlone.utils import normalizeString
 from plone import api
 from plone.base import PloneMessageFactory as _
 
@@ -18,7 +18,8 @@ class IEEANavigationPortlet(original_get.INavigationPortlet):
 
     portal_type = schema.Tuple(
         title=_("Displayed content types"),
-        description=_("The content types that should be shown in the navigation"),
+        description=_("The content types that should be shown in the navigati"
+                      "on"),
         required=False,
         default=(),
         missing_value=(),
@@ -33,7 +34,8 @@ class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
 
     side_nav_types = schema.Tuple(
         title=_("Displayed content types within the side navigation"),
-        description=_("The content types that should be shown in the side navigation"),
+        description=_("The content types that should be shown in the "
+                      "side navigation"),
         required=False,
         default=("Document",),
         missing_value=(),
@@ -56,7 +58,7 @@ def eea_extract_data(_obj_schema, raw_data, prefix):
         raw_value = raw_data.get(prefix + name, field.default)
 
         if isinstance(field, schema.Tuple):
-            value = "," in raw_value and raw_value.split(",") or raw_value
+            value = raw_value.split(',') if ',' in raw_value else raw_value
         else:
             value = IFromUnicode(field).fromUnicode(raw_value)
 
@@ -73,6 +75,7 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
     """Custom QueryBuilder for context navigation"""
 
     def getSideNavTypes(self, context):
+        """Get the side navigation types"""
         registry = getUtility(IRegistry)
         return registry.get("plone.side_nav_types", ())
 
@@ -91,14 +94,15 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
             rootPath = getNavigationRoot(context)
 
         # EEA modification to always use the rootPath for query
-        self.query["path"] = {"query": rootPath, "depth": depth, "navtree": 1}
+        self.query["path"] = {"query": rootPath, "depth": depth,
+                              "navtree": 1}
 
         self.query["portal_type"] = data.portal_type or self.getSideNavTypes(context)
 
         topLevel = data.topLevel
         if topLevel and topLevel > 0:
             # EEA modification to use bottomLevel for depth of navtree_start
-            self.query["path"]["navtree_start"] = depth  
+            self.query["path"]["navtree_start"] = depth
 
 
 original_get.QueryBuilder = EEAContextNavigationQueryBuilder
@@ -108,6 +112,7 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
     """Custom NavigationPortletRenderer for context navigation"""
 
     def render(self):
+        """Render the navigation portlet"""
         res = {
             "title": self.title(),
             "url": self.heading_link_target(),
@@ -170,6 +175,7 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
         return res
 
     def recurse(self, children, level, bottomLevel):
+        """Recurse through the navigation tree"""
         res = []
 
         show_thumbs = not self.data.no_thumbs
@@ -244,6 +250,7 @@ class EEANavtreeStrategy(original_get.NavtreeStrategy):
     """Custom NavtreeStrategy for context navigation"""
 
     def decoratorFactory(self, node):
+        """Decorate the navigation tree"""
         new_node = super().decoratorFactory(node)
         if getattr(new_node["item"], "side_nav_title", False):
             new_node["side_nav_title"] = new_node["item"].side_nav_title
