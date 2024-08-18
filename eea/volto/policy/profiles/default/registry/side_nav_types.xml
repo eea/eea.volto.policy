@@ -5,9 +5,7 @@
     interface="Products.CMFPlone.interfaces.controlpanel.INavigationSchema"
     field="side_nav_types">
     <value>
-      <element>Link</element>
-      <element>Collection</element>
-      <element>Folder</element>
+      <element>Document</element>
     </value>
   </record>
 
