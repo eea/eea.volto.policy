@@ -4,13 +4,13 @@ from zope.component import getUtility
 from zope.schema.interfaces import IFromUnicode
 from Products.CMFPlone.utils import normalizeString
 from plone.app.layout.navigation.root import getNavigationRoot
+from plone.app.dexterity import _
 from plone.restapi.services.contextnavigation import get as original_get
 from plone.registry.interfaces import IRegistry
 from plone.restapi import bbb as restapi_bbb
 from plone.restapi.bbb import safe_hasattr
 from plone import schema
 from plone import api
-from plone.base import PloneMessageFactory as _
 
 
 class IEEANavigationPortlet(original_get.INavigationPortlet):
