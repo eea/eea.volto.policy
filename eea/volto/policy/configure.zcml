@@ -9,6 +9,7 @@
 
   <include package="plone.volto" />
   <include file="profiles.zcml" />
+  <include file="permissions.zcml" />
 
   <include package=".browser" />
   <include package=".behaviors" />
