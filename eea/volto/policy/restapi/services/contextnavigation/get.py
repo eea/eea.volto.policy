@@ -51,6 +51,7 @@ class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
 
 restapi_bbb.INavigationSchema = IEEAContextNavigationSchema
 
+
 def eea_extract_data(_obj_schema, raw_data, prefix):
     """Custom extract data function for navigation portlet"""
     obj_schema = IEEANavigationPortlet
@@ -256,8 +257,12 @@ class EEAContextNavigation:
         if not expand:
             return result
         print("REQUEST FORM", self.request.form)
-        data = eea_extract_data(IEEANavigationPortlet, self.request.form, prefix)
-        renderer = EEANavigationPortletRenderer(self.context, self.request, data)
+        data = eea_extract_data(
+            IEEANavigationPortlet,
+            self.request.form,
+            prefix)
+        renderer = EEANavigationPortletRenderer(
+            self.context, self.request, data)
         res = renderer.render()
         result["contextnavigation"].update(res)
         return result
@@ -270,6 +275,7 @@ class EEAContextNavigation:
 
 class EEAContextNavigationGet(original_get.ContextNavigationGet):
     """Custom ContextNavigationGet for context navigation"""
+
     def reply(self):
         """Reply with context navigation"""
         navigation = EEAContextNavigation(self.context, self.request)
