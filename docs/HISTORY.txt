@@ -3,8 +3,12 @@ Changelog
 
 5.2 - (2024-08-19)
 ---------------------------
-* Change: Release
-  [avoinea]
+* Feature: Check for permissions when serializing restricted blocks
+  [razvanMiu - refs #273963]
+* Feature: Customized context navigation endpoint to filter portal_type
+  [ichim-david - refs #270999]
+* Fix: Depth of context navigation endpoint by passing depth parameter
+  [ichim-david - refs #270999]
 
 5.1 - (2024-07-22)
 ---------------------------
