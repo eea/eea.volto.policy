@@ -1,0 +1,12 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:zcml="http://namespaces.zope.org/zcml"
+>
+  <configure zcml:condition="installed AccessControl.security">
+    <permission
+      id="eea.blocks.manageRestrictedBlocks"
+      title="EEA: Manage restricted blocks"
+    />
+  </configure>
+
+</configure>
