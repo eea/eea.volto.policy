@@ -1,11 +1,13 @@
 <configure xmlns="http://namespaces.zope.org/zope" xmlns:plone="http://namespaces.plone.org/plone">
   <include package="plone.restapi" />
   <include package=".deserializer" />
-  <include package=".serializer" />
   <include package=".navigation" />
-
+  <include package=".serializer" />
+  <include package=".services" />
+  
   <!--  Serializations -->
   <subscriber
     provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
     factory=".blocks.RestrictedBlockSerializationTransformer" />
+
 </configure>

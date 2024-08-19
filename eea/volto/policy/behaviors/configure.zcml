@@ -4,4 +4,12 @@
   i18n_domain="eea">
 
 
+  <plone:behavior
+      name="eea.side_nav_title"
+      title="EEA Side Navigation title"
+      description="Used by the side navigation block"
+      provides=".sidenavigation.IEEASideNavTitle"
+      />
+
+
 </configure>

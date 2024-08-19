@@ -20,4 +20,7 @@
       <element>huge 1920:65536</element>
     </value>
   </record>
+  <records interface="plone.restapi.bbb.INavigationSchema"
+           prefix="plone"
+  />
 </registry>
