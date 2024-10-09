@@ -1,10 +1,5 @@
 import logging
 import transaction
-from plone.restapi.blocks import visit_blocks
-from zope.lifecycleevent import modified
-from xml.etree import ElementTree as ET
-from plone.restapi.interfaces import ISerializeToJson
-from zope.component import getMultiAdapter
 from plone.namedfile.utils import getImageInfo
 from zope.lifecycleevent import modified
 
