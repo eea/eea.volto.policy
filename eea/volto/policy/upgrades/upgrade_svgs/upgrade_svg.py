@@ -13,7 +13,7 @@ logger.setLevel(logging.INFO)
 
 
 def upgrade_svgs(portal):
-    """Upgrade all teaserGrid blocks to gridBlock and log SVG dimensions"""
+    """Upgrade all SVG dimensions"""
     i = 0
     for brain in portal.portal_catalog():
         obj = brain.getObject()
