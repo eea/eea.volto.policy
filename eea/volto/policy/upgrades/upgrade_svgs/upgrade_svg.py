@@ -13,14 +13,12 @@ logger.setLevel(logging.INFO)
 
 
 def upgrade_svgs(portal):
-    """Upgrade all SVG dimensions"""
+    """Upgrade SVG dimensions"""
     i = 0
     for brain in portal.portal_catalog():
         obj = brain.getObject()
         if (
-            hasattr(obj, "image")
-            and hasattr(obj.image, "_width")
-            and hasattr(obj.image, "_height")
+            hasattr(obj, "image") and hasattr(obj.image, "_width") and hasattr(obj.image, "_height")
         ):
             logger.info("Processing %s", obj.absolute_url())
             contentType, width, height = getImageInfo(obj.image.data)
@@ -30,9 +28,7 @@ def upgrade_svgs(portal):
                 modified(obj.image)
                 i += 1
         if (
-            hasattr(obj, "preview_image")
-            and hasattr(obj.preview_image, "_width")
-            and hasattr(obj.preview_image, "_height")
+            hasattr(obj, "preview_image") and hasattr(obj.preview_image, "_width") and hasattr(obj.preview_image, "_height")
         ):
             logger.info("Processing %s", obj.absolute_url())
             contentType, width, height = getImageInfo(obj.preview_image.data)
