@@ -1,3 +1,5 @@
+"""Upgrade step for svgs to fix width and height"""
+
 import logging
 import transaction
 from plone.namedfile.utils import getImageInfo
