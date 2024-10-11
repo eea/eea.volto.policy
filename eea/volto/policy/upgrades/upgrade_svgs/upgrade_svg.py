@@ -16,7 +16,7 @@ def upgrade_svgs(portal):
         obj = dict()
         try:
             obj = brain.getObject()
-        except Exception as e:
+        except Exception:
             continue  # Skip to the next item if there's an error
 
         if (
