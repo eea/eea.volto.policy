@@ -17,7 +17,6 @@ def upgrade_svgs(portal):
         try:
             obj = brain.getObject()
         except Exception as e:
-            logger.error("Failed to get object for brain %s: %s", brain.getPath(), str(e))
             continue  # Skip to the next item if there's an error
 
         if (
