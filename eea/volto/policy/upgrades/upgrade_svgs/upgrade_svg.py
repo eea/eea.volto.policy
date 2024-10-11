@@ -1,5 +1,3 @@
-"""Upgrade step for svgs to fix width and height"""
-
 import logging
 import transaction
 from plone.namedfile.utils import getImageInfo
@@ -13,31 +11,41 @@ def upgrade_svgs(portal):
     """Upgrade SVG dimensions"""
     i = 0
     for brain in portal.portal_catalog():
-        obj = brain.getObject()
-        if (
-            hasattr(obj, "image") and hasattr(obj.image, "_width") and
-            hasattr(obj.image, "_height")
-        ):
-            logger.info("Processing %s", obj.absolute_url())
-            contentType, width, height = getImageInfo(obj.image.data)
-            if contentType == "image/svg+xml":
-                obj.image._width = width
-                obj.image._height = height
-                modified(obj.image)
-                i += 1
-        if (
-            hasattr(obj, "preview_image") and
-            hasattr(obj.preview_image, "_width") and
-            hasattr(obj.preview_image, "_height")
-        ):
-            logger.info("Processing %s", obj.absolute_url())
-            contentType, width, height = getImageInfo(obj.preview_image.data)
-            if contentType == "image/svg+xml":
-                obj.preview_image._width = width
-                obj.preview_image._height = height
-                modified(obj.preview_image)
-                i += 1
+        try:
+            obj = brain.getObject()
+        except Exception as e:
+            logger.error("Failed to get object for brain %s: %s", brain.getPath(), str(e))
+            continue  # Skip to the next item if there's an error
+        
+        try:
+            if (
+                hasattr(obj, "image") and hasattr(obj.image, "_width") and
+                hasattr(obj.image, "_height")
+            ):
+                logger.info("Processing %s", obj.absolute_url())
+                contentType, width, height = getImageInfo(obj.image.data)
+                if contentType == "image/svg+xml":
+                    obj.image._width = width
+                    obj.image._height = height
+                    modified(obj.image)
+                    i += 1
+            if (
+                hasattr(obj, "preview_image") and
+                hasattr(obj.preview_image, "_width") and
+                hasattr(obj.preview_image, "_height")
+            ):
+                logger.info("Processing %s", obj.absolute_url())
+                contentType, width, height = getImageInfo(obj.preview_image.data)
+                if contentType == "image/svg+xml":
+                    obj.preview_image._width = width
+                    obj.preview_image._height = height
+                    modified(obj.preview_image)
+                    i += 1
+        except Exception as e:
+            logger.error("Error processing object %s: %s", obj.absolute_url(), str(e))
+        
         if not i % 100:
             logger.info(i)
             transaction.commit()
+    
     transaction.commit()
