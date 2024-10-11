@@ -1,8 +1,27 @@
 Changelog
 =========
 
-5.2-dev0 - (unreleased)
+5.5-dev0 - (unreleased)
 ---------------------------
+
+5.4 - (2024-10-09)
+---------------------------
+* Fix: Create a content upgrade script to fix SVGs display 
+  [@dobri1408 - refs #276995]
+
+5.3 - (2024-08-23)
+---------------------------
+* Change: Develop
+  [tiberiuichim]
+
+5.2 - (2024-08-19)
+---------------------------
+* Feature: Check for permissions when serializing restricted blocks
+  [razvanMiu - refs #273963]
+* Feature: Customized context navigation endpoint to filter portal_type
+  [ichim-david - refs #270999]
+* Fix: Depth of context navigation endpoint by passing depth parameter
+  [ichim-david - refs #270999]
 
 5.1 - (2024-07-22)
 ---------------------------

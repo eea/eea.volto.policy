@@ -1,7 +1,7 @@
-""" Navigation
-"""
+"""Navigation"""
 
 from urllib.parse import urlparse
+
 from plone.restapi.interfaces import IExpandableElement, IPloneRestapiLayer
 from plone.restapi.services.navigation.get import Navigation as BaseNavigation
 from plone.restapi.services.navigation.get import (
@@ -30,6 +30,11 @@ class Navigation(BaseNavigation):
 
     def render_item(self, item, path):
         """build navtree from item helper"""
+        # prevents a crash in clms custom rendering
+        # see also https://github.com/plone/plone.restapi/issues/1801
+        if "path" not in item:
+            return item
+
         sub = self.build_tree(item["path"], first_run=False)
 
         item.update({"items": sub})
