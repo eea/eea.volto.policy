@@ -13,7 +13,9 @@ logger.setLevel(logging.INFO)
 def upgrade_svgs(portal):
     """Upgrade SVG dimensions"""
     i = 0
-    for brain in portal.portal_catalog():
+    brains = portal.portal_catalog()
+    total = len(brains)
+    for idx,brain in enumerate(brains):
         obj = dict()
         try:
             obj = brain.getObject()
@@ -24,9 +26,10 @@ def upgrade_svgs(portal):
             hasattr(obj, "image") and hasattr(obj.image, "_width") and
             hasattr(obj.image, "_height")
         ):
-            logger.info("Processing %s", obj.absolute_url())
+            
             contentType, width, height = getImageInfo(obj.image.data)
             if contentType == "image/svg+xml":
+                logger.info("Processing %s", obj.absolute_url())
                 obj.image._width = width
                 obj.image._height = height
                 anno = IAnnotations(obj)
@@ -40,9 +43,9 @@ def upgrade_svgs(portal):
             hasattr(obj.preview_image, "_width") and
             hasattr(obj.preview_image, "_height")
         ):
-            logger.info("Processing %s", obj.absolute_url())
             contentType, width, height = getImageInfo(obj.preview_image.data)
             if contentType == "image/svg+xml":
+                logger.info("Processing %s", obj.absolute_url())
                 obj.preview_image._width = width
                 obj.preview_image._height = height
                 anno = IAnnotations(obj)
@@ -52,6 +55,7 @@ def upgrade_svgs(portal):
                 modified(obj)
                 i += 1
         if not i % 100:
-            logger.info(i)
+            logger.warning("Progress %s/%s", idx, total)
+            logger.warning("Modified %s items", i)
             transaction.commit()
     transaction.commit()
