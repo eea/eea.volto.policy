@@ -23,9 +23,9 @@ def upgrade_svgs(portal):
             continue  # Skip to the next item if there's an error
 
         if (
-            hasattr(obj, "image")
-            and hasattr(obj.image, "_width")
-            and hasattr(obj.image, "_height")
+            hasattr(obj, "image") and
+            hasattr(obj.image, "_width") and
+            hasattr(obj.image, "_height")
         ):
 
             contentType, width, height = getImageInfo(obj.image.data)
@@ -39,9 +39,9 @@ def upgrade_svgs(portal):
                 modified(obj)
                 i += 1
         if (
-            hasattr(obj, "preview_image")
-            and hasattr(obj.preview_image, "_width")
-            and hasattr(obj.preview_image, "_height")
+            hasattr(obj, "preview_image") and
+            hasattr(obj.preview_image, "_width") and
+            hasattr(obj.preview_image, "_height")
         ):
             contentType, width, height = getImageInfo(obj.preview_image.data)
             if contentType == "image/svg+xml":
