@@ -36,7 +36,6 @@ def upgrade_svgs(portal):
                 anno = IAnnotations(obj)
                 if "plone.scale" in anno:
                     del anno["plone.scale"]
-                modified(obj.image)
                 modified(obj)
                 i += 1
         if (
@@ -52,7 +51,6 @@ def upgrade_svgs(portal):
                 anno = IAnnotations(obj)
                 if "plone.scale" in anno:
                     del anno["plone.scale"]
-                modified(obj.preview_image)
                 modified(obj)
                 i += 1
         if not i % 100:
