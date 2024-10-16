@@ -43,8 +43,8 @@ def upgrade_svgs(portal):
             logger.info("Processing %s", obj.absolute_url())
             contentType, width, height = getImageInfo(obj.preview_image.data)
             if contentType == "image/svg+xml":
-                obj.preview_image._width = 2
-                obj.preview_image._height = 2
+                obj.preview_image._width = width
+                obj.preview_image._height = height
                 anno = IAnnotations(obj)
                 if 'plone.scale' in anno:
                      del anno['plone.scale']
