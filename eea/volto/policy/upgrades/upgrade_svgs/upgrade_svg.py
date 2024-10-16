@@ -15,7 +15,7 @@ def upgrade_svgs(portal):
     i = 0
     brains = portal.portal_catalog()
     total = len(brains)
-    for idx,brain in enumerate(brains):
+    for idx, brain in enumerate(brains):
         obj = dict()
         try:
             obj = brain.getObject()
@@ -23,25 +23,26 @@ def upgrade_svgs(portal):
             continue  # Skip to the next item if there's an error
 
         if (
-            hasattr(obj, "image") and hasattr(obj.image, "_width") and
-            hasattr(obj.image, "_height")
+            hasattr(obj, "image")
+            and hasattr(obj.image, "_width")
+            and hasattr(obj.image, "_height")
         ):
-            
+
             contentType, width, height = getImageInfo(obj.image.data)
             if contentType == "image/svg+xml":
                 logger.info("Processing %s", obj.absolute_url())
                 obj.image._width = width
                 obj.image._height = height
                 anno = IAnnotations(obj)
-                if 'plone.scale' in anno:
-                     del anno['plone.scale']
+                if "plone.scale" in anno:
+                    del anno["plone.scale"]
                 modified(obj.image)
                 modified(obj)
                 i += 1
         if (
-            hasattr(obj, "preview_image") and
-            hasattr(obj.preview_image, "_width") and
-            hasattr(obj.preview_image, "_height")
+            hasattr(obj, "preview_image")
+            and hasattr(obj.preview_image, "_width")
+            and hasattr(obj.preview_image, "_height")
         ):
             contentType, width, height = getImageInfo(obj.preview_image.data)
             if contentType == "image/svg+xml":
@@ -49,8 +50,8 @@ def upgrade_svgs(portal):
                 obj.preview_image._width = width
                 obj.preview_image._height = height
                 anno = IAnnotations(obj)
-                if 'plone.scale' in anno:
-                     del anno['plone.scale']
+                if "plone.scale" in anno:
+                    del anno["plone.scale"]
                 modified(obj.preview_image)
                 modified(obj)
                 i += 1
