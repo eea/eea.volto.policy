@@ -4,8 +4,10 @@ from zope.lifecycleevent import modified
 from zope.annotation.interfaces import IAnnotations
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 
+
 def upgrade_svgs(portal):
     """Upgrade SVG dimensions"""
+
     i = 0
     brains = portal.portal_catalog()
     total = len(brains)
