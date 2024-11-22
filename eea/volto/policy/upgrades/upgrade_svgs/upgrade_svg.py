@@ -1,3 +1,4 @@
+"""Upgrade step for svgs to fix width and height"""
 import transaction
 from plone.namedfile.utils import getImageInfo
 from zope.lifecycleevent import modified
