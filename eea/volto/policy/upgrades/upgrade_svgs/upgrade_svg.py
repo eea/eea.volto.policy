@@ -10,7 +10,6 @@ def upgrade_svgs(portal):
 
     i = 0
     brains = portal.portal_catalog()
-    total = len(brains)
     pghandler = ZLogHandler(100)
     pghandler.init("Recalculate svgs width and height", len(brains))
     for idx, brain in enumerate(brains):
@@ -30,7 +29,6 @@ def upgrade_svgs(portal):
         ):
             contentType, width, height = getImageInfo(obj.image.data)
             if contentType == "image/svg+xml":
-                logger.info("Processing %s", obj.absolute_url())
                 obj.image._width = width
                 obj.image._height = height
                 anno = IAnnotations(obj)
@@ -48,7 +46,6 @@ def upgrade_svgs(portal):
         ):
             contentType, width, height = getImageInfo(obj.preview_image.data)
             if contentType == "image/svg+xml":
-                logger.info("Processing %s", obj.absolute_url())
                 obj.preview_image._width = width
                 obj.preview_image._height = height
                 anno = IAnnotations(obj)
