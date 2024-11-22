@@ -1,3 +1,9 @@
+import transaction
+from plone.namedfile.utils import getImageInfo
+from zope.lifecycleevent import modified
+from zope.annotation.interfaces import IAnnotations
+from Products.ZCatalog.ProgressHandler import ZLogHandler
+
 def upgrade_svgs(portal):
     """Upgrade SVG dimensions"""
     i = 0
