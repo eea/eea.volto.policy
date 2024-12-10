@@ -1,6 +1,13 @@
 Changelog
 =========
 
+6.1 - (2024-12-10)
+---------------------------
+* Fix: large query on context navigation when on layout or add new item.
+  We return no results when we have the `Additional files` variation set
+  since it has potential to have a very large number of items.
+  [ichim-david - refs #280463]
+
 6.0 - (2024-12-05)
 ---------------------------
 * Change: Fix plone.app.vocabularies.Users to work with Creators and Contributors Field
