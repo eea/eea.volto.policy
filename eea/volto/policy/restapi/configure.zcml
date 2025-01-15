@@ -11,7 +11,11 @@
     factory=".blocks.RestrictedBlockSerializationTransformer" />
   <subscriber
     provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
-    factory=".slate.SlateBlockSerializer" 
+    factory=".blocks.SlateBlockSerializer" 
+    for="plone.restapi.behaviors.IBlocks zope.publisher.interfaces.browser.IBrowserRequest"/>
+  <subscriber
+    provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
+    factory=".blocks.HTMLBlockSerializerBase" 
     for="plone.restapi.behaviors.IBlocks zope.publisher.interfaces.browser.IBrowserRequest"/>
 
 </configure>
