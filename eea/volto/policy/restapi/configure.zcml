@@ -8,6 +8,7 @@
   <!--  Serializations -->
   <subscriber
     provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
-    factory=".blocks.RestrictedBlockSerializationTransformer" />
+    factory=".slate.SlateBlockSerializer" 
+    for="plone.restapi.behaviors.IBlocks zope.publisher.interfaces.browser.IBrowserRequest"/>
 
 </configure>
