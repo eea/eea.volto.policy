@@ -1,42 +1,24 @@
-""" block-related utils """
-
+from urllib.parse import urlparse
 from plone import api
-import copy
 from plone.restapi.behaviors import IBlocks
 from plone.restapi.interfaces import IBlockFieldSerializationTransformer
 from zope.component import adapter
 from zope.interface import implementer
 from zope.publisher.interfaces.browser import IBrowserRequest
-from copy import deepcopy
-
-from lxml.html import fragments_fromstring, tostring
-from plone import api
-from plone.api import portal
-from plone.app.textfield.interfaces import IRichText
-from plone.dexterity.interfaces import IDexterityContainer, IDexterityContent
-from plone.restapi.behaviors import IBlocks
-from plone.restapi.interfaces import IBlockFieldSerializationTransformer
-from plone.restapi.serializer.blocks import SlateBlockSerializerBase, uid_to_url
-from plone.restapi.serializer.converters import json_compatible
-from plone.restapi.serializer.dxcontent import SerializeFolderToJson, SerializeToJson
-from plone.restapi.serializer.dxfields import DefaultFieldSerializer
-from zope.component import adapter, getMultiAdapter
-from zope.interface import Interface, implementer
-from plone.restapi.deserializer.utils import path2uid
-
 from bs4 import BeautifulSoup
-from plone.restapi.serializer.utils import uid_to_url
+from plone.restapi.serializer.blocks import SlateBlockSerializerBase, uid_to_url
+from plone.restapi.deserializer.utils import path2uid
+from copy import deepcopy
 
 
 def getLink(path):
     """
     Get link
     """
-
     URL = urlparse(path)
 
     if URL.netloc.startswith("localhost") and URL.scheme:
-        return path.replace(URL.scheme + "://" + URL.netloc, "")
+        return path.replace(f"{URL.scheme}://{URL.netloc}", "")
     return path
 
 
@@ -60,7 +42,6 @@ class HTMLBlockDeserializerBase:
         # Resolve all <a> and <img> tags to UIDs
         for tag in soup.find_all(["a", "img"]):
             if tag.name == "a" and tag.has_attr("href"):
-
                 tag["href"] = path2uid(context=self.context, link=tag["href"])
 
             elif tag.name == "img" and tag.has_attr("src"):
@@ -89,7 +70,7 @@ class HTMLBlockSerializerBase:
         self.request = request
 
     def __call__(self, block):
-        block_serializer = copy.deepcopy(block)
+        block_serializer = deepcopy(block)
         raw_html = block_serializer.get("html", "")
 
         if not raw_html:
@@ -131,7 +112,7 @@ class SlateBlockSerializer(SlateBlockSerializerBase):
         if child.get("url"):
             if "resolveuid" in child["url"]:
                 url = uid_to_url(child["url"])
-                url = "%s/@@download/image" % url
+                url = f"{url}/@@download/image"
                 child["url"] = url
 
 
