@@ -6,9 +6,13 @@ from zope.component import adapter
 from zope.interface import implementer
 from zope.publisher.interfaces.browser import IBrowserRequest
 from bs4 import BeautifulSoup
-from plone.restapi.serializer.blocks import SlateBlockSerializerBase, uid_to_url
+from plone.restapi.serializer.blocks import (
+    SlateBlockSerializerBase,
+    uid_to_url,
+)
 from plone.restapi.deserializer.utils import path2uid
 import copy
+
 
 def getLink(path):
     """
