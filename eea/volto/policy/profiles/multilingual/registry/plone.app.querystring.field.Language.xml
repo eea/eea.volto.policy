@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<registry xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+          i18n:domain="eea.volto.policy">
+    <records interface="plone.app.querystring.interfaces.IQueryField"
+             prefix="plone.app.querystring.field.Language">
+       <value key="title" i18n:translate="">Language</value>
+       <value key="description" i18n:translate="">The language of the content.</value>
+       <value key="enabled">True</value>
+       <value key="sortable">False</value>
+        <value key="operations">
+            <element>plone.app.querystring.operation.selection.any</element>
+        </value>
+       <value key="vocabulary">plone.app.vocabularies.SupportedContentLanguages</value>
+       <value key="group" i18n:domain="plone" i18n:translate="">Text</value>
+    </records>
+</registry>

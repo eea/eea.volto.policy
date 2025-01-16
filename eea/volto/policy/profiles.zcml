@@ -17,6 +17,15 @@
       />
 
   <genericsetup:registerProfile
+      name="multilingual"
+      title="eea.volto.policy"
+      directory="profiles/multilingual"
+      description="Installs the eea.volto.policy multilingual options."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      post_handler=".setuphandlers.post_install"
+      />
+
+  <genericsetup:registerProfile
       name="uninstall"
       title="eea.volto.policy (uninstall)"
       directory="profiles/uninstall"

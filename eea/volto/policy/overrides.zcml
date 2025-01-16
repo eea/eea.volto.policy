@@ -10,4 +10,9 @@
             permission="zope.Public" />
     </configure>
 
+  <utility
+    factory=".vocabularies.principals.UsersFactory"
+    name="plone.app.vocabularies.Users"
+    />
+
 </configure>

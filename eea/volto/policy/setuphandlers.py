@@ -19,6 +19,7 @@ class HiddenProfiles:
         """ Hide uninstall profile from site-creation and quickinstaller.
         """
         return [
+            'eea.volto.policy:multilingual',
             'eea.volto.policy:uninstall',
         ]
 

@@ -1,11 +1,15 @@
 """EEA Context Navigation"""
 
+from Acquisition import aq_inner
 from zope.component import getUtility
 from zope.component import adapter
+from zope.globalrequest import getRequest
 from zope.schema.interfaces import IFromUnicode
 from zope.interface import implementer
 from zope.interface import Interface
+from Products.CMFCore.interfaces import ISiteRoot
 from Products.CMFPlone.utils import normalizeString
+from plone.app.layout.navigation.navtree import buildFolderTree
 from plone.app.layout.navigation.root import getNavigationRoot
 from plone.app.dexterity import _
 from plone.restapi.services.contextnavigation import get as original_get
@@ -15,6 +19,7 @@ from plone.restapi import bbb as restapi_bbb
 from plone.restapi.bbb import safe_hasattr
 from plone import schema
 from plone import api
+from plone.memoize.instance import memoize
 
 
 class IEEANavigationPortlet(original_get.INavigationPortlet):
@@ -59,12 +64,15 @@ def eea_extract_data(_obj_schema, raw_data, prefix):
     data = original_get.Data({})
     for name in obj_schema_names:
         field = obj_schema[name]
-        raw_value = raw_data.get(prefix + name, field.default)
+        if prefix:
+            raw_value = raw_data.get(prefix + name, field.default)
+        else:  # pragma: no cover
+            raw_value = raw_data.get(name, field.default)
 
         if isinstance(field, schema.Tuple):
-            value = raw_value.split(',') if ',' in raw_value else raw_value
+            value = raw_value.split(",") if "," in raw_value else raw_value
         else:
-            value = IFromUnicode(field).fromUnicode(raw_value)
+            value = IFromUnicode(field).fromUnicode(str(raw_value))
 
         data[name] = value
 
@@ -87,11 +95,25 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
         if depth == 0:
             depth = 999
 
+        currentFolderOnly = data.currentFolderOnly
+
         root = original_get.get_root(context, data.root_path)
         if root is not None:
             rootPath = "/".join(root.getPhysicalPath())
         else:
-            rootPath = getNavigationRoot(context)
+            rootPath = getNavigationRoot(context) if not currentFolderOnly \
+                else "/".join(context.getPhysicalPath())
+
+        # avoid large queries on layout pages where context is site
+        if currentFolderOnly:
+            request = getRequest()
+            # don't query when we add a new page and we use report_navigation
+            is_site = ISiteRoot.providedBy(context)
+            if is_site or 'add?type' in request.get('HTTP_REFERER', '') and \
+                    request.form.get('expand.contextnavigation.variation', '')\
+                    == 'report_navigation':
+                self.query = {}
+                return
 
         # EEA modification to always use the rootPath for query
         self.query["path"] = {"query": rootPath, "depth": depth,
@@ -106,7 +128,15 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
             self.query["path"]["navtree_start"] = depth
 
 
-original_get.QueryBuilder = EEAContextNavigationQueryBuilder
+class EEANavtreeStrategy(original_get.NavtreeStrategy):
+    """Custom NavtreeStrategy for context navigation"""
+
+    def decoratorFactory(self, node):
+        """Decorate the navigation tree"""
+        new_node = super().decoratorFactory(node)
+        if getattr(new_node["item"], "side_nav_title", False):
+            new_node["side_nav_title"] = new_node["item"].side_nav_title
+        return new_node
 
 
 class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
@@ -172,6 +202,31 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
         res["items"].extend(self.createNavTree())
 
         return res
+
+    def title(self):
+        """ title """
+        # Allow to have empty title without Navigation fallback
+        name = self.data.name
+        # handle bug where empty title is set to undefined from Volto
+        return name if name != "undefined" else self.data.title
+
+    @memoize
+    def getNavTree(self, _marker=None):
+        """ Get the navigation tree """
+
+        if _marker is None:
+            _marker = []
+        context = aq_inner(self.context)
+        queryBuilder = EEAContextNavigationQueryBuilder(context, self.data)
+        query_result = queryBuilder()
+        if not query_result:
+            return {"children": []}
+        strategy = EEANavtreeStrategy(context, self.data)
+
+        tree = buildFolderTree(
+            context, obj=context, query=query_result, strategy=strategy
+        )
+        return tree
 
     def recurse(self, children, level, bottomLevel):
         """Recurse through the navigation tree"""
@@ -282,18 +337,3 @@ class EEAContextNavigationGet(original_get.ContextNavigationGet):
         return navigation(expand=True, prefix="expand.contextnavigation.")[
             "contextnavigation"
         ]
-
-
-class EEANavtreeStrategy(original_get.NavtreeStrategy):
-    """Custom NavtreeStrategy for context navigation"""
-
-    def decoratorFactory(self, node):
-        """Decorate the navigation tree"""
-        new_node = super().decoratorFactory(node)
-        if getattr(new_node["item"], "side_nav_title", False):
-            new_node["side_nav_title"] = new_node["item"].side_nav_title
-        return new_node
-
-
-# Monkey patch the original NavtreeStrategy
-original_get.NavtreeStrategy = EEANavtreeStrategy
