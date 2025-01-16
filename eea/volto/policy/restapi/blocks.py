@@ -1,7 +1,7 @@
 """
 Serializers and Deserializers for the blocks of the EEA
 """
-from copy import deepcopy
+import copy
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from plone import api
@@ -15,7 +15,6 @@ from plone.restapi.deserializer.utils import path2uid
 from zope.component import adapter
 from zope.interface import implementer
 from zope.publisher.interfaces.browser import IBrowserRequest
-
 
 
 def getLink(path):
