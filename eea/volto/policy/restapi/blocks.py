@@ -27,16 +27,18 @@ from plone.restapi.deserializer.utils import path2uid
 from bs4 import BeautifulSoup
 from plone.restapi.serializer.utils import uid_to_url
 
+
 def getLink(path):
     """
-      Get link
-      """
+    Get link
+    """
 
     URL = urlparse(path)
 
-    if URL.netloc.startswith('localhost') and URL.scheme:
+    if URL.netloc.startswith("localhost") and URL.scheme:
         return path.replace(URL.scheme + "://" + URL.netloc, "")
     return path
+
 
 class HTMLBlockDeserializerBase:
     order = 100
@@ -56,16 +58,14 @@ class HTMLBlockDeserializerBase:
         soup = BeautifulSoup(raw_html, "html.parser")
 
         # Resolve all <a> and <img> tags to UIDs
-        for tag in soup.find_all(['a', 'img']):
+        for tag in soup.find_all(["a", "img"]):
             if tag.name == "a" and tag.has_attr("href"):
 
-                tag["href"] = path2uid(
-                context=self.context, link= tag["href"])
+                tag["href"] = path2uid(context=self.context, link=tag["href"])
 
             elif tag.name == "img" and tag.has_attr("src"):
-                tag["src"] = path2uid(
-                context=self.context, link= tag["src"])
-  
+                tag["src"] = path2uid(context=self.context, link=tag["src"])
+
         # Serialize the modified HTML back into the block
         block["html"] = str(soup)
         return block
@@ -89,8 +89,8 @@ class HTMLBlockSerializerBase:
         self.request = request
 
     def __call__(self, block):
-        block_serializer = copy.deepcopy(block);
-        raw_html = block_serializer.get("html", "");
+        block_serializer = copy.deepcopy(block)
+        raw_html = block_serializer.get("html", "")
 
         if not raw_html:
             return block
@@ -99,7 +99,7 @@ class HTMLBlockSerializerBase:
         soup = BeautifulSoup(raw_html, "html.parser")
 
         # Resolve all <a> and <img> tags
-        for tag in soup.find_all(['a', 'img']):
+        for tag in soup.find_all(["a", "img"]):
             if tag.name == "a" and tag.has_attr("href"):
                 tag["href"] = self._resolve_uid(tag["href"])
             elif tag.name == "img" and tag.has_attr("src"):
@@ -125,7 +125,7 @@ class HTMLBlockSerializerBase:
 class SlateBlockSerializer(SlateBlockSerializerBase):
     """SlateBlockSerializerBase."""
 
-    block_type="slate"
+    block_type = "slate"
 
     def handle_img(self, child):
         if child.get("url"):
@@ -133,6 +133,7 @@ class SlateBlockSerializer(SlateBlockSerializerBase):
                 url = uid_to_url(child["url"])
                 url = "%s/@@download/image" % url
                 child["url"] = url
+
 
 @implementer(IBlockFieldSerializationTransformer)
 @adapter(IBlocks, IBrowserRequest)
@@ -151,11 +152,7 @@ class RestrictedBlockSerializationTransformer:
         if not restrictedBlock:
             return value
         if restrictedBlock and api.user.has_permission(
-                'EEA: Manage restricted blocks', obj=self.context):
+            "EEA: Manage restricted blocks", obj=self.context
+        ):
             return value
-        return {
-            "@type": "empty"
-        }
-
-
-
+        return {"@type": "empty"}
