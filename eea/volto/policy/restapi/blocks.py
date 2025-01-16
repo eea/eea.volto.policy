@@ -8,17 +8,17 @@ from zope.publisher.interfaces.browser import IBrowserRequest
 from bs4 import BeautifulSoup
 from plone.restapi.serializer.blocks import SlateBlockSerializerBase, uid_to_url
 from plone.restapi.deserializer.utils import path2uid
-from copy import deepcopy
-
+import copy
 
 def getLink(path):
     """
     Get link
     """
+
     URL = urlparse(path)
 
     if URL.netloc.startswith("localhost") and URL.scheme:
-        return path.replace(f"{URL.scheme}://{URL.netloc}", "")
+        return path.replace(URL.scheme + "://" + URL.netloc, "")
     return path
 
 
@@ -42,6 +42,7 @@ class HTMLBlockDeserializerBase:
         # Resolve all <a> and <img> tags to UIDs
         for tag in soup.find_all(["a", "img"]):
             if tag.name == "a" and tag.has_attr("href"):
+
                 tag["href"] = path2uid(context=self.context, link=tag["href"])
 
             elif tag.name == "img" and tag.has_attr("src"):
@@ -70,7 +71,7 @@ class HTMLBlockSerializerBase:
         self.request = request
 
     def __call__(self, block):
-        block_serializer = deepcopy(block)
+        block_serializer = copy.deepcopy(block)
         raw_html = block_serializer.get("html", "")
 
         if not raw_html:
@@ -112,7 +113,7 @@ class SlateBlockSerializer(SlateBlockSerializerBase):
         if child.get("url"):
             if "resolveuid" in child["url"]:
                 url = uid_to_url(child["url"])
-                url = f"{url}/@@download/image"
+                url = "%s/@@download/image" % url
                 child["url"] = url
 
 
