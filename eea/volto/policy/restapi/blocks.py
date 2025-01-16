@@ -1,3 +1,6 @@
+"""
+Serializers and Deserializers for the blocks of the EEA
+"""
 from urllib.parse import urlparse
 from plone import api
 from plone.restapi.behaviors import IBlocks
@@ -27,6 +30,9 @@ def getLink(path):
 
 
 class HTMLBlockDeserializerBase:
+    """
+    HTML block Deserializer for the hrefs and src
+    """
     order = 100
     block_type = "html"
 
@@ -67,6 +73,9 @@ class HTMLBlockDeserializerBase:
 
 
 class HTMLBlockSerializerBase:
+    """
+    HTML block Serializer for the hrefs and src
+    """
     order = 9999
     block_type = "html"
 
