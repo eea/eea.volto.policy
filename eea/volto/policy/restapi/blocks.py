@@ -1,20 +1,21 @@
 """
 Serializers and Deserializers for the blocks of the EEA
 """
+from copy import deepcopy
 from urllib.parse import urlparse
+from bs4 import BeautifulSoup
 from plone import api
 from plone.restapi.behaviors import IBlocks
 from plone.restapi.interfaces import IBlockFieldSerializationTransformer
-from zope.component import adapter
-from zope.interface import implementer
-from zope.publisher.interfaces.browser import IBrowserRequest
-from bs4 import BeautifulSoup
 from plone.restapi.serializer.blocks import (
     SlateBlockSerializerBase,
     uid_to_url,
 )
 from plone.restapi.deserializer.utils import path2uid
-import copy
+from zope.component import adapter
+from zope.interface import implementer
+from zope.publisher.interfaces.browser import IBrowserRequest
+
 
 
 def getLink(path):
@@ -123,6 +124,7 @@ class SlateBlockSerializer(SlateBlockSerializerBase):
     block_type = "slate"
 
     def handle_img(self, child):
+        "Serializer for the imgs"
         if child.get("url"):
             if "resolveuid" in child["url"]:
                 url = uid_to_url(child["url"])
