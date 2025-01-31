@@ -67,8 +67,7 @@ class HTMLBlockDeserializerBase:
 
             elif tag.name == "img" and tag.has_attr("src"):
                 tag["src"] = self._clean_download_image(tag["src"])
-                tag["src"] = path2uid(context=self.context, link=tag["src"])
-        
+                tag["src"] = path2uid(context=self.context, link=tag["src"])  
         # Serialize the modified HTML back into the block
         block["html"] = str(soup)
 
