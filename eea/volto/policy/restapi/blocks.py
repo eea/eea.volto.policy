@@ -2,6 +2,7 @@
 Serializers and Deserializers for the blocks of the EEA
 """
 import copy
+import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from plone import api
@@ -42,22 +43,16 @@ class HTMLBlockDeserializerBase:
     """
     HTML block Deserializer for the hrefs and src
     """
-    order = 100
+    order = 9999
     block_type = "html"
-    
-    def _clean_download_image(self, url):
-        """
-        Delete '/@@download/image'.
-        """
-        return re.sub(r"/@@download/image", "", url)
-    
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
-
+    def _clean_download_image(self, url: str) -> str:
+        return url.replace("/@@download/image", "")
     def __call__(self, block):
         raw_html = block.get("html", "")
-
         if not raw_html:
             return block
 
@@ -67,24 +62,19 @@ class HTMLBlockDeserializerBase:
         # Resolve all <a> and <img> tags to UIDs
         for tag in soup.find_all(["a", "img"]):
             if tag.name == "a" and tag.has_attr("href"):
-                tag["href"] = self._resolve_uid(cleaned_href)
-                tag["href"] = path2uid(context=self.context, link=self._clean_download_image(tag["href"]))
+                tag["href"] = self._clean_download_image(tag["href"])
+
+                tag["href"] = path2uid(context=self.context, link=tag["href"])
 
             elif tag.name == "img" and tag.has_attr("src"):
-                tag["src"] = path2uid(context=self.context, link= self._clean_download_image(tag["src"]))
-
+                tag["src"] = self._clean_download_image(tag["src"])
+                tag["src"] = path2uid(context=self.context, link=tag["src"])
+        
         # Serialize the modified HTML back into the block
         block["html"] = str(soup)
+
         return block
 
-    def _convert_to_uid(self, url, is_image=False):
-        """
-        Convert relative or absolute URLs into resolve UID links.
-        """
-        uid = path2uid(self.context, url)
-        if uid:
-            return f"/resolveuid/{uid}"
-        return url
 
 
 class HTMLBlockSerializerBase:
@@ -117,6 +107,7 @@ class HTMLBlockSerializerBase:
 
         # Serialize the modified HTML back into the block
         block_serializer["html"] = str(soup)
+   
         return block_serializer
 
     def _resolve_uid(self, url, is_image=False):
