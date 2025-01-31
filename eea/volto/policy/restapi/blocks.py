@@ -44,7 +44,13 @@ class HTMLBlockDeserializerBase:
     """
     order = 100
     block_type = "html"
-
+    
+    def _clean_download_image(self, url):
+        """
+        Delete '/@@download/image'.
+        """
+        return re.sub(r"/@@download/image", "", url)
+    
     def __init__(self, context, request):
         self.context = context
         self.request = request
@@ -61,11 +67,11 @@ class HTMLBlockDeserializerBase:
         # Resolve all <a> and <img> tags to UIDs
         for tag in soup.find_all(["a", "img"]):
             if tag.name == "a" and tag.has_attr("href"):
-
-                tag["href"] = path2uid(context=self.context, link=tag["href"])
+                tag["href"] = self._resolve_uid(cleaned_href)
+                tag["href"] = path2uid(context=self.context, link=self._clean_download_image(tag["href"])
 
             elif tag.name == "img" and tag.has_attr("src"):
-                tag["src"] = path2uid(context=self.context, link=tag["src"])
+                tag["src"] = path2uid(context=self.context, link= self._clean_download_image(tag["src"])
 
         # Serialize the modified HTML back into the block
         block["html"] = str(soup)
