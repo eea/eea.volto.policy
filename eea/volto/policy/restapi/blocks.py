@@ -2,7 +2,6 @@
 Serializers and Deserializers for the blocks of the EEA
 """
 import copy
-import re
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from plone import api
