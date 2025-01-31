@@ -48,10 +48,13 @@ class HTMLBlockDeserializerBase:
     def __init__(self, context, request):
         self.context = context
         self.request = request
-    
+
     def _clean_download_image(self, url: str) -> str:
+        """
+        Remove /@@download/image
+        """
         return url.replace("/@@download/image", "")
-    
+
     def __call__(self, block):
         raw_html = block.get("html", "")
         if not raw_html:
@@ -70,11 +73,12 @@ class HTMLBlockDeserializerBase:
             elif tag.name == "img" and tag.has_attr("src"):
                 tag["src"] = self._clean_download_image(tag["src"])
                 tag["src"] = path2uid(context=self.context, link=tag["src"])
-        
+
         # Serialize the modified HTML back into the block
         block["html"] = str(soup)
 
         return block
+
 
 class HTMLBlockSerializerBase:
     """
@@ -105,7 +109,6 @@ class HTMLBlockSerializerBase:
 
         # Serialize the modified HTML back into the block
         block_serializer["html"] = str(soup)
-   
         return block_serializer
 
     def _resolve_uid(self, url, is_image=False):
