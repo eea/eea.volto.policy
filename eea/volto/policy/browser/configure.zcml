@@ -36,4 +36,15 @@
       layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
       />
 
+  <browser:page
+      name="eea_portal_tabs_view"
+      for="*"
+      class=".navigation.CatalogNavigationTabs"
+      allowed_attributes="topLevelTabs"
+      permission="zope.Public"
+      layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+
+      />
+
+
 </configure>

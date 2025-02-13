@@ -7,7 +7,10 @@ from plone.restapi.services.navigation.get import Navigation as BaseNavigation
 from plone.restapi.services.navigation.get import (
     NavigationGet as BaseNavigationGet,
 )
+
+from plone.memoize.view import memoize
 from Products.CMFCore.utils import getToolByName
+from zope.component import getMultiAdapter
 from zope.component import adapter
 from zope.interface import Interface, implementer
 
@@ -46,6 +49,15 @@ class Navigation(BaseNavigation):
             del item["brain"]
 
         return item
+
+    @property
+    @memoize
+    def portal_tabs(self):
+        portal_tabs_view = getMultiAdapter(
+            (self.context, self.request), name="eea_portal_tabs_view"
+        )
+        print('portal_tabs_view', portal_tabs_view)
+        return portal_tabs_view.topLevelTabs()
 
 
 class NavigationGet(BaseNavigationGet):
