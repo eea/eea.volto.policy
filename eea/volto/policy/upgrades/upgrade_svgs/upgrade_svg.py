@@ -7,7 +7,7 @@ from zope.annotation.interfaces import IAnnotations
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 
 
-def process_image(image_attr):
+def process_image(obj, image_attr):
     """Process an image field if it's an SVG and needs updating."""
     image = getattr(obj, image_attr, None)
     if (
@@ -47,7 +47,7 @@ def upgrade_svgs(portal):
             continue  # Skip object if it cannot be retrieved
 
         # Process both main and preview images
-        updated = process_image("image") or process_image("preview_image")
+        updated = process_image(obj, "image") or process_image(obj, "preview_image")
         if updated:
             updated_count += 1
 
