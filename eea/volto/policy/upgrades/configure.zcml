@@ -86,4 +86,16 @@
 
   </genericsetup:upgradeSteps>
 
+ <genericsetup:upgradeSteps
+    source="6.1"
+    destination="6.2"
+    profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeStep
+      title="Fix Svg width and height"
+      handler="eea.volto.policy.upgrades.upgrade_svgs.upgrade_svg.upgrade_svgs"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>
