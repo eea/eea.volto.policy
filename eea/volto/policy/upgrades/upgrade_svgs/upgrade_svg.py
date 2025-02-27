@@ -17,6 +17,7 @@ def upgrade_svgs(portal):
 
     updated_count = 0  # Tracks number of updates
     for idx, brain in enumerate(brains):
+        obj = dict()
         pghandler.report(idx)
         try:
             obj = brain.getObject()
