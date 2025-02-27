@@ -48,7 +48,7 @@ def upgrade_svgs(portal):
 
         # Process both main and preview images
         updated = (
-                process_image(obj, "image") or 
+                process_image(obj, "image") or
                 process_image(obj, "preview_image")
         )
         if updated:
