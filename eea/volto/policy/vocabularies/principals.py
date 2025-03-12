@@ -1,22 +1,24 @@
 """ Vocabulary for users."""
 
+# Plone imports
 from plone import api
 from plone.app.vocabularies.principals import UsersFactory as BaseUsersFactory
 from plone.app.vocabularies.principals import PrincipalsVocabulary
+from plone.restapi.serializer.vocabularies import SerializeTermToJson
+from plone.restapi.interfaces import ISerializeToJson
+
+# Zope imports
 from zope.schema.vocabulary import SimpleTerm
 from zope.component.hooks import getSite
-from Products.CMFCore.utils import getToolByName
-from plone.restapi.serializer.vocabularies import SerializeTermToJson
 from zope.interface import Interface, implementer
-from plone.restapi.interfaces import ISerializeToJson
 from zope.component import adapter
+
+# CMFCore imports
+from Products.CMFCore.utils import getToolByName
 
 
 class SimpleUserTerm(SimpleTerm):
-
-    def __init__(self, token, value, title):
-        super().__init__(token, value, title)
-
+    """A simple term representing a user, storing token, value, and title."""
 
 class UsersFactory(BaseUsersFactory):
     """ Factory creating a UsersVocabulary"""
@@ -45,18 +47,13 @@ class UsersFactory(BaseUsersFactory):
         vocabulary = PrincipalsVocabulary(list(self.items))
         vocabulary.principal_source = self.source
         return vocabulary
-
-
 @implementer(ISerializeToJson)
 @adapter(SimpleUserTerm, Interface)
 class SerializeUserTermToJson(SerializeTermToJson):
     """Serializer for SimpleUserTerm."""
 
-    def __init__(self, context, request):
-        super().__init__(context, request)
-
     def __call__(self):
+        """Serialize user term to JSON."""
         termData = super().__call__()
         termData["email"] = self.context.value
         return termData
-        
