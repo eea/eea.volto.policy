@@ -6,6 +6,17 @@ from plone.app.vocabularies.principals import PrincipalsVocabulary
 from zope.schema.vocabulary import SimpleTerm
 from zope.component.hooks import getSite
 from Products.CMFCore.utils import getToolByName
+from plone.restapi.serializer.vocabularies import SerializeTermToJson
+
+from zope.interface import Interface
+from plone.restapi.interfaces import ISerializeToJson
+from zope.interface import implementer
+from zope.component import adapter
+
+
+class SimpleUserTerm(SimpleTerm):
+    def __init__(self, token, value, title):
+        super(SimpleUserTerm, self).__init__(token, value, title)
 
 
 class UsersFactory(BaseUsersFactory):
@@ -25,9 +36,23 @@ class UsersFactory(BaseUsersFactory):
             fullname = user.getProperty("fullname", "")
             if not fullname:
                 continue
-            yield SimpleTerm(userid, userid, fullname)
+            email = user.getProperty("email", "")
+            yield SimpleUserTerm(email, userid, fullname)
 
     def __call__(self, *args, **kwargs):
         vocabulary = PrincipalsVocabulary(list(self.items))
         vocabulary.principal_source = self.source
         return vocabulary
+
+
+@implementer(ISerializeToJson)
+@adapter(SimpleUserTerm, Interface)
+class SerializeUserTermToJson(SerializeTermToJson):
+    def __init__(self, context, request):
+        super(SerializeUserTermToJson, self).__init__(context, request)
+
+    def __call__(self):
+        termData = super(SerializeUserTermToJson, self).__call__()
+        termData["email"] = self.context.value
+        print(termData)
+        return termData
