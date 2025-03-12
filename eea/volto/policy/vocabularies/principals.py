@@ -20,6 +20,7 @@ from Products.CMFCore.utils import getToolByName
 class SimpleUserTerm(SimpleTerm):
     """A simple term representing a user, storing token, value, and title."""
 
+
 class UsersFactory(BaseUsersFactory):
     """ Factory creating a UsersVocabulary"""
 
@@ -47,6 +48,8 @@ class UsersFactory(BaseUsersFactory):
         vocabulary = PrincipalsVocabulary(list(self.items))
         vocabulary.principal_source = self.source
         return vocabulary
+    
+    
 @implementer(ISerializeToJson)
 @adapter(SimpleUserTerm, Interface)
 class SerializeUserTermToJson(SerializeTermToJson):
