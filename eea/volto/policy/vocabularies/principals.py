@@ -48,8 +48,8 @@ class UsersFactory(BaseUsersFactory):
         vocabulary = PrincipalsVocabulary(list(self.items))
         vocabulary.principal_source = self.source
         return vocabulary
-    
-    
+
+
 @implementer(ISerializeToJson)
 @adapter(SimpleUserTerm, Interface)
 class SerializeUserTermToJson(SerializeTermToJson):
