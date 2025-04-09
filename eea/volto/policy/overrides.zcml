@@ -3,18 +3,18 @@
   xmlns:zcml="http://namespaces.zope.org/zcml"
   xmlns:browser="http://namespaces.zope.org/browser">
 
-    <include file="restapi/overrides.zcml" />
+  <include file="restapi/overrides.zcml" />
 
-    <configure package="zmi.styles">
-        <browser:resourceDirectory
-            name="zmi"
-            directory="resources"
-            permission="zope.Public" />
-    </configure>
+  <configure package="zmi.styles">
+    <browser:resourceDirectory
+      name="zmi"
+      directory="resources"
+      permission="zope.Public" />
+  </configure>
 
   <utility
     factory=".vocabularies.principals.UsersFactory"
     name="plone.app.vocabularies.Users"
-    />
+  />
 
 </configure>
