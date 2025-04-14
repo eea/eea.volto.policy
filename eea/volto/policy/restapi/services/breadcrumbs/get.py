@@ -6,10 +6,11 @@ from zope.interface import implementer
 from zope.interface import Interface
 from plone.restapi.interfaces import IExpandableElement, IPloneRestapiLayer
 from plone.restapi.services.breadcrumbs.get import Breadcrumbs
+from eea.volto.policy.interfaces import IEeaVoltoPolicyLayer
 
 
 @implementer(IExpandableElement)
-@adapter(Interface, IPloneRestapiLayer)
+@adapter(Interface, IEeaVoltoPolicyLayer)
 class EEABreadcrumbs(Breadcrumbs):
     """EEA Breadcrumbs"""
 
@@ -40,6 +41,5 @@ class EEABreadcrumbs(Breadcrumbs):
             items.append(item)
 
         result["breadcrumbs"]["items"] = items
-        result["breadcrumbs"]["root"] = portal_state.navigation_root()\
-            .absolute_url()
+        result["breadcrumbs"]["root"] = portal_state.navigation_root().absolute_url()
         return result
