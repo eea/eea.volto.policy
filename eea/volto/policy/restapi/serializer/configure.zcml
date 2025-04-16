@@ -5,6 +5,7 @@
 
   <adapter factory=".dxfields.DateTimeFieldSerializer" />
   <adapter factory=".dxfields.EEAPrimaryFileFieldTarget" />
+  <adapter factory=".dxfields.CreatorsFieldSerializer" />
   
     <utility
       factory=".summary.EEAJSONSummarySerializerMetadata"
