@@ -32,13 +32,12 @@ except ImportError:
 @implementer(IFieldSerializer)
 @adapter(ITuple, IDexterityContent, Interface)
 class CreatorsFieldSerializer(DefaultFieldSerializer):
-    """Creators field serializer"""
+    """Creators and Contributors field serializer"""
 
     def __call__(self):
         value = copy.deepcopy(self.get_value())
-        print('first value', value)
 
-        if self.field is IOwnership["creators"]:
+        if self.field is IOwnership["creators"] or self.field is IOwnership["contributors"]:
             fullnames = []
             for userid in value:
                 user = api.user.get(userid)
@@ -47,8 +46,8 @@ class CreatorsFieldSerializer(DefaultFieldSerializer):
                     fullnames.append(fullname if fullname else userid)
                 else:
                     fullnames.append(userid)
-
             value = fullnames
+
         return json_compatible(value)
 
 @adapter(IDatetime, IDexterityContent, IEeaVoltoPolicyLayer)
