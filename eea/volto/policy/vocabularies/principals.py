@@ -42,7 +42,9 @@ class UsersFactory(BaseUsersFactory):
                 continue
 
             email = user.getProperty("email", "")
-            yield SimpleUserTerm(email, userid, fullname)
+            simpleTerm = SimpleUserTerm(userid, userid, fullname)
+            simpleTerm.email = email
+            yield simpleTerm
 
     def __call__(self, *args, **kwargs):
         vocabulary = PrincipalsVocabulary(list(self.items))
@@ -58,5 +60,5 @@ class SerializeUserTermToJson(SerializeTermToJson):
     def __call__(self):
         """Serialize user term to JSON."""
         termData = super().__call__()
-        termData["email"] = self.context.value
+        termData["email"] = self.context.email
         return termData
