@@ -3,8 +3,8 @@ Changelog
 
 7.2 - (2025-04-30)
 ---------------------------
-* Change: Add email field for users - refs #274362
-  [avoinea]
+* Feature: Add email field to Users vocabulary
+  [tedw87 - refs #274362]
 
 7.1 - (2025-03-05)
 ---------------------------
