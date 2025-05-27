@@ -53,6 +53,18 @@ def merge_principal_infos(infos, acl_users, prefix=False):
     return info
 
 
+def unique_terms(objects):
+    unique_objects = []
+    seen_values = set()
+
+    for obj in objects:
+        if obj.value not in seen_values:
+            unique_objects.append(obj)
+            seen_values.add(obj.value)
+
+    return unique_objects
+
+
 class UsersFactory(BaseUsersFactory):
     """Factory creating a UsersVocabulary"""
 
@@ -129,11 +141,12 @@ class UsersFactory(BaseUsersFactory):
                             info, prefix=cfg["prefix"])
                         yield (value, token, info["title"])
 
-        vocabulary = PrincipalsVocabulary(
+        terms = unique_terms(
             [
                 SimpleTerm(*term_triple)
                 for term_triple in filter(self.use_principal_triple, term_triples())
             ]
         )
+        vocabulary = PrincipalsVocabulary(terms)
         vocabulary.principal_source = self.source
         return vocabulary
