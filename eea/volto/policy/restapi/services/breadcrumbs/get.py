@@ -1,6 +1,6 @@
 """Breadcrumbs"""
 
-from zope.component import getMultiAdapter
+from zope.component import getMultiAdapter, queryMultiAdapter
 from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import Interface
@@ -23,9 +23,12 @@ class EEABreadcrumbs(Breadcrumbs):
         portal_state = getMultiAdapter(
             (self.context, self.request), name="plone_portal_state"
         )
-        breadcrumbs_view = getMultiAdapter(
+        breadcrumbs_view = queryMultiAdapter(
             (self.context, self.request), name="eea_breadcrumbs_view"
         )
+        if not breadcrumbs_view:
+            return result
+
         items = []
         # EEA add portal_type info to breadcrumbs
         for crumb in breadcrumbs_view.breadcrumbs():

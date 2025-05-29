@@ -3,6 +3,8 @@ Changelog
 
 7.3-dev0 - (unreleased)
 ---------------------------
+* Fix: ComponentLookupError eea_breadcrumbs_view
+  [avoinea]
 
 7.2 - (2025-04-30)
 ---------------------------
