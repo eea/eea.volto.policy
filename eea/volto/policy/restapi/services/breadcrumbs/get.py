@@ -20,14 +20,15 @@ class EEABreadcrumbs(Breadcrumbs):
         if not expand:
             return result
 
-        portal_state = getMultiAdapter(
-            (self.context, self.request), name="plone_portal_state"
-        )
         breadcrumbs_view = queryMultiAdapter(
             (self.context, self.request), name="eea_breadcrumbs_view"
         )
         if not breadcrumbs_view:
-            return result
+            return super().__call__(expand=expand)
+
+        portal_state = getMultiAdapter(
+            (self.context, self.request), name="plone_portal_state"
+        )
 
         items = []
         # EEA add portal_type info to breadcrumbs
