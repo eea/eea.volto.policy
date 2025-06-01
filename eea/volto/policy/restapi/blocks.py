@@ -156,9 +156,14 @@ class RestrictedBlockSerializationTransformer:
         restricted_block = value.get("restrictedBlock", False)
         if not restricted_block:
             return value
-
+        # editors in context can see
+        if api.user.has_permission("Modify portal content", obj=self.context):
+            return value
+        
         # First check: User MUST have the manage permission to see any restricted block
-        if not api.user.has_permission("EEA: Manage restricted blocks", obj=self.context):
+        if not api.user.has_permission(
+            "EEA: Manage restricted blocks", obj=self.context
+        ):
             return {"@type": "empty"}
 
         # Get current user (we know they have the basic permission)
@@ -166,26 +171,19 @@ class RestrictedBlockSerializationTransformer:
         if not current_user or api.user.is_anonymous():
             return {"@type": "empty"}
 
-        # Check allow_view permissions
-        allow_view = value.get("allow_view", [])
-        if allow_view:
-            # If allow_view is set, only users in the list can see
-            if self._check_user_access(current_user, allow_view):
-                return value
-            else:
-                return {"@type": "empty"}
-
-        # Check deny_view permissions (if implemented)
         deny_view = value.get("deny_view", [])
+
         if deny_view:
             # If deny_view is set, users in the list can't see
             if self._check_user_access(current_user, deny_view):
                 return {"@type": "empty"}
-            else:
-                return value
-
-        # For old restrictedBlock format without allow/deny lists
-        # User already has the manage permission, so they can see it
+        
+        # Check allow_view permissions
+        allow_view = value.get("allow_view", [])
+        if allow_view:
+            # If allow_view is set, only users in the list can see
+            if not self._check_user_access(current_user, allow_view):
+                 return {"@type": "empty"}
         return value
 
     def _check_user_access(self, current_user, access_list):
