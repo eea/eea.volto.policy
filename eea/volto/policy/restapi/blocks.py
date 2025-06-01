@@ -142,7 +142,7 @@ class SlateBlockSerializer(SlateBlockSerializerBase):
 @implementer(IBlockFieldSerializationTransformer)
 @adapter(IBlocks, IBrowserRequest)
 class RestrictedBlockSerializationTransformer:
-    """Restricted Block serialization"""
+    """Enhanced Restricted Block serialization with allow/deny logic"""
 
     order = 9999
     block_type = None
@@ -152,14 +152,90 @@ class RestrictedBlockSerializationTransformer:
         self.request = request
 
     def __call__(self, value):
-        restrictedBlock = value.get("restrictedBlock", False)
-        if not restrictedBlock:
+        # Check if this is a restricted block
+        restricted_block = value.get("restrictedBlock", False)
+        if not restricted_block:
             return value
-        if restrictedBlock and api.user.has_permission(
-            "EEA: Manage restricted blocks", obj=self.context
-        ):
-            return value
-        return {"@type": "empty"}
+
+        # First check: User MUST have the manage permission to see any restricted block
+        if not api.user.has_permission("EEA: Manage restricted blocks", obj=self.context):
+            return {"@type": "empty"}
+
+        # Get current user (we know they have the basic permission)
+        current_user = api.user.get_current()
+        if not current_user or api.user.is_anonymous():
+            return {"@type": "empty"}
+
+        # Check allow_view permissions
+        allow_view = value.get("allow_view", [])
+        if allow_view:
+            # If allow_view is set, only users in the list can see
+            if self._check_user_access(current_user, allow_view):
+                return value
+            else:
+                return {"@type": "empty"}
+
+        # Check deny_view permissions (if implemented)
+        deny_view = value.get("deny_view", [])
+        if deny_view:
+            # If deny_view is set, users in the list can't see
+            if self._check_user_access(current_user, deny_view):
+                return {"@type": "empty"}
+            else:
+                return value
+
+        # For old restrictedBlock format without allow/deny lists
+        # User already has the manage permission, so they can see it
+        return value
+
+    def _check_user_access(self, current_user, access_list):
+        """
+        Check if current user has access based on allow/deny list
+        
+        Args:
+            current_user: Current Plone user object
+            access_list: List of users/groups with access permissions
+            
+        Returns:
+            bool: True if user has access, False otherwise
+        """
+        current_user_id = current_user.getId()
+        
+        # Get user's groups
+        user_groups = api.group.get_groups(user=current_user)
+        user_group_ids = [group.getId() for group in user_groups]
+        
+        for access_item in access_list:
+            access_type = access_item.get("type", "")
+            access_id = access_item.get("id", "")
+            
+            if access_type == "user":
+                # For users, check only by ID (which is the primary identifier)
+                if access_id == current_user_id:
+                    return True
+                    
+            elif access_type == "group":
+                # For groups, check only by ID (which is the primary identifier)
+                if access_id in user_group_ids:
+                    return True
+        
+        return False
+
+    def _get_user_groups(self, user):
+        """
+        Helper method to get all groups a user belongs to
+        
+        Args:
+            user: Plone user object
+            
+        Returns:
+            list: List of group IDs the user belongs to
+        """
+        try:
+            groups = api.group.get_groups(user=user)
+            return [group.getId() for group in groups]
+        except Exception:
+            return []
 
 
 @implementer(IBlockFieldSerializationTransformer)
