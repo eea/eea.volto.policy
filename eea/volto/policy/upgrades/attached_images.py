@@ -31,10 +31,10 @@ def migrate_item_images(portal):
         logger.info("Processing %s", obj.absolute_url())
         for block in visit_blocks(obj, blocks):
             if (
-                block.get("@type", False)
-                and block["@type"] in types
-                and block['assetType'] == "image"
-                and block['image'] and isinstance(block['image'], str)
+                block.get("@type", False) and
+                block["@type"] in types and
+                block['assetType'] == "image" and
+                block['image'] and isinstance(block['image'], str)
             ):
                 new_block = block.copy()
                 logger.info(
@@ -102,10 +102,10 @@ def migrate_teaser_images(portal):
         logger.info("Processing %s", obj.absolute_url())
         for block in visit_blocks(obj, blocks):
             if (
-                block.get("@type", False)
-                and block["@type"] in types
-                and block['preview_image']
-                and isinstance(block['preview_image'], str)
+                block.get("@type", False) and
+                block["@type"] in types and
+                block['preview_image'] and
+                isinstance(block['preview_image'], str)
             ):
                 new_block = block.copy()
                 logger.info(
@@ -153,10 +153,10 @@ def migrate_hero_images(portal):
         logger.info("Processing %s", obj.absolute_url())
         for block in visit_blocks(obj, blocks):
             if (
-                block.get("@type", False)
-                and block["@type"] in types
-                and block['image']
-                and isinstance(block['image'], str)
+                block.get("@type", False) and
+                block["@type"] in types and
+                block['image'] and
+                isinstance(block['image'], str)
             ):
                 new_block = block.copy()
                 logger.info(
