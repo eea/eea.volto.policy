@@ -1,6 +1,7 @@
 """
-Module for migrating image references in Volto blocks to the new format.
-Contains functions to update image references in item, teaser, and hero blocks.
+Module for migrating image references in Volto blocks to the new
+format. Contains functions to update image references in item,
+teaser, and hero blocks.
 """
 import logging
 import transaction
@@ -15,7 +16,8 @@ logger.setLevel(logging.INFO)
 
 def migrate_item_images(portal):
     """
-    Migrate image references in item blocks from string paths to object references.
+    Migrate image references in item blocks from string paths to
+    object references.
     """
     i = 0
     output = ""
@@ -28,19 +30,23 @@ def migrate_item_images(portal):
         blocks = obj.blocks
         logger.info("Processing %s", obj.absolute_url())
         for block in visit_blocks(obj, blocks):
-            if (block.get("@type", False)
-                    and block["@type"] in types
-                    and block['assetType'] == "image"
-                    and block['image'] and isinstance(block['image'], str)):
+            if (
+                block.get("@type", False)
+                and block["@type"] in types
+                and block['assetType'] == "image"
+                and block['image'] and isinstance(block['image'], str)
+            ):
                 new_block = block.copy()
                 logger.info(
                     '%s - Updated hero "image" field: %s',
-                    obj.absolute_url(), block["image"])
+                    obj.absolute_url(), block["image"]
+                )
 
                 uid = path2uid(context=obj, link=block["image"])
                 if not uid:
                     logger.warning(
-                        "Failed to convert path to UID: %s", block['image'])
+                        "Failed to convert path to UID: %s", block['image']
+                    )
                     continue
 
                 image = [
@@ -69,7 +75,9 @@ def migrate_item_images(portal):
     try:
         transaction.commit()
         logger.info(
-            "Migration completed successfully. Total objects processed: %d", i)
+            "Migration completed successfully. Total objects processed: %d",
+            i
+        )
     except Exception as e:
         logger.error("Final transaction commit failed: %s", e)
         transaction.abort()
@@ -79,7 +87,8 @@ def migrate_item_images(portal):
 
 def migrate_teaser_images(portal):
     """
-    Migrate image references in teaser blocks from string paths to object references.
+    Migrate image references in teaser blocks from string paths to
+    object references.
     """
     i = 0
     output = ""
@@ -92,19 +101,24 @@ def migrate_teaser_images(portal):
         blocks = obj.blocks
         logger.info("Processing %s", obj.absolute_url())
         for block in visit_blocks(obj, blocks):
-            if (block.get("@type", False)
-                    and block["@type"] in types
-                    and block['preview_image']
-                    and isinstance(block['preview_image'], str)):
+            if (
+                block.get("@type", False)
+                and block["@type"] in types
+                and block['preview_image']
+                and isinstance(block['preview_image'], str)
+            ):
                 new_block = block.copy()
                 logger.info(
                     '%s - Updated teaser "preview_image" field: %s',
-                    obj.absolute_url(), block["preview_image"])
+                    obj.absolute_url(), block["preview_image"]
+                )
 
                 image = [
                     {
                         "@type": "Image",
-                        "@id": path2uid(context=obj, link=block["preview_image"]),
+                        "@id": path2uid(
+                            context=obj, link=block["preview_image"]
+                        ),
                         "image_field": "image"
                     }
                 ]
@@ -124,32 +138,37 @@ def migrate_teaser_images(portal):
 
 def migrate_hero_images(portal):
     """
-    Migrate image references in hero blocks from string paths to object references.
+    Migrate image references in hero blocks from string paths to
+    object references.
     """
     i = 0
     output = ""
     types = ["hero"]
     for brain in portal.portal_catalog(
-        object_provides="plone.restapi.behaviors.IBlocks",
-        block_types=types
+            object_provides="plone.restapi.behaviors.IBlocks",
+            block_types=types
     ):
         obj = brain.getObject()
         blocks = obj.blocks
         logger.info("Processing %s", obj.absolute_url())
         for block in visit_blocks(obj, blocks):
-            if (block.get("@type", False)
-                    and block["@type"] in types
-                    and block['image']
-                    and isinstance(block['image'], str)):
+            if (
+                block.get("@type", False)
+                and block["@type"] in types
+                and block['image']
+                and isinstance(block['image'], str)
+            ):
                 new_block = block.copy()
                 logger.info(
                     '%s - Updated item "image" field: %s',
-                    obj.absolute_url(), block["image"])
+                    obj.absolute_url(), block["image"]
+                )
 
                 uid = path2uid(context=obj, link=block["image"])
                 if not uid:
                     logger.warning(
-                        "Failed to convert path to UID: %s", block['image'])
+                        "Failed to convert path to UID: %s", block['image']
+                    )
                     continue
 
                 image = [
