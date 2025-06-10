@@ -161,15 +161,15 @@ class RestrictedBlockSerializationTransformer:
             return value
         
         # First check: User MUST have the manage permission to see any restricted block
-        if not api.user.has_permission(
+         if not api.user.has_permission(
             "EEA: Manage restricted blocks", obj=self.context
         ) and not value.get("deny_view") and not value.get("allow_view"):
             return {"@type": "empty"}
 
         # Get current user (we know they have the basic permission)
         current_user = api.user.get_current()
-        if not current_user or api.user.is_anonymous():
-            return {"@type": "empty"}
+        deny_view = value.get("deny_view", [])
+
 
         deny_view = value.get("deny_view", [])
 
