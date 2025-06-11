@@ -11,5 +11,12 @@
       provides=".sidenavigation.IEEASideNavTitle"
       />
 
+  <plone:behavior
+      name="eea.hide_children_from_navigation"
+      title="EEA Hide Children From Navigation"
+      description="Hide child items from appearing in navigation menus"
+      provides=".sidenavigation.IEEAHideChildrenFromNavigation"
+      />
+
 
 </configure>

@@ -23,4 +23,10 @@
   <records interface="plone.restapi.bbb.INavigationSchema"
            prefix="plone"
   />
+  
+  <record name="plone.app.dexterity.behaviors">
+    <value>
+      <element>eea.hide_children_from_navigation</element>
+    </value>
+  </record>
 </registry>
