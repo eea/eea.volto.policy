@@ -24,8 +24,10 @@
            prefix="plone"
   />
   
-  <record name="plone.app.dexterity.behaviors">
-    <value>
+  <record name="plone.app.dexterity.behaviors"
+          interface="plone.app.dexterity.interfaces.IBehaviorRegistry"
+          field="behaviors">
+    <value purge="false">
       <element>eea.hide_children_from_navigation</element>
     </value>
   </record>
