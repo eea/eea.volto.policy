@@ -34,30 +34,10 @@ class Navigation(BaseNavigation):
         """build navtree from item helper"""
         # prevents a crash in clms custom rendering
         # see also https://github.com/plone/plone.restapi/issues/1801
-
         if "path" not in item:
             return item
 
-        # Check hideChildrenFromNavigation field on the root/subsite object
-        hide_children = False
-        try:
-            # Get the root object from the path URL to check the property
-            root_obj = self.context.restrictedTraverse(path.lstrip('/'))
-            hide_children = getattr(root_obj, 'hideChildrenFromNavigation', False)
-        except (AttributeError, TypeError, KeyError):
-            hide_children = False
-
-        # If hideChildrenFromNavigation is True, only show first level
-        if hide_children:
-            # Get immediate children only (first level)
-            sub = self.build_tree(item["path"], first_run=False)
-            # Remove nested children from each immediate child
-            for child in sub:
-                if "items" in child:
-                    child["items"] = []
-        else:
-            # Normal behavior: show all children recursively
-            sub = self.build_tree(item["path"], first_run=False)
+        sub = self.build_tree(item["path"], first_run=False)
 
         item.update({"items": sub})
 

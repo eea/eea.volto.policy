@@ -98,4 +98,16 @@
 
   </genericsetup:upgradeSteps>
 
+ <genericsetup:upgradeSteps
+    source="6.2"
+    destination="6.3"
+    profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeStep
+      title="Make hideChildrenFromNavigation behavior available"
+      handler="eea.volto.policy.upgrades.to_63.add_hidechildren_behavior.add_hidechildren_behavior"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>
