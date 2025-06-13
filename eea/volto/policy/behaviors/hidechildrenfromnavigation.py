@@ -19,7 +19,9 @@ class IEEAHideChildrenFromNavigation(model.Schema):
 
     hideChildrenFromNavigation = Bool(
         title=_("Hide Children From Navigation"),
-        description=_("Check this to hide child items from appearing in navigation menus"),
+        description=_(
+            "Check this to add a setting to hide the children from navigation"
+        ),
         default=False,
         required=False
     )
