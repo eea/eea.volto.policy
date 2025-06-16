@@ -13,7 +13,7 @@
 
   <plone:behavior
       name="eea.hide_children_from_navigation"
-      title="EEA Hide Children From Navigation"
+      title="EEA Hide children from navigation"
       description="Hide child items from appearing in navigation menus"
       provides=".hidechildrenfromnavigation.IEEAHideChildrenFromNavigation"
       />
