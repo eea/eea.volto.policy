@@ -4,7 +4,12 @@ from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
 from plone.supermodel.directives import fieldset
 from zope.interface import provider
-from zope.schema import Bool
+from zope.schema import Bool, Text, List, Int
+
+try:
+    from plone.app.multilingual.interfaces import ILanguageIndependentField
+except ImportError:
+    ILanguageIndependentField = None
 
 
 @provider(IFormFieldProvider)
@@ -25,3 +30,7 @@ class IEEAHideChildrenFromNavigation(model.Schema):
         default=False,
         required=False
     )
+
+    # Make field language independent
+    if ILanguageIndependentField:
+        model.directives.languageindependent('hideChildrenFromNavigation')
