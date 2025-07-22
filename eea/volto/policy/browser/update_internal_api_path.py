@@ -119,8 +119,8 @@ class UpdateInternalApiPathView(BrowserView):
         try:
             value = getattr(obj, field_name)
             if (callable(value) or
-                field_name.startswith('_') or
-                field_name.startswith('aq_')):
+                    field_name.startswith('_') or
+                    field_name.startswith('aq_')):
                 return False
 
             new_value, was_changed = self.process_value(value)
