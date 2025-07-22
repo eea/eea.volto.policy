@@ -1,6 +1,6 @@
-""" Fix wrong url after migrations """
+"""Fix wrong url after migrations"""
 # pylint: disable=line-too-long
-# pylint: disable=broad-exception-caught
+
 import logging
 import re
 import transaction
@@ -11,6 +11,9 @@ from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import iterSchemata
 from plone.restapi.deserializer.utils import path2uid
 from zope.schema import getFields
+from zope.component import ComponentLookupError
+from zExceptions import Unauthorized
+from ZODB.POSException import ConflictError
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +29,7 @@ REPLACE_PATTERN = re.compile(
     rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+"
 )
 
+
 class UpdateInternalApiPathView(BrowserView):
     """Browser view to replace backend URLs with resolveuid references"""
 
@@ -33,13 +37,13 @@ class UpdateInternalApiPathView(BrowserView):
         return self.update_content()
 
     def update_content(self):
-        """ Main function that iterates through all objects in the catalog"""
+        """Main function that iterates through all objects in the catalog"""
         try:
             portal = self.context.portal_url.getPortalObject()
             catalog = portal.portal_catalog
             brains = catalog()
             logger.info("Found %d content items in catalog", len(brains))
-        except Exception as e:
+        except (AttributeError, ComponentLookupError) as e:
             logger.error("Error accessing catalog: %s", str(e))
             return "Could not access portal catalog"
 
@@ -51,11 +55,16 @@ class UpdateInternalApiPathView(BrowserView):
                 if self.process_object(obj):
                     obj.reindexObject()
                     modified.append(obj.absolute_url())
-            except Exception as e:
-                logger.error("Error processing %s: %s", brain.getPath(), str(e))
+            except (AttributeError, ConflictError, Unauthorized) as e:
+                logger.error(
+                    "Error processing %s: %s", brain.getPath(), str(e)
+                )
 
         transaction.commit()
-        msg = f"Updated {len(modified)} items. Modified content: {', '.join(modified)}"
+        msg = (
+            f"Updated {len(modified)} items. Modified content: "
+            f"{', '.join(modified)}"
+        )
         logger.info(msg)
         return msg
 
@@ -63,7 +72,6 @@ class UpdateInternalApiPathView(BrowserView):
         """Process all relevant fields in an object recursively"""
         changed = False
 
-        # Process blocks field separately
         if hasattr(aq_base(obj), 'blocks'):
             try:
                 blocks = obj.blocks
@@ -71,10 +79,13 @@ class UpdateInternalApiPathView(BrowserView):
                 if blocks_changed:
                     obj.blocks = new_blocks
                     changed = True
-            except Exception as e:
-                logger.error("Error processing blocks on %s: %s", obj.absolute_url(), str(e))
+            except (AttributeError, KeyError, TypeError) as e:
+                logger.error(
+                    "Error processing blocks on %s: %s",
+                    obj.absolute_url(),
+                    str(e),
+                )
 
-        # Process Dexterity fields
         try:
             for schema in iterSchemata(obj):
                 for field_name, field in getFields(schema).items():
@@ -90,8 +101,13 @@ class UpdateInternalApiPathView(BrowserView):
                         if was_changed:
                             field.set(obj, new_value)
                             changed = True
-                    except Exception as e:
-                        logger.error("Error processing Archetypes field %s on %s: %s", field_name, obj.absolute_url(), str(e))
+                    except (AttributeError, KeyError, ValueError) as e:
+                        logger.error(
+                            "Error processing Archetypes field %s on %s: %s",
+                            field_name,
+                            obj.absolute_url(),
+                            str(e),
+                        )
 
         return changed
 
@@ -102,15 +118,24 @@ class UpdateInternalApiPathView(BrowserView):
 
         try:
             value = getattr(obj, field_name)
-            if callable(value) or field_name.startswith('_') or field_name.startswith('aq_'):
+            if (
+                callable(value)
+                or field_name.startswith('_')
+                or field_name.startswith('aq_')
+            ):
                 return False
 
             new_value, was_changed = self.process_value(value)
             if was_changed:
                 setattr(obj, field_name, new_value)
                 return True
-        except Exception as e:
-            logger.error("Error processing field %s on %s: %s", field_name, obj.absolute_url(), str(e))
+        except (AttributeError, KeyError, ValueError) as e:
+            logger.error(
+                "Error processing field %s on %s: %s",
+                field_name,
+                obj.absolute_url(),
+                str(e),
+            )
 
         return False
 
@@ -123,12 +148,15 @@ class UpdateInternalApiPathView(BrowserView):
         if isinstance(value, RichTextValue):
             new_raw = self.replace_urls(value.raw)
             if new_raw != value.raw:
-                return RichTextValue(
-                    raw=new_raw,
-                    mimeType=value.mimeType,
-                    outputMimeType=value.outputMimeType,
-                    encoding=value.encoding
-                ), True
+                return (
+                    RichTextValue(
+                        raw=new_raw,
+                        mimeType=value.mimeType,
+                        outputMimeType=value.outputMimeType,
+                        encoding=value.encoding,
+                    ),
+                    True,
+                )
             return value, False
 
         if isinstance(value, dict):
@@ -153,12 +181,18 @@ class UpdateInternalApiPathView(BrowserView):
 
     def replace_urls(self, text):
         """Replace backend URLs with resolveuid"""
-        if not isinstance(text, str) or not any(s in text for s in SEARCH_STRINGS):
+        if not isinstance(text, str):
+            return text
+
+        if not any(s in text for s in SEARCH_STRINGS):
             return text
 
         def replace_match(match):
             url = match.group(0)
-            base = next((s for s in SEARCH_STRINGS if url.startswith(s)), None)
+            base = next(
+                (s for s in SEARCH_STRINGS if url.startswith(s)),
+                None,
+            )
             if not base:
                 return url
 
@@ -169,10 +203,12 @@ class UpdateInternalApiPathView(BrowserView):
             if uid:
                 parts = relative_path.strip("/").split("/")
                 extra = "/".join(parts[1:]) if len(parts) > 1 else ""
-                return f"/resolveuid/{uid}/{extra}" if extra else f"/resolveuid/{uid}"
+                return (
+                    f"/resolveuid/{uid}/{extra}"
+                    if extra else f"/resolveuid/{uid}"
+                )
 
             logger.warning("No UID found for path: %s", relative_path)
             return url
-
 
         return REPLACE_PATTERN.sub(replace_match, text)
