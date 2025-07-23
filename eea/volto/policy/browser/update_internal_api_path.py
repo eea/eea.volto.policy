@@ -199,12 +199,18 @@ class UpdateInternalApiPathView(BrowserView):
         if not any(s in text for s in SEARCH_STRINGS):
             return text
         logger.info(text)
+        logger.info(REPLACE_PATTERN)
+        
         def replace_match(match):
+            logger.info("A intrat in functie :)")
+            
             url = match.group(0)
             base = next(
                 (s for s in SEARCH_STRINGS if url.startswith(s)),
                 None,
             )
+            logger.info(f"Something base {base}")
+            
             if not base:
                 logger.info("not base")
                 return url
@@ -213,6 +219,8 @@ class UpdateInternalApiPathView(BrowserView):
             path = "/" + relative_path.lstrip("/")
 
             uid = path2uid(context=self.context, link=path)
+            logger.info(f"Something uid {uid}")
+            
             if uid and uid != path:
                 return uid
 
