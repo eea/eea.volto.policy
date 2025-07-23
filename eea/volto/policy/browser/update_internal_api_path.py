@@ -25,10 +25,6 @@ SEARCH_STRINGS = [
     'http://backend:6081',
 ]
 
-REPLACE_PATTERN = re.compile(
-    rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+"
-)
-
 
 class UpdateInternalApiPathView(BrowserView):
     """Browser view to replace backend URLs with resolveuid references"""
@@ -226,5 +222,5 @@ class UpdateInternalApiPathView(BrowserView):
 
             logger.warning("No UID found for path: %s", relative_path)
             return relative_path
-
+        REPLACE_PATTERN = re.compile(rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+")
         return REPLACE_PATTERN.sub(replace_match, text)
