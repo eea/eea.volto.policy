@@ -7,6 +7,7 @@ import transaction
 
 from Acquisition import aq_base
 from Products.Five import BrowserView
+from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import iterSchemata
 from plone.restapi.deserializer.utils import path2uid
@@ -14,6 +15,7 @@ from zope.schema import getFields
 from zope.component import ComponentLookupError
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
+from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +23,6 @@ SEARCH_STRINGS = [
     'http://localhost:8080',
     'http://backend:8080',
     'http://backend:6081',
-    "https://insitu.copernicus.eu/api",
-    "https://insitu.copernicus.eu",
 ]
 
 REPLACE_PATTERN = re.compile(
@@ -34,6 +34,19 @@ class UpdateInternalApiPathView(BrowserView):
     """Browser view to replace backend URLs with resolveuid references"""
 
     def __call__(self):
+        site = api.portal.get()
+        site_id = site.getId()
+        backend_site = f"http://backend:8080/{site_id}"
+        if backend_site not in SEARCH_STRINGS:
+            SEARCH_STRINGS.insert(0, backend_site)
+        site_url = api.portal.get().absolute_url()
+        parsed = urlparse(site_url)
+        base_url = f"{parsed.scheme}://{parsed.netloc}"
+        if base_url not in SEARCH_STRINGS:
+            SEARCH_STRINGS.append(base_url)
+        if f"{base_url}/api" not in SEARCH_STRINGS:
+            SEARCH_STRINGS.append(f"{base_url}/api")
+        print(SEARCH_STRINGS)
         return self.update_content()
 
     def update_content(self):
@@ -43,6 +56,7 @@ class UpdateInternalApiPathView(BrowserView):
             catalog = portal.portal_catalog
             brains = catalog()
             logger.info("Found %d content items in catalog", len(brains))
+
         except (AttributeError, ComponentLookupError) as e:
             logger.error("Error accessing catalog: %s", str(e))
             return "Could not access portal catalog"
@@ -62,7 +76,7 @@ class UpdateInternalApiPathView(BrowserView):
 
         transaction.commit()
         msg = (
-            f"Updated {len(modified)} items. Modified content: "
+            f"Updated {len(modified)} items. Modified content on pages: "
             f"{', '.join(modified)}"
         )
         logger.info(msg)
@@ -198,15 +212,10 @@ class UpdateInternalApiPathView(BrowserView):
             path = "/" + relative_path.lstrip("/")
 
             uid = path2uid(context=self.context, link=path)
-            if uid:
-                parts = relative_path.strip("/").split("/")
-                extra = "/".join(parts[1:]) if len(parts) > 1 else ""
-                return (
-                    f"/resolveuid/{uid}/{extra}"
-                    if extra else f"/resolveuid/{uid}"
-                )
+            if uid and uid != path:
+                return uid
 
             logger.warning("No UID found for path: %s", relative_path)
-            return url
+            return relative_path
 
         return REPLACE_PATTERN.sub(replace_match, text)
