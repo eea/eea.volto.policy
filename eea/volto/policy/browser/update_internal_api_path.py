@@ -3,6 +3,7 @@
 
 import logging
 import re
+from urllib.parse import urlparse
 import transaction
 
 from Acquisition import aq_base
@@ -15,7 +16,6 @@ from zope.schema import getFields
 from zope.component import ComponentLookupError
 from zExceptions import Unauthorized
 from ZODB.POSException import ConflictError
-from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,6 @@ class UpdateInternalApiPathView(BrowserView):
             SEARCH_STRINGS.append(base_url)
         if f"{base_url}/api" not in SEARCH_STRINGS:
             SEARCH_STRINGS.append(f"{base_url}/api")
-        print(SEARCH_STRINGS)
         return self.update_content()
 
     def update_content(self):
@@ -80,7 +79,7 @@ class UpdateInternalApiPathView(BrowserView):
             f"{', '.join(modified)}"
         )
         logger.info(msg)
-        return msg
+        return ''.join(SEARCH_STRINGS)
 
     def process_object(self, obj):
         """Process all relevant fields in an object recursively"""
