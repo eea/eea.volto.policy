@@ -46,6 +46,7 @@ class UpdateInternalApiPathView(BrowserView):
             SEARCH_STRINGS.append(base_url)
         if f"{base_url}/api" not in SEARCH_STRINGS:
             SEARCH_STRINGS.append(f"{base_url}/api")
+        logger.info(''.join(SEARCH_STRINGS))
         return self.update_content()
 
     def update_content(self):
@@ -197,7 +198,7 @@ class UpdateInternalApiPathView(BrowserView):
         
         if not any(s in text for s in SEARCH_STRINGS):
             return text
-        import pdb; pdb.set_trace()
+        logger.info(text)
         def replace_match(match):
             url = match.group(0)
             base = next(
@@ -205,6 +206,7 @@ class UpdateInternalApiPathView(BrowserView):
                 None,
             )
             if not base:
+                logger.info("not base")
                 return url
 
             relative_path = url.replace(base, "", 1)
