@@ -194,10 +194,10 @@ class UpdateInternalApiPathView(BrowserView):
         """Replace backend URLs with resolveuid"""
         if not isinstance(text, str):
             return text
-
+        
         if not any(s in text for s in SEARCH_STRINGS):
             return text
-
+        import pdb; pdb.set_trace()
         def replace_match(match):
             url = match.group(0)
             base = next(
