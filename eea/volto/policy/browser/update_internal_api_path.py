@@ -77,7 +77,7 @@ class UpdateInternalApiPathView(BrowserView):
         output = "=" * 80 + "\n"
         output += "URL REPLACEMENT PROCESS COMPLETED\n"
         output += "=" * 80 + "\n\n"
-        output += f"STATISTICS:\n"
+        output += "STATISTICS:\n"
         output += f"   • Total items processed: {len(brains)}\n"
         output += f"   • Items modified: {len(modified)}\n\n"
 
@@ -228,7 +228,6 @@ class UpdateInternalApiPathView(BrowserView):
             uid = path2uid(context=self.context, link=path)
 
             if uid and uid != path:
-                pass  # URL replaced successfully
                 return uid
 
             logger.warning("No UID found for path: %s", relative_path)
