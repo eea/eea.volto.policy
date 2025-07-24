@@ -1,4 +1,5 @@
 """Fix wrong url after migrations"""
+
 # pylint: disable=line-too-long
 
 import logging
@@ -20,9 +21,9 @@ from ZODB.POSException import ConflictError
 logger = logging.getLogger(__name__)
 
 SEARCH_STRINGS = [
-    'http://localhost:8080',
-    'http://backend:8080',
-    'http://backend:6081',
+    "http://localhost:8080",
+    "http://backend:8080",
+    "http://backend:6081",
 ]
 
 
@@ -42,7 +43,7 @@ class UpdateInternalApiPathView(BrowserView):
             SEARCH_STRINGS.append(base_url)
         if f"{base_url}/api" not in SEARCH_STRINGS:
             SEARCH_STRINGS.append(f"{base_url}/api")
-        
+
         return self.update_content()
 
     def update_content(self):
@@ -66,12 +67,10 @@ class UpdateInternalApiPathView(BrowserView):
                     obj.reindexObject()
                     modified.append(obj.absolute_url())
             except (AttributeError, ConflictError, Unauthorized) as e:
-                logger.error(
-                    "Error processing %s: %s", brain.getPath(), str(e)
-                )
+                logger.error("Error processing %s: %s", brain.getPath(), str(e))
 
         transaction.commit()
-        
+
         # Format output for display
         output = "=" * 80 + "\n"
         output += "URL REPLACEMENT PROCESS COMPLETED\n"
@@ -79,14 +78,14 @@ class UpdateInternalApiPathView(BrowserView):
         output += f"STATISTICS:\n"
         output += f"   • Total items processed: {len(brains)}\n"
         output += f"   • Items modified: {len(modified)}\n\n"
-        
+
         if modified:
             output += "MODIFIED PAGES:\n"
             for i, url in enumerate(modified, 1):
                 output += f"   {i:2d}. {url}\n"
         else:
             output += "No items were modified.\n"
-        
+
         output += "\n" + "=" * 80
         return output
 
@@ -94,7 +93,7 @@ class UpdateInternalApiPathView(BrowserView):
         """Process all relevant fields in an object recursively"""
         changed = False
 
-        if hasattr(aq_base(obj), 'blocks'):
+        if hasattr(aq_base(obj), "blocks"):
             try:
                 blocks = obj.blocks
                 new_blocks, blocks_changed = self.process_value(blocks)
@@ -113,7 +112,7 @@ class UpdateInternalApiPathView(BrowserView):
                 for field_name, field in getFields(schema).items():
                     changed |= self.process_field(obj, field_name)
         except TypeError:
-            if hasattr(aq_base(obj), 'Schema'):
+            if hasattr(aq_base(obj), "Schema"):
                 schema = obj.Schema()
                 for field in schema.fields():
                     field_name = field.getName()
@@ -140,9 +139,11 @@ class UpdateInternalApiPathView(BrowserView):
 
         try:
             value = getattr(obj, field_name)
-            if (callable(value) or
-                    field_name.startswith('_') or
-                    field_name.startswith('aq_')):
+            if (
+                callable(value)
+                or field_name.startswith("_")
+                or field_name.startswith("aq_")
+            ):
                 return False
 
             new_value, was_changed = self.process_value(value)
@@ -203,19 +204,21 @@ class UpdateInternalApiPathView(BrowserView):
         """Replace backend URLs with resolveuid"""
         if not isinstance(text, str):
             return text
-        
+
         if not any(s in text for s in SEARCH_STRINGS):
             return text
-        
-        REPLACE_PATTERN = re.compile(rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+")
-        
+
+        REPLACE_PATTERN = re.compile(
+            rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+"
+        )
+
         def replace_match(match):
             url = match.group(0)
             base = next(
                 (s for s in SEARCH_STRINGS if url.startswith(s)),
                 None,
             )
-            
+
             if not base:
                 return url
 
@@ -223,12 +226,12 @@ class UpdateInternalApiPathView(BrowserView):
             path = "/" + relative_path.lstrip("/")
 
             uid = path2uid(context=self.context, link=path)
-            
+
             if uid and uid != path:
                 pass  # URL replaced successfully
                 return uid
 
             logger.warning("No UID found for path: %s", relative_path)
             return relative_path
-        
+
         return REPLACE_PATTERN.sub(replace_match, text)
