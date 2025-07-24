@@ -194,6 +194,8 @@ class UpdateInternalApiPathView(BrowserView):
         
         if not any(s in text for s in SEARCH_STRINGS):
             return text
+        
+        REPLACE_PATTERN = re.compile(rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+")
         logger.info(text)
         logger.info(REPLACE_PATTERN)
         
@@ -222,5 +224,5 @@ class UpdateInternalApiPathView(BrowserView):
 
             logger.warning("No UID found for path: %s", relative_path)
             return relative_path
-        REPLACE_PATTERN = re.compile(rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+")
+        
         return REPLACE_PATTERN.sub(replace_match, text)
