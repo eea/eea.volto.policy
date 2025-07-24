@@ -73,20 +73,22 @@ class UpdateInternalApiPathView(BrowserView):
         transaction.commit()
         
         # Format output for display
-        result = ["=" * 60]
-        result.append("✓ URL replacement process completed")
-        result.append(f"Total items processed: {len(brains)}")
-        result.append(f"Items modified: {len(modified)}")
+        output = "=" * 80 + "\n"
+        output += "URL REPLACEMENT PROCESS COMPLETED\n"
+        output += "=" * 80 + "\n\n"
+        output += f"STATISTICS:\n"
+        output += f"   • Total items processed: {len(brains)}\n"
+        output += f"   • Items modified: {len(modified)}\n\n"
         
         if modified:
-            result.append("\nModified pages:")
+            output += "MODIFIED PAGES:\n"
             for i, url in enumerate(modified, 1):
-                result.append(f"  {i:2d}. {url}")
+                output += f"   {i:2d}. {url}\n"
         else:
-            result.append("No items were modified.")
+            output += "No items were modified.\n"
         
-        result.append("=" * 60)
-        return "\n".join(result)
+        output += "\n" + "=" * 80
+        return output
 
     def process_object(self, obj):
         """Process all relevant fields in an object recursively"""
