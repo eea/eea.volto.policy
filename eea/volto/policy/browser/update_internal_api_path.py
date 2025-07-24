@@ -42,7 +42,7 @@ class UpdateInternalApiPathView(BrowserView):
             SEARCH_STRINGS.append(base_url)
         if f"{base_url}/api" not in SEARCH_STRINGS:
             SEARCH_STRINGS.append(f"{base_url}/api")
-        logger.info(''.join(SEARCH_STRINGS))
+        
         return self.update_content()
 
     def update_content(self):
@@ -71,12 +71,22 @@ class UpdateInternalApiPathView(BrowserView):
                 )
 
         transaction.commit()
-        msg = (
-            f"Updated {len(modified)} items. Modified content on pages: "
-            f"{', '.join(modified)}"
-        )
-        logger.info(msg)
-        return ''.join(SEARCH_STRINGS)
+        
+        # Format output for display
+        result = ["=" * 60]
+        result.append("✓ URL replacement process completed")
+        result.append(f"Total items processed: {len(brains)}")
+        result.append(f"Items modified: {len(modified)}")
+        
+        if modified:
+            result.append("\nModified pages:")
+            for i, url in enumerate(modified, 1):
+                result.append(f"  {i:2d}. {url}")
+        else:
+            result.append("No items were modified.")
+        
+        result.append("=" * 60)
+        return "\n".join(result)
 
     def process_object(self, obj):
         """Process all relevant fields in an object recursively"""
@@ -196,30 +206,24 @@ class UpdateInternalApiPathView(BrowserView):
             return text
         
         REPLACE_PATTERN = re.compile(rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+")
-        logger.info(text)
-        logger.info(REPLACE_PATTERN)
         
         def replace_match(match):
-            logger.info("A intrat in functie :)")
-            
             url = match.group(0)
             base = next(
                 (s for s in SEARCH_STRINGS if url.startswith(s)),
                 None,
             )
-            logger.info(f"Something base {base}")
             
             if not base:
-                logger.info("not base")
                 return url
 
             relative_path = url.replace(base, "", 1)
             path = "/" + relative_path.lstrip("/")
 
             uid = path2uid(context=self.context, link=path)
-            logger.info(f"Something uid {uid}")
             
             if uid and uid != path:
+                pass  # URL replaced successfully
                 return uid
 
             logger.warning("No UID found for path: %s", relative_path)
