@@ -1,7 +1,7 @@
 Changelog
 =========
 
-7.4-dev0 - (unreleased)
+8.0-dev0 - (unreleased)
 -----------------------
 * Feature: added migration script for `item`, `teaser` and `hero`
   to new attachedimage array of object like object_browser widget
