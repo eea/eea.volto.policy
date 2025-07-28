@@ -15,11 +15,12 @@ class IInternalApiPathSettings(Interface):
 
     replacement_urls = schema.List(
         title=u"URLs to Replace",
-        description=u"List of URLs that should be replaced with resolveuid references",
+        description=u"List of URLs that should be replaced with "
+                    u"resolveuid references",
         value_type=schema.TextLine(),
         default=[
             u"http://localhost:8080",
-            u"http://backend:8080", 
+            u"http://backend:8080",
             u"http://backend:6081"
         ],
         required=False,
