@@ -4,7 +4,6 @@
 
 import logging
 import re
-from urllib.parse import urlparse
 import transaction
 
 from Acquisition import aq_base
