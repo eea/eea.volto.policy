@@ -20,30 +20,18 @@ from ZODB.POSException import ConflictError
 
 logger = logging.getLogger(__name__)
 
-SEARCH_STRINGS = [
-    "http://localhost:8080",
-    "http://backend:8080",
-    "http://backend:6081",
-]
-
 
 class UpdateInternalApiPathView(BrowserView):
     """Browser view to replace backend URLs with resolveuid references"""
 
-    def __call__(self):
-        site = api.portal.get()
-        site_id = site.getId()
-        backend_site = f"http://backend:8080/{site_id}"
-        if backend_site not in SEARCH_STRINGS:
-            SEARCH_STRINGS.insert(0, backend_site)
-        site_url = api.portal.get().absolute_url()
-        parsed = urlparse(site_url)
-        base_url = f"{parsed.scheme}://{parsed.netloc}"
-        if base_url not in SEARCH_STRINGS:
-            SEARCH_STRINGS.append(base_url)
-        if f"{base_url}/api" not in SEARCH_STRINGS:
-            SEARCH_STRINGS.append(f"{base_url}/api")
+    def get_search_strings(self):
+        """Get URLs from registry configuration"""
+        registry_urls = api.portal.get_registry_record(
+            "eea.volto.policy.internal_api_path.replacement_urls"
+        )
+        return list(registry_urls) if registry_urls else []
 
+    def __call__(self):
         return self.update_content()
 
     def update_content(self):
@@ -205,17 +193,18 @@ class UpdateInternalApiPathView(BrowserView):
         if not isinstance(text, str):
             return text
 
-        if not any(s in text for s in SEARCH_STRINGS):
+        search_strings = self.get_search_strings()
+        if not any(s in text for s in search_strings):
             return text
 
         REPLACE_PATTERN = re.compile(
-            rf"(?:{'|'.join(re.escape(s) for s in SEARCH_STRINGS)})[^\s\"'>]+"
+            rf"(?:{'|'.join(re.escape(s) for s in search_strings)})[^\s\"'>]+"
         )
 
         def replace_match(match):
             url = match.group(0)
             base = next(
-                (s for s in SEARCH_STRINGS if url.startswith(s)),
+                (s for s in search_strings if url.startswith(s)),
                 None,
             )
 
