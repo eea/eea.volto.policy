@@ -98,4 +98,16 @@
 
   </genericsetup:upgradeSteps>
 
+ <genericsetup:upgradeSteps
+    source="6.2"
+    destination="6.3"
+    profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeDepends
+       title="Add internal API path URL replacement settings to registry"
+       import_steps="plone.app.registry"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>
