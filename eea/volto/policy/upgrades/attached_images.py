@@ -122,7 +122,7 @@ def migrate_teaser_images(portal):
                         "image_field": "image"
                     }
                 ]
-                new_block["image"] = image
+                new_block["preview_image"] = image
                 block.clear()
                 block.update(new_block)
 
