@@ -1,6 +1,11 @@
 Changelog
 =========
 
+8.0 - (2025-07-30)
+---------------------------
+* Create method to update all backend:8080 to resolveuid 
+  [dobri1408 - refs #290024]
+
 7.3 - (2025-05-29)
 ---------------------------
 * Fix: ComponentLookupError eea_breadcrumbs_view

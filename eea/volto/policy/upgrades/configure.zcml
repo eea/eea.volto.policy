@@ -100,7 +100,7 @@
 
  <genericsetup:upgradeSteps
     source="6.2"
-    destination="6.3"
+    destination="8.0"
     profile="eea.volto.policy:default">
 
     <genericsetup:upgradeDepends
