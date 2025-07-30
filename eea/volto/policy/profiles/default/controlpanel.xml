@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <object name="portal_controlpanel">
   <configlet
-      title="Internal API Path Settings"
+      title="Internal API Path Correction"
       action_id="eea.volto.policy.internal_api_path"
       appId="eea.volto.policy.internal_api_path"
       category="Products"

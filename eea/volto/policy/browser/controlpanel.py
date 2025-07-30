@@ -24,8 +24,8 @@ class InternalApiPathControlPanel(RegistryEditForm):
 
     schema = IInternalApiPathSettings
     schema_prefix = "eea.volto.policy.internal_api_path"
-    label = u"Internal API Path Settings"
-    description = u"Configure URLs that should be replaced with resolveuid references"
+    label = u"Internal API Path Correction"
+    description = u"Configure and fix internal API paths by replacing backend URLs with resolveuid references"
 
     @button.buttonAndHandler(u'Save', name='save')
     def handleSave(self, action):
@@ -49,9 +49,9 @@ class InternalApiPathControlPanel(RegistryEditForm):
             f"{self.context.absolute_url()}/@@overview-controlpanel"
         )
 
-    @button.buttonAndHandler(u'Update Internal API Paths', name='update_paths')
+    @button.buttonAndHandler(u'Fix Internal API Paths', name='update_paths')
     def handleUpdatePaths(self, action):
-        """Handle the update paths button"""
+        """Handle the fix paths button"""
         # Redirect to the update view
         update_url = f"{self.context.absolute_url()}/@@update-internal-api-path"
         self.request.response.redirect(update_url)
@@ -60,5 +60,5 @@ class InternalApiPathControlPanel(RegistryEditForm):
 class InternalApiPathControlPanelView(ControlPanelFormWrapper):
     """Control panel view wrapper"""
     form = InternalApiPathControlPanel
-    label = u"Internal API Path Settings"
-    description = u"Configure URLs that should be replaced with resolveuid references. Use the 'Update Internal API Paths' button to run the replacement process on all content."
+    label = u"Internal API Path Correction"
+    description = u"Configure and fix internal API paths by replacing backend URLs with resolveuid references. Use the 'Fix Internal API Paths' button to run the correction process on all content."
