@@ -5,8 +5,7 @@ from plone.app.registry.browser.controlpanel import (
     ControlPanelFormWrapper,
     RegistryEditForm,
 )
-from plone.z3cform import layout
-from z3c.form import form, button
+from z3c.form import button
 from zope.interface import implementer
 from zope.interface import Interface
 from Products.statusmessages.interfaces import IStatusMessage
@@ -56,7 +55,10 @@ class InternalApiPathControlPanel(RegistryEditForm):
     def handleUpdatePaths(self, action):
         """Handle the fix paths button"""
         # Redirect to the update view
-        update_url = self.context.absolute_url() + "/@@update-internal-api-path"
+        update_url = (
+            self.context.absolute_url()
+            + "/@@update-internal-api-path"
+        )
         self.request.response.redirect(update_url)
 
 
