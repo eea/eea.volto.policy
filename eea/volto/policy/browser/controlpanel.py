@@ -56,7 +56,7 @@ class InternalApiPathControlPanel(RegistryEditForm):
         """Handle the fix paths button"""
         # Redirect to the update view
         update_url = (
-            self.context.absolute_url() + 
+            self.context.absolute_url() +
             "/@@update-internal-api-path"
         )
         self.request.response.redirect(update_url)
