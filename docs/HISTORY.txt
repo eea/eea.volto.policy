@@ -1,7 +1,7 @@
 Changelog
 =========
 
-8.0-dev0 - (unreleased)
+8.0 - (2025-07-31)
 -----------------------
 * Create method to update all backend:8080 to resolveuid
   [dobri1408 - refs #290024]
