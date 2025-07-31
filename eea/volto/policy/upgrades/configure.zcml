@@ -98,4 +98,26 @@
 
   </genericsetup:upgradeSteps>
 
+ <genericsetup:upgradeSteps
+    source="6.2"
+    destination="8.0"
+    profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeStep
+      title="Fix Item images"
+      handler="eea.volto.policy.upgrades.attached_images.migrate_item_images"
+      />
+
+    <genericsetup:upgradeStep
+      title="Fix Teaser images"
+      handler="eea.volto.policy.upgrades.attached_images.migrate_teaser_images"
+      />
+
+    <genericsetup:upgradeStep
+      title="Fix Hero images"
+      handler="eea.volto.policy.upgrades.attached_images.migrate_hero_images"
+      />
+
+  </genericsetup:upgradeSteps>
+
 </configure>
