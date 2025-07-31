@@ -35,5 +35,20 @@
       permission="zope.Public"
       layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
       />
+  <browser:page
+    name="update-internal-api-path"
+    for="*"
+    layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+    class=".update_internal_api_path.UpdateInternalApiPathView"
+    permission="cmf.ManagePortal"
+    />
+
+  <!-- Control panel for Internal API Path settings -->
+  <browser:page
+    name="internal-api-path-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".controlpanel.InternalApiPathControlPanelView"
+    permission="cmf.ManagePortal"
+    />
 
 </configure>
