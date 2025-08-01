@@ -2,7 +2,13 @@
 from plone.app.dexterity import _
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
-from plone.app.multilingual.dx.interfaces import ILanguageIndependentField
+try:
+    from plone.app.multilingual.dx.interfaces import ILanguageIndependentField
+except ImportError:
+    try:
+        from plone.app.multilingual.interfaces import ILanguageIndependentField
+    except ImportError:
+        ILanguageIndependentField = None
 
 
 from zope.interface import provider
@@ -22,6 +28,6 @@ class IEnhancedNavigationBehavior(model.Schema):
         default="{}",
     )
 
-    # Make field language independent
-    if ILanguageIndependentField:
-        model.directives.languageindependent('navigation_settings')
+# Make field language independent
+if ILanguageIndependentField:
+    model.directives.languageindependent('navigation_settings')
