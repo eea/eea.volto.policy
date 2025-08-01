@@ -2,7 +2,7 @@
 from plone.app.dexterity import _
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
-from plone.app.multilingual.interfaces import ILanguageIndependentField
+from plone.app.multilingual.dx.interfaces import ILanguageIndependentField
 
 
 from zope.interface import provider
