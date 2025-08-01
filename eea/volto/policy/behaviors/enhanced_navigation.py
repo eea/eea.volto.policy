@@ -2,22 +2,22 @@
 from plone.app.dexterity import _
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
-try:
-    from plone.app.multilingual.dx.interfaces import ILanguageIndependentField
-except ImportError:
-    try:
-        from plone.app.multilingual.interfaces import ILanguageIndependentField
-    except ImportError:
-        ILanguageIndependentField = None
-
-
 from zope.interface import provider
 from zope.schema import Text
+
+try:
+    from plone.app.multilingual.dx import directives as pam_directives
+except ImportError:
+    pam_directives = None
 
 
 @provider(IFormFieldProvider)
 class IEnhancedNavigationBehavior(model.Schema):
     """Behavior interface for Enhanced Navigation settings."""
+
+    # Make field language independent
+    if pam_directives:
+        pam_directives.languageindependent('navigation_settings')
 
     navigation_settings = Text(
         title=_("Navigation Settings"),
@@ -27,7 +27,3 @@ class IEnhancedNavigationBehavior(model.Schema):
         required=False,
         default="{}",
     )
-
-# Make field language independent
-if ILanguageIndependentField:
-    model.directives.languageindependent('navigation_settings')
