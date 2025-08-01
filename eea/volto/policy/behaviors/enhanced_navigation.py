@@ -2,6 +2,7 @@
 from plone.app.dexterity import _
 from plone.autoform.interfaces import IFormFieldProvider
 from plone.supermodel import model
+
 from zope.interface import provider
 from zope.schema import Text
 
