@@ -5,6 +5,11 @@ from plone.supermodel import model
 from zope.interface import provider
 from zope.schema import Text
 
+try:
+    from plone.app.multilingual.interfaces import ILanguageIndependentField
+except ImportError:
+    ILanguageIndependentField = None
+
 
 @provider(IFormFieldProvider)
 class IEnhancedNavigationBehavior(model.Schema):
@@ -16,3 +21,7 @@ class IEnhancedNavigationBehavior(model.Schema):
         required=False,
         default="{}",
     )
+
+    # Make field language independent
+    if ILanguageIndependentField:
+        model.directives.languageindependent('navigation_settings')
