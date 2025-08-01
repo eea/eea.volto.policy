@@ -17,7 +17,9 @@ class IEnhancedNavigationBehavior(model.Schema):
 
     navigation_settings = Text(
         title=_("Navigation Settings"),
-        description=_("JSON object containing navigation settings for all menu routes"),
+        description=_(
+            "JSON object containing navigation settings for all menu routes"
+        ),
         required=False,
         default="{}",
     )
