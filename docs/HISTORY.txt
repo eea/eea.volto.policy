@@ -1,8 +1,10 @@
 Changelog
 =========
 
-8.1-dev0 - (unreleased)
+8.1 - (2025-08-04)
 ---------------------------
+* Change: fix(upgrade): for images, allowing also to run @@image-migrate script
+  [ichim-david]
 
 8.0 - (2025-07-31)
 -----------------------
