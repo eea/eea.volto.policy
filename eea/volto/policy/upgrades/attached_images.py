@@ -75,10 +75,9 @@ def _migrate_block_images(
         changed = False
         for block in visit_blocks(obj, blocks):
             if (
-                block.get("@type") in block_types
-                and block.get(image_field)
-                and isinstance(block[image_field], str)
-                and (
+                block.get("@type") in block_types and
+                block.get(image_field) and
+                isinstance(block[image_field], str) and (
                     item_block_asset_type is None or
                     block.get("assetType") == item_block_asset_type
                 )

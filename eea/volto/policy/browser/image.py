@@ -49,7 +49,7 @@ class ImageMigrateContent(BrowserView):
         if not block_types_param or not field_name:
             return self._json(
                 {
-                    "error": "Required parameters: 'block_type' & 'field_name'",
+                    "error": "Required parameters: block_type & field_name",
                 },
                 status=400,
             )
