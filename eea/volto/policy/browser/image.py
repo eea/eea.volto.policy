@@ -35,6 +35,7 @@ class ImageMigrateContent(BrowserView):
     """
 
     def _json(self, data, status=200):
+        """Return JSON response"""
         self.request.response.setHeader("Content-Type", "application/json")
         self.request.response.setStatus(status)
         return json.dumps(data)

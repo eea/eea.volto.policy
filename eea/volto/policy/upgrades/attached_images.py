@@ -1,11 +1,11 @@
-""" 
+"""
 Module for migrating image references in Volto blocks to the new
 format. Contains functions to update image references in item,
 teaser, and hero blocks.
 """
 import logging
-import transaction
 from urllib.parse import urlparse
+import transaction
 
 from plone.restapi.blocks import visit_blocks
 from plone.restapi.deserializer.utils import path2uid
@@ -38,9 +38,9 @@ def get_relative_url_path(url: str) -> str:
 
 def _migrate_block_images(
     portal,
-    block_types: list[str],
+    block_types: list,
     image_field: str,
-    item_block_asset_type: str | None = None,
+    item_block_asset_type=None,
 ) -> str:
     """Core routine for migrating image references inside Volto blocks.
 
@@ -60,8 +60,6 @@ def _migrate_block_images(
         Number of Plone objects that were processed.
     """
     processed = 0
-    import pdb
-    pdb.set_trace()
     for brain in portal.portal_catalog(
         object_provides="plone.restapi.behaviors.IBlocks",
         block_types=block_types,
@@ -81,8 +79,8 @@ def _migrate_block_images(
                 and block.get(image_field)
                 and isinstance(block[image_field], str)
                 and (
-                    item_block_asset_type is None
-                    or block.get("assetType") == item_block_asset_type
+                    item_block_asset_type is None or
+                    block.get("assetType") == item_block_asset_type
                 )
             ):
                 rel_path = get_relative_url_path(block[image_field])
