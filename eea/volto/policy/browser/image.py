@@ -41,8 +41,6 @@ class ImageMigrateContent(BrowserView):
 
     def __call__(self):
         req = self.request
-        import pdb
-        pdb.set_trace()
 
         block_types_param = req.get("block_type")
         field_name = req.get("field_name")
