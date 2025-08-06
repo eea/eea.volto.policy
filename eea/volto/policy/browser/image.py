@@ -18,6 +18,17 @@ from eea.volto.policy.upgrades.attached_images import (
 logger = logging.getLogger("eea.volto.policy.image_migrate")
 
 
+class LogCapture(logging.Handler):
+    """Custom log handler to capture log messages"""
+
+    def __init__(self):
+        super().__init__()
+        self.records = []
+
+    def emit(self, record):
+        self.records.append(self.format(record))
+
+
 class ImageMigrateContent(BrowserView):
     """Run image migration for Volto blocks outside of the ones defined
     in the upgrade step (hero, teaser, item)
@@ -63,6 +74,12 @@ class ImageMigrateContent(BrowserView):
         else:  # pragma: no cover
             portal = self.context.portal_url.getPortalObject()
 
+        # Set up log capture to get migration progress information
+        migrate_logger = logging.getLogger("migrate_images")
+        log_capture = LogCapture()
+        log_capture.setLevel(logging.INFO)
+        migrate_logger.addHandler(log_capture)
+
         try:
             processed_msg = _migrate_block_images(
                 portal,
@@ -72,6 +89,9 @@ class ImageMigrateContent(BrowserView):
         except Exception as e:  # pragma: no cover
             logger.exception("Image migration failed")
             return self._json({"error": f"Migration failed: {e}"}, status=500)
+        finally:
+            # Remove the log handler to avoid memory leaks
+            migrate_logger.removeHandler(log_capture)
 
         return self._json(
             {
@@ -79,5 +99,6 @@ class ImageMigrateContent(BrowserView):
                 "message": processed_msg,
                 "block_types": block_types,
                 "field_name": field_name,
+                "migration_logs": log_capture.records,
             }
         )
