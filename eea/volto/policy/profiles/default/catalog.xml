@@ -2,4 +2,5 @@
 <object meta_type="Plone Catalog Tool" name="portal_catalog">
   <column value="image_scales" />
   <column value="side_nav_title" />
+  <column value="navigation_settings" />
 </object>
