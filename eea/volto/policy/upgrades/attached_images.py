@@ -9,8 +9,9 @@ import transaction
 
 from plone.restapi.blocks import visit_blocks
 from plone.restapi.deserializer.utils import path2uid
-from plone.restapi.serializer.blocks import resolve_uid
 from zope.lifecycleevent import modified
+
+from eea.volto.policy.utils import resolve_uid
 
 logger = logging.getLogger("migrate_images")
 logger.setLevel(logging.INFO)
