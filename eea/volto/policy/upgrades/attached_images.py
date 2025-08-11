@@ -43,7 +43,7 @@ def _validate_resolveuid(uid_url):
     Parameters
     ----------
     uid_url
-        The resolveuid URL to validate (e.g., "resolveuid/abc123" 
+        The resolveuid URL to validate (e.g., "resolveuid/abc123"
         or "../resolveuid/abc123")
 
     Returns
