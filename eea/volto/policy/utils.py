@@ -1,13 +1,16 @@
 """
 Utility functions for eea.volto.policy package.
 """
+# pylint: disable=import-error
 import re
+
 from plone.app.uuid.utils import uuidToCatalogBrain
 from plone.restapi.interfaces import IObjectPrimaryFieldTarget
 from zope.component import queryMultiAdapter
 
 
 # Compatibility import for resolve_uid function
+# pylint: disable=ungrouped-imports
 try:
     from plone.restapi.serializer.utils import resolve_uid
 except ImportError:
@@ -17,19 +20,19 @@ except ImportError:
     )
 
     def resolve_uid(path):
-        """Fallback implementation of resolve_uid for older plone.restapi 
+        """Fallback implementation of resolve_uid for older plone.restapi
         versions.
 
-        Resolves a resolveuid URL into a tuple of absolute URL and catalog 
+        Resolves a resolveuid URL into a tuple of absolute URL and catalog
         brain.
-        If the original path is not found (including external URLs),
-        it will be returned unchanged and the brain will be None.
+        If the original path is not found (including external URLs), it
+        will be returned unchanged and the brain will be None.
 
         Args:
             path (str): The path to resolve, potentially containing resolveuid
 
         Returns:
-            tuple: (resolved_url, brain) where brain is the catalog brain or 
+            tuple: (resolved_url, brain) where brain is the catalog brain or
             None
         """
         if not path:
