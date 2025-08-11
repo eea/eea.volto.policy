@@ -83,12 +83,15 @@ class UpdateInternalApiPathView(BrowserView):
                 logger.error(
                     "Error processing %s: %s", brain.getPath(), str(e)
                 )
-            self.set_last_processed_index(offset + 1)  # save progress after each item
+            self.set_last_processed_index(offset + 1)
 
         transaction.commit()
 
         output = "=" * 80 + "\n"
-        output += f"URL REPLACEMENT PROCESS PROGRESS\nProcessed items {start_index + 1} to {end_index} of {total}\n"
+        output += (
+            f"URL REPLACEMENT PROGRESS\n"
+            f"Items {start_index+1}-{end_index} of {total}\n"
+        )
         output += "=" * 80 + "\n\n"
         output += f"Items modified in this run: {len(modified)}\n\n"
 
@@ -100,7 +103,7 @@ class UpdateInternalApiPathView(BrowserView):
             output += "No items were modified in this run.\n"
 
         if end_index >= total:
-            output += "\nProcessing complete! Resetting last processed index.\n"
+            output += "\nComplete! Resetting last processed index.\n"
             self.set_last_processed_index(0)  # reset for next full run
 
         output += "\n" + "=" * 80
