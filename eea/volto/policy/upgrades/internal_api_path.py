@@ -1,3 +1,4 @@
+"""Upgrade step to add registries"""
 from plone import api
 
 PROFILE_ID = "profile-eea.volto.policy:default"
