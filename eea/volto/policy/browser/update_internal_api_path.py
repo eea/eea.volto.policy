@@ -1,4 +1,5 @@
 """Fix wrong url after migrations, with resume support"""
+# pylint: disable=line-too-long
 
 import logging
 import re
@@ -17,7 +18,7 @@ from ZODB.POSException import ConflictError
 logger = logging.getLogger(__name__)
 
 # Registry key to store progress
-REGISTRY_KEY = "eea.volto.policy.internal_api_path.last_processed_index"
+REGISTRY_KEY = "eea.volto.policy.last_batch.last_processed_index"
 
 
 class UpdateInternalApiPathView(BrowserView):
@@ -59,7 +60,7 @@ class UpdateInternalApiPathView(BrowserView):
             logger.error("Error accessing catalog: %s", str(e))
             return "Could not access portal catalog"
 
-        batch_size = 10
+        batch_size = 100
         start_index = self.get_last_processed_index()
         logger.info("Starting at index %d", start_index)
 
