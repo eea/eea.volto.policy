@@ -11,6 +11,8 @@ from plone.restapi.blocks import visit_blocks
 from plone.restapi.deserializer.utils import path2uid
 from zope.lifecycleevent import modified
 
+from eea.volto.policy.utils import resolve_uid
+
 logger = logging.getLogger("migrate_images")
 logger.setLevel(logging.INFO)
 
@@ -34,6 +36,29 @@ def get_relative_url_path(url: str) -> str:
     if not path.startswith("/"):
         path = f"/{path}"
     return path
+
+
+def _validate_resolveuid(uid_url):
+    """Validate that a resolveuid URL actually resolves to an object.
+
+    Parameters
+    ----------
+    uid_url
+        The resolveuid URL to validate (e.g., "resolveuid/abc123"
+        or "../resolveuid/abc123")
+
+    Returns
+    -------
+    bool
+        True if the resolveuid URL resolves to an actual brain, False otherwise
+    """
+    try:
+
+        _path, brain = resolve_uid(uid_url)
+        return brain is not None
+    except Exception as e:
+        logger.debug("Failed to validate resolveuid %s: %s", uid_url, e)
+        return False
 
 
 def _migrate_block_images(
@@ -60,6 +85,8 @@ def _migrate_block_images(
         Number of Plone objects that were processed.
     """
     processed = 0
+    skipped_invalid_uids = 0
+
     for brain in portal.portal_catalog(
         object_provides="plone.restapi.behaviors.IBlocks",
         block_types=block_types,
@@ -70,25 +97,44 @@ def _migrate_block_images(
             logger.error("Failed to get object from brain: %s", e)
             continue
         blocks = obj.blocks
-        logger.info("Processing %s", obj.absolute_url())
+        object_url = obj.absolute_url()
 
         changed = False
         for block in visit_blocks(obj, blocks):
+            block_image_field = block.get(image_field)
             if (
                 block.get("@type") in block_types and
-                block.get(image_field) and
-                isinstance(block[image_field], str) and (
+                block_image_field and
+                isinstance(block_image_field, str) and (
                     item_block_asset_type is None or
                     block.get("assetType") == item_block_asset_type
                 )
             ):
-                rel_path = get_relative_url_path(block[image_field])
+                rel_path = get_relative_url_path(block_image_field)
                 uid = path2uid(context=obj, link=rel_path)
+
                 if not uid:
                     logger.warning(
                         "Failed to resolve UID for path: %s", rel_path
                     )
                     continue
+
+                # Clean up the URL to get just the resolveuid part
+                if uid.startswith("../"):
+                    uid = uid[3:]  # Remove "../"
+
+                if not _validate_resolveuid(uid):
+                    logger.warning(
+                        "Skipping migration for %s -> %s: resolveuid %s "
+                        "does not resolve to a valid object",
+                        object_url, block_image_field, uid
+                    )
+                    skipped_invalid_uids += 1
+                    continue
+
+                logger.info("Processing %s -> %s -> %s", object_url,
+                            block_image_field, uid)
+
                 block[image_field] = [
                     {
                         "@type": "Image",
@@ -114,8 +160,10 @@ def _migrate_block_images(
     try:
         transaction.commit()
         logger.info(
-            "Migration completed. Total objects processed: %d", processed)
-        return f"{processed} objects processed"
+            "Migration completed. Total processed: %d, bad UID skipped: %d",
+            processed, skipped_invalid_uids
+        )
+        return f"{processed} processed, {skipped_invalid_uids} bad UID skipped"
     except Exception as e:
         logger.error("Final transaction commit failed: %s", e)
         transaction.abort()
