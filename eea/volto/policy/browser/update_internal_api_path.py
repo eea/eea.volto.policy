@@ -26,12 +26,14 @@ class UpdateInternalApiPathView(BrowserView):
     with resume support"""
 
     def get_search_strings(self):
+        """Get URLs from registry configuration"""
         registry_urls = api.portal.get_registry_record(
             "eea.volto.policy.internal_api_path.replacement_urls"
         )
         return list(registry_urls) if registry_urls else []
 
     def get_last_processed_index(self):
+        """Get index from registry"""
         try:
             last = api.portal.get_registry_record(REGISTRY_KEY)
             if isinstance(last, int) and last >= 0:
@@ -41,6 +43,7 @@ class UpdateInternalApiPathView(BrowserView):
         return 0
 
     def set_last_processed_index(self, index):
+        """Set index in registry"""
         try:
             api.portal.set_registry_record(REGISTRY_KEY, index)
         except Exception as e:
@@ -50,6 +53,7 @@ class UpdateInternalApiPathView(BrowserView):
         return self.update_content()
 
     def update_content(self):
+        """Main function that iterates through all objects in the catalog"""
         try:
             portal = self.context.portal_url.getPortalObject()
             catalog = portal.portal_catalog
@@ -110,6 +114,7 @@ class UpdateInternalApiPathView(BrowserView):
         return output
 
     def process_object(self, obj):
+        """Process all relevant fields in an object recursively"""
         changed = False
 
         if hasattr(aq_base(obj), "blocks"):
@@ -152,6 +157,7 @@ class UpdateInternalApiPathView(BrowserView):
         return changed
 
     def process_field(self, obj, field_name):
+        """Process a single field on an object"""
         if not hasattr(aq_base(obj), field_name):
             return False
 
@@ -177,6 +183,7 @@ class UpdateInternalApiPathView(BrowserView):
         return False
 
     def process_value(self, value):
+        """Recursively process any value and replace URLs"""
         if isinstance(value, str):
             new_value = self.replace_urls(value)
             return new_value, new_value != value
@@ -216,6 +223,7 @@ class UpdateInternalApiPathView(BrowserView):
         return value, False
 
     def replace_urls(self, text):
+        """Replace backend URLs with relative path"""
         if not isinstance(text, str):
             return text
 
