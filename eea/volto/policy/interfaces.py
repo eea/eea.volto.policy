@@ -27,7 +27,19 @@ class IInternalApiPathSettings(Interface):
     )
 
 
+class IInternalApiPathBatchSettings(Interface):
+    """List of all processed urls"""
+
+    last_processed_index = schema.Int(
+        title=u"Last Processed Catalog Index",
+        description=u"Stores last processed catalog index"
+                    U"for URL replacement batch processing",
+        default=0,
+        required=False,
+    )
+
 __all__ = [
     IVoltoSettings.__name__,
     "IInternalApiPathSettings",
+    "IInternalApiPathBatchSettings",
 ]

@@ -1,5 +1,4 @@
-"""Fix wrong url after migrations"""
-
+"""Fix wrong url after migrations, with resume support"""
 # pylint: disable=line-too-long
 
 import logging
@@ -11,7 +10,6 @@ from Products.Five import BrowserView
 from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import iterSchemata
-from plone.restapi.deserializer.utils import path2uid
 from zope.schema import getFields
 from zope.component import ComponentLookupError
 from zExceptions import Unauthorized
@@ -19,9 +17,13 @@ from ZODB.POSException import ConflictError
 
 logger = logging.getLogger(__name__)
 
+# Registry key to store progress
+REGISTRY_KEY = "eea.volto.policy.last_batch.last_processed_index"
+
 
 class UpdateInternalApiPathView(BrowserView):
-    """Browser view to replace backend URLs with resolveuid references"""
+    """Browser view to replace backend URLs with relative paths only,
+    with resume support"""
 
     def get_search_strings(self):
         """Get URLs from registry configuration"""
@@ -29,6 +31,23 @@ class UpdateInternalApiPathView(BrowserView):
             "eea.volto.policy.internal_api_path.replacement_urls"
         )
         return list(registry_urls) if registry_urls else []
+
+    def get_last_processed_index(self):
+        """Get index from registry"""
+        try:
+            last = api.portal.get_registry_record(REGISTRY_KEY)
+            if isinstance(last, int) and last >= 0:
+                return last
+        except Exception:
+            pass
+        return 0
+
+    def set_last_processed_index(self, index):
+        """Set index in registry"""
+        try:
+            api.portal.set_registry_record(REGISTRY_KEY, index)
+        except Exception as e:
+            logger.error("Could not save last processed index: %s", str(e))
 
     def __call__(self):
         return self.update_content()
@@ -39,15 +58,26 @@ class UpdateInternalApiPathView(BrowserView):
             portal = self.context.portal_url.getPortalObject()
             catalog = portal.portal_catalog
             brains = catalog()
-            logger.info("Found %d content items in catalog", len(brains))
-
+            total = len(brains)
+            logger.info("Found %d content items in catalog", total)
         except (AttributeError, ComponentLookupError) as e:
             logger.error("Error accessing catalog: %s", str(e))
             return "Could not access portal catalog"
 
+        batch_size = 100
+        start_index = self.get_last_processed_index()
+        logger.info("Starting at index %d", start_index)
+
+        if start_index >= total:
+            return "All items have been processed."
+
         modified = []
 
-        for brain in brains:
+        # Process only next batch
+        end_index = min(start_index + batch_size, total)
+        batch = brains[start_index:end_index]
+
+        for offset, brain in enumerate(batch, start=start_index):
             try:
                 obj = brain.getObject()
                 if self.process_object(obj):
@@ -57,23 +87,28 @@ class UpdateInternalApiPathView(BrowserView):
                 logger.error(
                     "Error processing %s: %s", brain.getPath(), str(e)
                 )
+            self.set_last_processed_index(offset + 1)
 
         transaction.commit()
 
-        # Format output for display
         output = "=" * 80 + "\n"
-        output += "URL REPLACEMENT PROCESS COMPLETED\n"
+        output += (
+            f"URL REPLACEMENT PROGRESS\n"
+            f"Items {start_index+1}-{end_index} of {total}\n"
+        )
         output += "=" * 80 + "\n\n"
-        output += "STATISTICS:\n"
-        output += f"   • Total items processed: {len(brains)}\n"
-        output += f"   • Items modified: {len(modified)}\n\n"
+        output += f"Items modified in this run: {len(modified)}\n\n"
 
         if modified:
             output += "MODIFIED PAGES:\n"
             for i, url in enumerate(modified, 1):
                 output += f"   {i:2d}. {url}\n"
         else:
-            output += "No items were modified.\n"
+            output += "No items were modified in this run.\n"
+
+        if end_index >= total:
+            output += "\nComplete! Resetting last processed index.\n"
+            self.set_last_processed_index(0)  # reset for next full run
 
         output += "\n" + "=" * 80
         return output
@@ -188,7 +223,7 @@ class UpdateInternalApiPathView(BrowserView):
         return value, False
 
     def replace_urls(self, text):
-        """Replace backend URLs with resolveuid"""
+        """Replace backend URLs with relative path"""
         if not isinstance(text, str):
             return text
 
@@ -212,13 +247,6 @@ class UpdateInternalApiPathView(BrowserView):
 
             relative_path = url.replace(base, "", 1)
             path = "/" + relative_path.lstrip("/")
-
-            uid = path2uid(context=self.context, link=path)
-
-            if uid and uid != path:
-                return uid
-
-            logger.warning("No UID found for path: %s", relative_path)
-            return relative_path
+            return path
 
         return REPLACE_PATTERN.sub(replace_match, text)
