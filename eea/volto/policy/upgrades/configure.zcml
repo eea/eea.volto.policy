@@ -126,14 +126,14 @@
   </genericsetup:upgradeSteps>
 
   <genericsetup:upgradeSteps
-      source="8.0"
-      destination="8.1"
+      source="8.2"
+      destination="8.3"
       profile="eea.volto.policy:default">
 
     <genericsetup:upgradeDepends
-        title="Add registry record for IInternalApiPathSettings"
-        description="Adds the new internal API path setting to registry."
-        import_profile="eea.volto.policy:to_81"
+        title="Add registry record for IInternalApiPathBatchSettings"
+        description="Adds the new batch processing settings to registry."
+        import_profile="eea.volto.policy:to_83"
         />
   </genericsetup:upgradeSteps>
 </configure>

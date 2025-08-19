@@ -35,10 +35,10 @@
       />
 
   <genericsetup:registerProfile
-      name="to_81"
-      title="eea.volto.policy to 81"
-      directory="profiles/to_81"
-      description="Upgrade profile to 8.1 for internal API path registry settings."
+      name="to_83"
+      title="eea.volto.policy to 83"
+      directory="profiles/to_83"
+      description="Upgrade profile to 8.3 for internal API path registry settings."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
