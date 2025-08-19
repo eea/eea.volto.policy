@@ -134,7 +134,6 @@
         title="Add registry record for IInternalApiPathSettings"
         description="Adds the new internal API path setting to registry."
         import_profile="eea.volto.policy:internal_api_path_upgrade"
-        import_steps="controlpanel"
         />
   </genericsetup:upgradeSteps>
 </configure>
