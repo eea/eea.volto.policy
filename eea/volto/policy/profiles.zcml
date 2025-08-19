@@ -34,6 +34,14 @@
       post_handler=".setuphandlers.uninstall"
       />
 
+  <genericsetup:registerProfile
+      name="to_83"
+      title="eea.volto.policy to 83"
+      directory="profiles/to_83"
+      description="Upgrade profile to 8.3 for internal API path registry settings."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <utility
       factory=".setuphandlers.HiddenProfiles"
       name="eea.volto.policy-hiddenprofiles"
