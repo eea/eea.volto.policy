@@ -126,7 +126,7 @@
   </genericsetup:upgradeSteps>
 
   <genericsetup:upgradeSteps
-      source="8.2"
+      source="8.0"
       destination="8.3"
       profile="eea.volto.policy:default">
 
