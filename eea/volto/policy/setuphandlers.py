@@ -21,7 +21,7 @@ class HiddenProfiles:
         return [
             'eea.volto.policy:multilingual',
             'eea.volto.policy:uninstall',
-            'eea.volto.policy:to_81',
+            'eea.volto.policy:to_83',
         ]
 
 
