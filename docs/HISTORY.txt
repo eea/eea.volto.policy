@@ -1,6 +1,11 @@
 Changelog
 =========
 
+8.3 - (2025-08-19)
+---------------------------
+* Change: Release
+  [dobri1408]
+
 8.2 - (2025-08-11)
 ---------------------------
 * Change: Release with an older python 3 version
