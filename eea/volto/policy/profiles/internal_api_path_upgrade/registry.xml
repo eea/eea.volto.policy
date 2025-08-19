@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<registry>
+  <records interface="eea.volto.policy.interfaces.IInternalApiPathSettings"
+           prefix="eea.volto.policy.internal_api_path"
+  />
+  <records interface="eea.volto.policy.interfaces.IInternalApiPathBatchSettings"
+          prefix="eea.volto.policy.last_batch"
+  />
+</registry>

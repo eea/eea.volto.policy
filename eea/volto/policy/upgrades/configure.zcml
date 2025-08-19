@@ -130,10 +130,10 @@
       destination="8.1"
       profile="eea.volto.policy:default">
 
-    <genericsetup:upgradeStep
+    <genericsetup:upgradeDepends
         title="Add registry record for IInternalApiPathSettings"
         description="Adds the new internal API path setting to registry."
-        handler="eea.volto.policy.upgrades.internal_api_path.add_internal_api_path_registry"
+        import_profile="eea.volto.policy:internal_api_path_upgrade"
         />
   </genericsetup:upgradeSteps>
 </configure>
