@@ -1,8 +1,10 @@
 Changelog
 =========
 
-8.4-dev0 - (unreleased)
+8.4 - (2025-08-20)
 ---------------------------
+* Change: feat: Control Navigation Settings TTW - refs #288509
+  [avoinea]
 
 8.3 - (2025-08-19)
 ---------------------------
