@@ -11,5 +11,12 @@
       provides=".sidenavigation.IEEASideNavTitle"
       />
 
+  <plone:behavior
+      name="eea.enhanced_navigation"
+      title="EEA Enhanced Navigation"
+      description="Enhanced navigation behavior with metadata settings for routes"
+      provides=".enhanced_navigation.IEnhancedNavigationBehavior"
+      />
+
 
 </configure>
