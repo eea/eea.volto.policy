@@ -18,7 +18,6 @@ from ZODB.POSException import ConflictError
 logger = logging.getLogger(__name__)
 
 
-
 class UpdateInternalApiPathView(BrowserView):
     """Browser view to replace backend URLs with relative paths only"""
 
@@ -28,7 +27,6 @@ class UpdateInternalApiPathView(BrowserView):
             "eea.volto.policy.internal_api_path.replacement_urls"
         )
         return list(registry_urls) if registry_urls else []
-
 
     def __call__(self):
         return self.update_content()
