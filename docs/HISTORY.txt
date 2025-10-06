@@ -1,6 +1,11 @@
 Changelog
 =========
 
+8.6-dev0 - (unreleased)
+---------------------------
+* Fix: teaser block serializer to not clear href for non-http urls
+  [ichim-david - refs #292589]
+
 8.5 - (2025-08-27)
 ---------------------------
 * Change: Release
