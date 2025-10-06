@@ -1,5 +1,4 @@
 """Fix wrong url after migrations"""
-
 # pylint: disable=line-too-long
 
 import logging
@@ -11,7 +10,6 @@ from Products.Five import BrowserView
 from plone import api
 from plone.app.textfield.value import RichTextValue
 from plone.dexterity.utils import iterSchemata
-from plone.restapi.deserializer.utils import path2uid
 from zope.schema import getFields
 from zope.component import ComponentLookupError
 from zExceptions import Unauthorized
@@ -21,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class UpdateInternalApiPathView(BrowserView):
-    """Browser view to replace backend URLs with resolveuid references"""
+    """Browser view to replace backend URLs with relative paths only"""
 
     def get_search_strings(self):
         """Get URLs from registry configuration"""
@@ -39,44 +37,35 @@ class UpdateInternalApiPathView(BrowserView):
             portal = self.context.portal_url.getPortalObject()
             catalog = portal.portal_catalog
             brains = catalog()
-            logger.info("Found %d content items in catalog", len(brains))
-
+            total = len(brains)
+            logger.info("Found %d content items in catalog", total)
         except (AttributeError, ComponentLookupError) as e:
             logger.error("Error accessing catalog: %s", str(e))
             return "Could not access portal catalog"
 
-        modified = []
+        batch_size = 30
+        modified_count = 0
 
-        for brain in brains:
-            try:
-                obj = brain.getObject()
-                if self.process_object(obj):
-                    obj.reindexObject()
-                    modified.append(obj.absolute_url())
-            except (AttributeError, ConflictError, Unauthorized) as e:
-                logger.error(
-                    "Error processing %s: %s", brain.getPath(), str(e)
-                )
+        # Process all items in batches
+        for start_index in range(0, total, batch_size):
+            end_index = min(start_index + batch_size, total)
+            batch = brains[start_index:end_index]
 
-        transaction.commit()
+            for brain in batch:
+                try:
+                    obj = brain.getObject()
+                    logger.info("Processing object: %s", obj.absolute_url())
+                    if self.process_object(obj):
+                        obj.reindexObject()
+                        modified_count += 1
+                except (AttributeError, ConflictError, Unauthorized) as e:
+                    logger.error(
+                        "Error processing %s: %s", brain.getPath(), str(e)
+                    )
 
-        # Format output for display
-        output = "=" * 80 + "\n"
-        output += "URL REPLACEMENT PROCESS COMPLETED\n"
-        output += "=" * 80 + "\n\n"
-        output += "STATISTICS:\n"
-        output += f"   • Total items processed: {len(brains)}\n"
-        output += f"   • Items modified: {len(modified)}\n\n"
+            transaction.commit()
 
-        if modified:
-            output += "MODIFIED PAGES:\n"
-            for i, url in enumerate(modified, 1):
-                output += f"   {i:2d}. {url}\n"
-        else:
-            output += "No items were modified.\n"
-
-        output += "\n" + "=" * 80
-        return output
+        return "Finished"
 
     def process_object(self, obj):
         """Process all relevant fields in an object recursively"""
@@ -188,7 +177,7 @@ class UpdateInternalApiPathView(BrowserView):
         return value, False
 
     def replace_urls(self, text):
-        """Replace backend URLs with resolveuid"""
+        """Replace backend URLs with relative path"""
         if not isinstance(text, str):
             return text
 
@@ -212,13 +201,6 @@ class UpdateInternalApiPathView(BrowserView):
 
             relative_path = url.replace(base, "", 1)
             path = "/" + relative_path.lstrip("/")
-
-            uid = path2uid(context=self.context, link=path)
-
-            if uid and uid != path:
-                return uid
-
-            logger.warning("No UID found for path: %s", relative_path)
-            return relative_path
+            return path
 
         return REPLACE_PATTERN.sub(replace_match, text)

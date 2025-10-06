@@ -1,8 +1,25 @@
 Changelog
 =========
 
-8.2-dev0 - (unreleased)
+8.5 - (2025-08-27)
 ---------------------------
+* Change: Release
+  [dobri1408]
+
+8.4 - (2025-08-20)
+---------------------------
+* Change: feat: Control Navigation Settings TTW - refs #288509
+  [avoinea]
+
+8.3 - (2025-08-19)
+---------------------------
+* Change: Release
+  [dobri1408]
+
+8.2 - (2025-08-11)
+---------------------------
+* Change: Release with an older python 3 version
+  [valentinab25]
 
 8.1 - (2025-08-04)
 ---------------------------
