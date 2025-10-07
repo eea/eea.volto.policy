@@ -25,6 +25,7 @@ setup(
     description="An add-on for Plone",
     long_description_content_type="text/x-rst",
     long_description=LONG_DESCRIPTION,
+    #test
     classifiers=[
         "Environment :: Web Environment",
         "Framework :: Plone",
