@@ -1,7 +1,7 @@
 Changelog
 =========
 
-9.0-dev0 - (unreleased)
+9.0 - (2025-10-08)
 ---------------------------
 * Fix: teaser block serializer to not clear href for non-http urls
   [ichim-david - refs #292589]
