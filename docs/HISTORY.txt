@@ -1,6 +1,14 @@
 Changelog
 =========
 
+9.0-dev0 - (unreleased)
+---------------------------
+* Fix: teaser block serializer to not clear href for non-http urls
+  [ichim-david - refs #292589]
+* Breaking: drop testing for Plone 5 that used plone.restapi 8.x
+  Version 8 was deprecated in 2023
+  [ichim-david - refs #292589]
+
 8.5 - (2025-08-27)
 ---------------------------
 * Change: Release
