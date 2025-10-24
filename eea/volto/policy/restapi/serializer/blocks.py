@@ -2,10 +2,20 @@
 eea.volto.policy.restapi.serializer.blocks overrides
 """
 
-from plone.restapi.serializer.blocks import (
-    TeaserBlockSerializerBase,
-    url_to_brain,
-)
+try:
+    from plone.restapi.serializer.blocks import (
+        TeaserBlockSerializerBase,
+        url_to_brain,
+    )
+    HAS_TEASER_BLOCK = True
+except ImportError:
+    # Plone 5 doesn't have TeaserBlockSerializerBase
+    HAS_TEASER_BLOCK = False
+    TeaserBlockSerializerBase = None
+    try:
+        from plone.restapi.serializer.blocks import url_to_brain
+    except ImportError:
+        url_to_brain = None
 
 from plone.restapi.interfaces import ISerializeToJsonSummary
 from zope.component import getMultiAdapter
@@ -46,5 +56,8 @@ def patched_process_data(self, data, field=None):
 
 def apply_teaser_block_monkey_patch():
     """Apply monkey patch to TeaserBlockSerializerBase._process_data"""
+    if not HAS_TEASER_BLOCK:
+        print("EEA: Skipping TeaserBlockSerializerBase monkey patch (not available in Plone 5)")
+        return
     TeaserBlockSerializerBase._process_data = patched_process_data
     print("EEA: Applied TeaserBlockSerializerBase monkey patch")
