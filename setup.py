@@ -54,7 +54,6 @@ setup(
     ],
     extras_require={
         'test': [
-            'zope.testrunner',
             'plone.app.testing',
         ],
     },

@@ -121,7 +121,7 @@ pipeline {
 // */
           "Plone6": {
             node(label: 'docker') {
-              sh '''docker run --pull="always" -i --rm --name="$BUILD_TAG" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e ADDONS="$GIT_NAME[test]" -e DEVELOP="src/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plone-test:6'''
+              sh '''docker run --pull="always" -i --rm --name="$BUILD_TAG" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e DEVELOP="src/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plone-test:6'''
             }
           },
 
