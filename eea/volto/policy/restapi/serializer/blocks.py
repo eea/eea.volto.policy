@@ -57,7 +57,7 @@ def patched_process_data(self, data, field=None):
 def apply_teaser_block_monkey_patch():
     """Apply monkey patch to TeaserBlockSerializerBase._process_data"""
     if not HAS_TEASER_BLOCK:
-        print("EEA: Skipping TeaserBlockSerializerBase monkey patch (not available in Plone 5)")
+        print("EEA: Skipping TeaserBlockSerializerBase monkey patch (Plone 5)")
         return
     TeaserBlockSerializerBase._process_data = patched_process_data
     print("EEA: Applied TeaserBlockSerializerBase monkey patch")
