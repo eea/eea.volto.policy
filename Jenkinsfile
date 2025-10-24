@@ -79,9 +79,9 @@ pipeline {
       }
     }
 
-//     stage('Tests') {
-//       steps {
-//         parallel(
+    stage('Tests') {
+      steps {
+        parallel(
 // /*
 //           "WWW": {
 //             node(label: 'docker') {
@@ -119,22 +119,20 @@ pipeline {
 //             }
 //           },
 // */
-//           "Plone6 & Python3": {
-//             node(label: 'docker') {
-//               sh '''docker pull eeacms/plone-test:6'''
-//               sh '''docker run -i --rm --name="$BUILD_TAG" -e GIT_BRANCH="$BRANCH_NAME" -e ADDONS="$GIT_NAME" -e DEVELOP="src/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plone-test:6'''
-//                   sh '''docker run -i --name="$BUILD_TAG-python3" -e GIT_USER="eea" -e GIT_NAME=$GIT_NAME -e GIT_BRANCH="$BRANCH_NAME" -e ADDONS="$GIT_NAME[test]" -e DEVELOP="/app/eea/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" -e PIP_PARAMS="-f https://eggrepo.eea.europa.eu/simple/ -f https://code.codesyntax.com/static/public/" eeacms/plone-test:6'''
-//             }
-//           },
+          "Plone6": {
+            node(label: 'docker') {
+              sh '''docker run -i --rm --name="$BUILD_TAG" -e GIT_USER="eea" -e GIT_NAME=$GIT_NAME -e GIT_BRANCH="$BRANCH_NAME" -e ADDONS="$GIT_NAME[test]" -e DEVELOP="src/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plone-test:6'''
+            }
+          },
 
 //          "PloneSaaS": {
 //            node(label: 'docker') {
 //              sh '''docker pull eeacms/plonesaas-devel; docker run -i --rm --name="$BUILD_TAG-plonesaas" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plonesaas-devel /debug.sh bin/test --test-path /plone/instance/src/$GIT_NAME -v -vv -s $GIT_NAME'''
 //            }
 //          }
-        // )
-      // }
-    // }
+        )
+      }
+    }
 
     stage('Report to SonarQube') {
       when {
