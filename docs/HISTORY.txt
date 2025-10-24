@@ -3,6 +3,8 @@ Changelog
 
 9.1-dev0 - (unreleased)
 ---------------------------
+* Fix: tests for Plone 5
+  [ichim-david - refs #292589]
 
 9.0 - (2025-10-08)
 ---------------------------
