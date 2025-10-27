@@ -1,5 +1,5 @@
-""" Migrate teaser block from teaserGrid to Volto 17 gridBlock
-"""
+"""Migrate teaser block from teaserGrid to Volto 17 gridBlock"""
+
 import copy
 import logging
 import transaction
@@ -17,6 +17,7 @@ from zope.interface import alsoProvides
 from zope.schema.interfaces import IVocabularyFactory
 from zope.lifecycleevent import modified
 from zExceptions import Forbidden
+
 logger = logging.getLogger("eea.volto.policy")
 
 
@@ -29,15 +30,12 @@ class TeaserMigrateContent(BrowserView):
 
         grid_block["@type"] = "gridBlock"
         columns = block_data.get("columns", [])
-        grid_block["blocks_layout"] = {
-            "items": [column["id"] for column in columns]
-        }
+        grid_block["blocks_layout"] = {"items": [column["id"] for column in columns]}
         grid_block["blocks"] = {x["id"]: x for x in columns}
         try:
             del grid_block["columns"]
         except KeyError:
-            logger.exception("No columns found in %s",
-                             self.context.absolute_url())
+            logger.exception("No columns found in %s", self.context.absolute_url())
         return grid_block
 
     def migrate(self):
@@ -64,8 +62,7 @@ class TeaserMigrateContent(BrowserView):
         # Disable CSRF protection
         alsoProvides(self.request, IDisableCSRFProtection)
         count = self.migrate()
-        IStatusMessage(self.request).addStatusMessage(
-            f"Migrated {count} Teaser Blocks")
+        IStatusMessage(self.request).addStatusMessage(f"Migrated {count} Teaser Blocks")
         return self.request.response.redirect(self.context.absolute_url())
 
 
@@ -75,8 +72,7 @@ class TeaserMigrateSite(TeaserMigrateContent):
     def migrate(self):
         """Migrate Teaser Blocks to Volto 17"""
         brains = api.content.find(
-            context=self.context,
-            object_provides="plone.restapi.behaviors.IBlocks"
+            context=self.context, object_provides="plone.restapi.behaviors.IBlocks"
         )
 
         count = 0
@@ -87,27 +83,23 @@ class TeaserMigrateSite(TeaserMigrateContent):
                 if super().migrate():
                     count += 1
                 continue
-            view = queryMultiAdapter(
-                (obj, self.request), name="teaser-migrate")
+            view = queryMultiAdapter((obj, self.request), name="teaser-migrate")
             if view.migrate():
                 count += 1
             if idx % 100 == 0:
                 transaction.commit()
-                logger.info("Progress %s of %s. Migrated %s",
-                            idx, total, count)
+                logger.info("Progress %s of %s. Migrated %s", idx, total, count)
         return count
 
     def __call__(self):
         alsoProvides(self.request, IDisableCSRFProtection)
         count = self.migrate()
-        IStatusMessage(self.request).addStatusMessage(
-            f"Migrated {count} Teaser Blocks"
-        )
+        IStatusMessage(self.request).addStatusMessage(f"Migrated {count} Teaser Blocks")
         return self.request.response.redirect(self.context.absolute_url())
 
 
 class TeaserMigrateLayout(TeaserMigrateSite):
-    """ Migrate Teaser Blocks in DX Layout """
+    """Migrate Teaser Blocks in DX Layout"""
 
     def migrate_type(self, context):
         """Migrate teaserGrid to gridBlock"""
@@ -128,22 +120,24 @@ class TeaserMigrateLayout(TeaserMigrateSite):
                 block.update(new_block)
                 count += 1
         if count:
-            update_field(context, self.request, {
-                "id": "blocks",
-                "default": blocks,
-            })
+            update_field(
+                context,
+                self.request,
+                {
+                    "id": "blocks",
+                    "default": blocks,
+                },
+            )
             serializeSchema(context.schema)
         return count
 
     def migrate(self):
-        """ Migrate Teaser Blocks in DX Layout """
+        """Migrate Teaser Blocks in DX Layout"""
         count = 0
         ctypes = queryUtility(
-            IVocabularyFactory,
-            name="plone.app.vocabularies.ReallyUserFriendlyTypes"
+            IVocabularyFactory, name="plone.app.vocabularies.ReallyUserFriendlyTypes"
         )
-        dtool = queryMultiAdapter(
-            (self.context, self.request), name="dexterity-types")
+        dtool = queryMultiAdapter((self.context, self.request), name="dexterity-types")
         brains = ctypes(self.context)
         total = len(brains)
         for idx, ctype in enumerate(brains):

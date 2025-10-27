@@ -1,6 +1,7 @@
 """
 ImageScales
 """
+
 from Acquisition import aq_inner
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.utils import iterSchemata

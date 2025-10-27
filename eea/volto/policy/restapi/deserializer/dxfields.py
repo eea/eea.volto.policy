@@ -1,11 +1,12 @@
-""" DXFields
-"""
+"""DXFields"""
+
 import dateutil
 from plone.app.dexterity.behaviors.metadata import IPublication
 from plone.app.event.base import default_timezone
 from plone.dexterity.interfaces import IDexterityContent
-from plone.restapi.deserializer.dxfields import \
-    DatetimeFieldDeserializer as DefaultDatetimeFieldDeserializer
+from plone.restapi.deserializer.dxfields import (
+    DatetimeFieldDeserializer as DefaultDatetimeFieldDeserializer,
+)
 from plone.restapi.interfaces import IFieldDeserializer
 from pytz import timezone, utc
 from z3c.form.interfaces import IDataManager
@@ -14,6 +15,7 @@ from zope.interface import implementer
 from zope.schema.interfaces import IDatetime
 
 from eea.volto.policy.interfaces import IEeaVoltoPolicyLayer
+
 try:
     from eea.coremetadata.metadata import ICoreMetadata
 except ImportError:
@@ -24,12 +26,14 @@ except ImportError:
 @implementer(IFieldDeserializer)
 @adapter(IDatetime, IDexterityContent, IEeaVoltoPolicyLayer)
 class DatetimeFieldDeserializer(DefaultDatetimeFieldDeserializer):
-    """ DatetimeFieldDeserializer
-    """
+    """DatetimeFieldDeserializer"""
+
     def __call__(self, value):
         # PATCH
         is_publication_field = self.field.interface in (
-            IPublication, ICoreMetadata,)
+            IPublication,
+            ICoreMetadata,
+        )
 
         if is_publication_field:
             # because IPublication datamanager strips timezones
