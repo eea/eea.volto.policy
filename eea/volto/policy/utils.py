@@ -1,7 +1,6 @@
 """
 Utility functions for eea.volto.policy package.
 """
-# pylint: disable=import-error
 import re
 
 from plone.app.uuid.utils import uuidToCatalogBrain
@@ -10,7 +9,6 @@ from zope.component import queryMultiAdapter
 
 
 # Compatibility import for resolve_uid function
-# pylint: disable=ungrouped-imports
 try:
     from plone.restapi.serializer.utils import resolve_uid
 except ImportError:

@@ -1,5 +1,4 @@
 """Fix wrong url after migrations"""
-# pylint: disable=line-too-long
 
 import logging
 import re

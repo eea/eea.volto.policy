@@ -1,6 +1,5 @@
 """ Migrate teaser block from teaserGrid to Volto 17 gridBlock
 """
-# pylint: disable=line-too-long
 import copy
 import logging
 import transaction

@@ -1,6 +1,5 @@
 """ Custom setup
 """
-# pylint: disable = C0301
 import logging
 
 from Products.CMFPlone.interfaces import INonInstallable

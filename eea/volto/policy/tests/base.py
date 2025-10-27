@@ -1,4 +1,3 @@
-# pylint: disable = C0412
 """ Base test cases
 """
 from plone.testing import z2
