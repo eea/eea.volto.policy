@@ -4,8 +4,8 @@ format. Contains functions to update image references in item,
 teaser, and hero blocks.
 """
 import logging
-import transaction
 from urllib.parse import urlparse
+import transaction
 from plone.restapi.blocks import visit_blocks
 from plone.restapi.deserializer.utils import path2uid
 from zope.lifecycleevent import modified
@@ -37,7 +37,8 @@ def get_relative_url_path(url: str) -> str:
     return path
 
 
-def _validate_resolveuid(obj, uid_url, rel_path, portal_url, reindex_on_fail=False):
+def _validate_resolveuid(obj, uid_url, rel_path, portal_url,
+                         reindex_on_fail=False):
     """Validate that a resolveuid URL actually resolves to an object.
 
     Parameters
@@ -63,7 +64,8 @@ def _validate_resolveuid(obj, uid_url, rel_path, portal_url, reindex_on_fail=Fal
                 item_obj = obj.restrictedTraverse(portal_url + rel_path, None)
                 if item_obj is None:
                     logger.debug(
-                        "Object not found for path %s during reindex", rel_path)
+                        "Object not found for path %s during reindex",
+                        rel_path)
                     return False
                 item_obj.reindexObject()
                 logger.info("Reindexed %s -> with UID -> %s",
