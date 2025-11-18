@@ -38,8 +38,7 @@ def get_relative_url_path(url: str) -> str:
     return path
 
 
-def _validate_resolveuid(obj, uid_url, rel_path, portal_url,
-                         reindex_on_fail=False):
+def _validate_resolveuid(obj, uid_url, rel_path, portal_url, reindex_on_fail=False):
     """Validate that a resolveuid URL actually resolves to an object.
 
     Parameters
@@ -71,16 +70,16 @@ def _validate_resolveuid(obj, uid_url, rel_path, portal_url,
                 item_obj = obj.restrictedTraverse(portal_url + rel_path, None)
                 if item_obj is None:
                     logger.debug(
-                        "Object not found for path %s during reindex",
-                        rel_path)
+                        "Object not found for path %s during reindex", rel_path
+                    )
                     return False
                 item_obj.reindexObject()
-                logger.info("Reindexed %s -> with UID -> %s",
-                            item_obj.absolute_url(), uid_url)
+                logger.info(
+                    "Reindexed %s -> with UID -> %s", item_obj.absolute_url(), uid_url
+                )
                 return True
             except Exception as e:
-                logger.debug(
-                    "Failed to reindex object with UID %s: %s", uid_url, e)
+                logger.debug("Failed to reindex object with UID %s: %s", uid_url, e)
 
         return False
     except Exception as e:
@@ -148,8 +147,12 @@ def _migrate_block_images(
                 rel_path = get_relative_url_path(block_image_field)
                 if block_image_field in url_to_uid_cache:
                     uid = url_to_uid_cache[block_image_field]
-                    logger.info("Using cached UID for %s -> %s -> %s",
-                                object_url, block_image_field, uid)
+                    logger.info(
+                        "Using cached UID for %s -> %s -> %s",
+                        object_url,
+                        block_image_field,
+                        uid,
+                    )
                 else:
                     uid = path2uid(context=portal, link=rel_path)
 
@@ -158,9 +161,9 @@ def _migrate_block_images(
                     continue
 
                 # Validation with reindex (validate even for cached UIDs)
-                if not _validate_resolveuid(obj, uid, rel_path,
-                                            portal_url,
-                                            reindex_on_fail=True):
+                if not _validate_resolveuid(
+                    obj, uid, rel_path, portal_url, reindex_on_fail=True
+                ):
                     logger.warning(
                         "Skipping migration for %s -> %s: resolveuid %s "
                         "does not resolve to a valid object",
@@ -177,8 +180,9 @@ def _migrate_block_images(
 
                 # Cache the successful mapping
                 url_to_uid_cache[block_image_field] = uid
-                logger.info("Processing %s -> %s -> %s", object_url,
-                            block_image_field, uid)
+                logger.info(
+                    "Processing %s -> %s -> %s", object_url, block_image_field, uid
+                )
 
                 block[image_field] = [
                     {
