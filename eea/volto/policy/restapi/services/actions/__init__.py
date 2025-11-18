@@ -1,1 +1,1 @@
-""" EEA Actions overrides """
+"""EEA Actions overrides"""

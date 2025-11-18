@@ -3,6 +3,7 @@ Module for migrating image references in Volto blocks to the new
 format. Contains functions to update image references in item,
 teaser, and hero blocks.
 """
+
 import logging
 from urllib.parse import urlparse
 import transaction
@@ -28,7 +29,7 @@ def get_relative_url_path(url: str) -> str:
     if not url:
         return ""
 
-    if 'resolveuid' in url:
+    if "resolveuid" in url:
         # If the URL is already a resolveuid link, return it as is.
         return url
 
@@ -53,7 +54,6 @@ def _validate_resolveuid(uid_url):
         True if the resolveuid URL resolves to an actual brain, False otherwise
     """
     try:
-
         _path, brain = resolve_uid(uid_url)
         return brain is not None
     except Exception as e:
@@ -103,20 +103,19 @@ def _migrate_block_images(
         for block in visit_blocks(obj, blocks):
             block_image_field = block.get(image_field)
             if (
-                block.get("@type") in block_types and
-                block_image_field and
-                isinstance(block_image_field, str) and (
-                    item_block_asset_type is None or
-                    block.get("assetType") == item_block_asset_type
+                block.get("@type") in block_types
+                and block_image_field
+                and isinstance(block_image_field, str)
+                and (
+                    item_block_asset_type is None
+                    or block.get("assetType") == item_block_asset_type
                 )
             ):
                 rel_path = get_relative_url_path(block_image_field)
                 uid = path2uid(context=obj, link=rel_path)
 
                 if not uid:
-                    logger.warning(
-                        "Failed to resolve UID for path: %s", rel_path
-                    )
+                    logger.warning("Failed to resolve UID for path: %s", rel_path)
                     continue
 
                 # Clean up the URL to get just the resolveuid part
@@ -127,13 +126,16 @@ def _migrate_block_images(
                     logger.warning(
                         "Skipping migration for %s -> %s: resolveuid %s "
                         "does not resolve to a valid object",
-                        object_url, block_image_field, uid
+                        object_url,
+                        block_image_field,
+                        uid,
                     )
                     skipped_invalid_uids += 1
                     continue
 
-                logger.info("Processing %s -> %s -> %s", object_url,
-                            block_image_field, uid)
+                logger.info(
+                    "Processing %s -> %s -> %s", object_url, block_image_field, uid
+                )
 
                 block[image_field] = [
                     {
@@ -161,7 +163,8 @@ def _migrate_block_images(
         transaction.commit()
         logger.info(
             "Migration completed. Total processed: %d, bad UID skipped: %d",
-            processed, skipped_invalid_uids
+            processed,
+            skipped_invalid_uids,
         )
         return f"{processed} processed, {skipped_invalid_uids} bad UID skipped"
     except Exception as e:
