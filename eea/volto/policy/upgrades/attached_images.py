@@ -43,11 +43,17 @@ def _validate_resolveuid(obj, uid_url, rel_path, portal_url,
 
     Parameters
     ----------
+    obj
+        The Plone site object, used for restricted traversal and reindexing.
+    rel_path
+        The relative path to the object within the site, used for traversal.
+    portal_url
+        The portal URL, used to construct the full traversal path.
     uid_url
         The resolveuid URL to validate (e.g., "resolveuid/abc123"
         or "../resolveuid/abc123")
     reindex_on_fail
-        If True and validation fails, try to reindex the object and retry
+        If True and validation fails, try to reindex the object and retry.
 
     Returns
     -------
@@ -69,7 +75,7 @@ def _validate_resolveuid(obj, uid_url, rel_path, portal_url,
                     return False
                 item_obj.reindexObject()
                 logger.info("Reindexed %s -> with UID -> %s",
-                            portal_url, uid_url)
+                            item_obj.absolute_url(), uid_url)
                 return True
             except Exception as e:
                 logger.debug(
@@ -142,7 +148,7 @@ def _migrate_block_images(
                                 object_url, block_image_field, uid)
                 else:
                     rel_path = get_relative_url_path(block_image_field)
-                    uid = path2uid(context=portal, link=rel_path)
+                    uid = path2uid(context=obj, link=rel_path)
 
                     if not uid:
                         logger.warning(
