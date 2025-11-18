@@ -157,7 +157,7 @@ def _migrate_block_images(
                     )
                     continue
 
-                # Validation with reindex (always validate, even for cached UIDs)
+                # Validation with reindex (validate even for cached UIDs)
                 if not _validate_resolveuid(obj, uid, rel_path,
                                             portal_url,
                                             reindex_on_fail=True):
