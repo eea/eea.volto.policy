@@ -1,8 +1,15 @@
 Changelog
 =========
 
-9.2-dev0 - (unreleased)
+9.3-dev0 - (unreleased)
 ---------------------------
+
+9.2 - (2025-11-18)
+---------------------------
+* Change: Replace Python linting to ruff
+  [mihaidobrescu1111 = refs #286821]
+* Change: Add plone6 tests
+  [mihaidobrescu1111 = refs #293593]
 
 9.1 - (2025-10-24)
 ---------------------------

@@ -1,7 +1,7 @@
 """
 Utility functions for eea.volto.policy package.
 """
-# pylint: disable=import-error
+
 import re
 
 from plone.app.uuid.utils import uuidToCatalogBrain
@@ -10,14 +10,11 @@ from zope.component import queryMultiAdapter
 
 
 # Compatibility import for resolve_uid function
-# pylint: disable=ungrouped-imports
 try:
     from plone.restapi.serializer.utils import resolve_uid
 except ImportError:
     # Fallback implementation for older plone.restapi versions (< 9.0)
-    RESOLVEUID_RE = re.compile(
-        r"^[./]*resolve[Uu]id/([^/]*)/?(.*)$"
-    )
+    RESOLVEUID_RE = re.compile(r"^[./]*resolve[Uu]id/([^/]*)/?(.*)$")
 
     def resolve_uid(path):
         """Fallback implementation of resolve_uid for older plone.restapi
@@ -61,4 +58,4 @@ except ImportError:
 
 
 # Export the function for easy import
-__all__ = ['resolve_uid']
+__all__ = ["resolve_uid"]

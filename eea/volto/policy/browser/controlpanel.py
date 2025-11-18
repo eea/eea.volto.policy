@@ -23,13 +23,13 @@ class InternalApiPathControlPanel(RegistryEditForm):
 
     schema = IInternalApiPathSettings
     schema_prefix = "eea.volto.policy.internal_api_path"
-    label = u"Internal API Path Correction"
+    label = "Internal API Path Correction"
     description = (
-        u"Configure and fix internal API paths by replacing "
-        u"backend URLs with resolveuid references"
+        "Configure and fix internal API paths by replacing "
+        "backend URLs with resolveuid references"
     )
 
-    @button.buttonAndHandler(u'Save', name='save')
+    @button.buttonAndHandler("Save", name="save")
     def handleSave(self, action):
         """Handle save button"""
         data, errors = self.extractData()
@@ -37,37 +37,31 @@ class InternalApiPathControlPanel(RegistryEditForm):
             self.status = self.formErrorsMessage
             return
         self.applyChanges(data)
-        IStatusMessage(self.request).addStatusMessage(
-            u"Configuration updated.", "info"
-        )
+        IStatusMessage(self.request).addStatusMessage("Configuration updated.", "info")
 
-    @button.buttonAndHandler(u'Cancel', name='cancel')
+    @button.buttonAndHandler("Cancel", name="cancel")
     def handleCancel(self, action):
         """Handle cancel button"""
-        IStatusMessage(self.request).addStatusMessage(
-            u"Changes canceled.", "info"
-        )
+        IStatusMessage(self.request).addStatusMessage("Changes canceled.", "info")
         self.request.response.redirect(
             self.context.absolute_url() + "/@@overview-controlpanel"
         )
 
-    @button.buttonAndHandler(u'Fix Internal API Paths', name='update_paths')
+    @button.buttonAndHandler("Fix Internal API Paths", name="update_paths")
     def handleUpdatePaths(self, action):
         """Handle the fix paths button"""
         # Redirect to the update view
-        update_url = (
-            self.context.absolute_url() +
-            "/@@update-internal-api-path"
-        )
+        update_url = self.context.absolute_url() + "/@@update-internal-api-path"
         self.request.response.redirect(update_url)
 
 
 class InternalApiPathControlPanelView(ControlPanelFormWrapper):
     """Control panel view wrapper"""
+
     form = InternalApiPathControlPanel
-    label = u"Internal API Path Correction"
+    label = "Internal API Path Correction"
     description = (
-        u"Configure and fix internal API paths by replacing backend URLs with "
-        u"resolveuid references. Use the 'Fix Internal API Paths' button to "
-        u"run the correction process on all content."
+        "Configure and fix internal API paths by replacing backend URLs with "
+        "resolveuid references. Use the 'Fix Internal API Paths' button to "
+        "run the correction process on all content."
     )

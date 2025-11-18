@@ -1,5 +1,5 @@
-""" DXFields
-"""
+"""DXFields"""
+
 from plone.app.dexterity.behaviors.metadata import IPublication
 from plone.dexterity.interfaces import IDexterityContent
 from plone.restapi.interfaces import IFieldSerializer
@@ -12,6 +12,7 @@ from zope.schema.interfaces import IDatetime
 
 
 from eea.volto.policy.interfaces import IEeaVoltoPolicyLayer
+
 try:
     from eea.coremetadata.metadata import ICoreMetadata
 except ImportError:
@@ -22,15 +23,17 @@ except ImportError:
 @adapter(IDatetime, IDexterityContent, IEeaVoltoPolicyLayer)
 @implementer(IFieldSerializer)
 class DateTimeFieldSerializer(DefaultFieldSerializer):
-    """ DateTimeFieldSerializer
-    """
+    """DateTimeFieldSerializer"""
+
     def get_value(self, default=None):
-        """ Get value
-        """
+        """Get value"""
         value = getattr(
             self.field.interface(self.context), self.field.__name__, default
         )
-        if value and self.field.interface in (IPublication, ICoreMetadata,):
+        if value and self.field.interface in (
+            IPublication,
+            ICoreMetadata,
+        ):
             # the patch: we want the dates with full tz infos
             # default value is taken from
             # plone.app.dexterity.behaviors.metadata.Publication that escape
@@ -41,8 +44,8 @@ class DateTimeFieldSerializer(DefaultFieldSerializer):
 
 @adapter(INamedFileField, IDexterityContent, IEeaVoltoPolicyLayer)
 class EEAPrimaryFileFieldTarget(DefaultPrimaryFieldTarget):
-    """ EEAPrimaryFileFieldTarget adapter of PrimaryFileFieldTarget
-    """
+    """EEAPrimaryFileFieldTarget adapter of PrimaryFileFieldTarget"""
+
     def __call__(self):
-        if self.field.__name__ == 'file':
+        if self.field.__name__ == "file":
             return

@@ -15,8 +15,7 @@ class EEABreadcrumbs(Breadcrumbs):
 
     def __call__(self, expand=False):
         """ """
-        result = {"breadcrumbs": {
-            "@id": f"{self.context.absolute_url()}/@breadcrumbs"}}
+        result = {"breadcrumbs": {"@id": f"{self.context.absolute_url()}/@breadcrumbs"}}
         if not expand:
             return result
 
@@ -44,6 +43,5 @@ class EEABreadcrumbs(Breadcrumbs):
             items.append(item)
 
         result["breadcrumbs"]["items"] = items
-        result["breadcrumbs"]["root"] = portal_state.navigation_root()\
-            .absolute_url()
+        result["breadcrumbs"]["root"] = portal_state.navigation_root().absolute_url()
         return result

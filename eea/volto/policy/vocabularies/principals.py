@@ -1,4 +1,4 @@
-""" Vocabulary for users."""
+"""Vocabulary for users."""
 
 # Plone imports
 from plone import api
@@ -22,7 +22,7 @@ class SimpleUserTerm(SimpleTerm):
 
 
 class UsersFactory(BaseUsersFactory):
-    """ Factory creating a UsersVocabulary"""
+    """Factory creating a UsersVocabulary"""
 
     @property
     def items(self):
@@ -30,7 +30,7 @@ class UsersFactory(BaseUsersFactory):
         if not self.should_search(query=""):
             return
         acl_users = getToolByName(getSite(), "acl_users")
-        userids = set(u.get('id') for u in acl_users.searchUsers())
+        userids = set(u.get("id") for u in acl_users.searchUsers())
 
         for userid in userids:
             user = api.user.get(userid)

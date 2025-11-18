@@ -1,21 +1,21 @@
-""" Controlpanel get service """
+"""Controlpanel get service"""
 
 from zope.security import checkPermission
 from plone.restapi.services.controlpanels.get import (
-    ControlpanelsGet as PloneControlpanelsGet
+    ControlpanelsGet as PloneControlpanelsGet,
 )
 from eea.volto.policy.restapi.services.controlpanel.utils import (
     has_controlpanel_permission,
     get_permission,
-    send_unauthorized
+    send_unauthorized,
 )
 
 
 class ControlpanelsGet(PloneControlpanelsGet):
-    """ Controlpanel get service """
+    """Controlpanel get service"""
 
     def reply(self):
-        """ Reply """
+        """Reply"""
         if self.params:
             return self.reply_panel()
         permission = get_permission("plone.app.controlpanel.Overview")
@@ -25,7 +25,7 @@ class ControlpanelsGet(PloneControlpanelsGet):
         return super().reply()
 
     def reply_panel(self):
-        """ Reply panel """
+        """Reply panel"""
         name = self.params[0]
         panel = self.panel_by_name(name)
 

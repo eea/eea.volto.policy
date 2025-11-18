@@ -3,6 +3,7 @@ Module for migrating image references in Volto blocks to the new
 format. Contains functions to update image references in item,
 teaser, and hero blocks.
 """
+
 import logging
 from urllib.parse import urlparse
 import transaction
@@ -27,7 +28,7 @@ def get_relative_url_path(url: str) -> str:
     if not url:
         return ""
 
-    if 'resolveuid' in url:
+    if "resolveuid" in url:
         # If the URL is already a resolveuid link, return it as is.
         return url
 
@@ -134,11 +135,12 @@ def _migrate_block_images(
         for block in visit_blocks(obj, blocks):
             block_image_field = block.get(image_field) or ""
             if (
-                block.get("@type") in block_types and
-                block_image_field and
-                isinstance(block_image_field, str) and (
-                    item_block_asset_type is None or
-                    block.get("assetType") == item_block_asset_type
+                block.get("@type") in block_types
+                and block_image_field
+                and isinstance(block_image_field, str)
+                and (
+                    item_block_asset_type is None
+                    or block.get("assetType") == item_block_asset_type
                 )
             ):
                 # Check cache first
@@ -152,9 +154,7 @@ def _migrate_block_images(
                     uid = path2uid(context=portal, link=rel_path)
 
                 if not uid:
-                    logger.warning(
-                        "Failed to resolve UID for path: %s", rel_path
-                    )
+                    logger.warning("Failed to resolve UID for path: %s", rel_path)
                     continue
 
                 # Validation with reindex (validate even for cached UIDs)
@@ -164,7 +164,9 @@ def _migrate_block_images(
                     logger.warning(
                         "Skipping migration for %s -> %s: resolveuid %s "
                         "does not resolve to a valid object",
-                        object_url, block_image_field, uid
+                        object_url,
+                        block_image_field,
+                        uid,
                     )
                     skipped_invalid_uids += 1
                     skipped_files.add(obj.absolute_url(1))
@@ -204,7 +206,8 @@ def _migrate_block_images(
         transaction.commit()
         logger.info(
             "Migration completed. Total processed: %d, bad UID skipped: %d",
-            processed, skipped_invalid_uids
+            processed,
+            skipped_invalid_uids,
         )
 
         # Log skipped files

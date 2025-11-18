@@ -1,6 +1,7 @@
 """
 Serializers and Deserializers for the blocks of the EEA
 """
+
 import copy
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
@@ -20,6 +21,7 @@ from eea.volto.policy.restapi.services.contextnavigation.get import (
     eea_extract_data,
     IEEANavigationPortlet,
 )
+
 try:
     from eea.api.versions.browser.relations import EEAVersionsView
 except ImportError:
@@ -42,6 +44,7 @@ class HTMLBlockDeserializerBase:
     """
     HTML block Deserializer for the hrefs and src
     """
+
     order = 9999
     block_type = "html"
 
@@ -84,6 +87,7 @@ class HTMLBlockSerializerBase:
     """
     HTML block Serializer for the hrefs and src
     """
+
     order = 9999
     block_type = "html"
 
@@ -176,11 +180,10 @@ class ContextNavigationBlockSerializationTransformer:
 
     def __call__(self, value):
         if value.get("variation", None) == "report_navigation":
-
             if (
-                "root_node" in value and
-                isinstance(value["root_node"], list) and
-                len(value["root_node"]) > 0
+                "root_node" in value
+                and isinstance(value["root_node"], list)
+                and len(value["root_node"]) > 0
             ):
                 root_nav_item = value["root_node"][0]
                 url = urlparse(root_nav_item.get("@id", ""))
@@ -188,13 +191,9 @@ class ContextNavigationBlockSerializationTransformer:
 
             data = eea_extract_data(IEEANavigationPortlet, value, prefix=None)
 
-            renderer = EEANavigationPortletRenderer(
-                self.context, self.request, data
-            )
+            renderer = EEANavigationPortletRenderer(self.context, self.request, data)
             res = renderer.render()
-            is_data_available = res.get(
-                "available", True
-            )  # or get res[items]?
+            is_data_available = res.get("available", True)  # or get res[items]?
             value["results"] = is_data_available
 
         return value
@@ -215,9 +214,7 @@ class AllVersionBlockSerializationTransformer:
     def __call__(self, value):
         if value.get("@type", None) == "eea_versions":
             all_versions = EEAVersionsView(self.context, self.request)
-            results = (
-                all_versions.newer_versions() or all_versions.older_versions()
-            )
+            results = all_versions.newer_versions() or all_versions.older_versions()
 
             value["results"] = len(results) > 0
         return value
