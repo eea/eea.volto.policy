@@ -142,37 +142,41 @@ def _migrate_block_images(
                 )
             ):
                 # Check cache first
+                uid = None
+                rel_path = get_relative_url_path(block_image_field)
                 if block_image_field in url_to_uid_cache:
                     uid = url_to_uid_cache[block_image_field]
                     logger.info("Using cached UID for %s -> %s -> %s",
                                 object_url, block_image_field, uid)
                 else:
-                    rel_path = get_relative_url_path(block_image_field)
-                    uid = path2uid(context=obj, link=rel_path)
+                    uid = path2uid(context=portal, link=rel_path)
 
-                    if not uid:
-                        logger.warning(
-                            "Failed to resolve UID for path: %s", rel_path
-                        )
-                        continue
+                if not uid:
+                    logger.warning(
+                        "Failed to resolve UID for path: %s", rel_path
+                    )
+                    continue
 
-                    # Validation with reindex
-                    if not _validate_resolveuid(obj, uid, rel_path,
-                                                portal_url,
-                                                reindex_on_fail=True):
-                        logger.warning(
-                            "Skipping migration for %s -> %s: resolveuid %s "
-                            "does not resolve to a valid object",
-                            object_url, block_image_field, uid
-                        )
-                        skipped_invalid_uids += 1
-                        skipped_files.add(obj.absolute_url(1))
-                        continue
+                # Validation with reindex (always validate, even for cached UIDs)
+                if not _validate_resolveuid(obj, uid, rel_path,
+                                            portal_url,
+                                            reindex_on_fail=True):
+                    logger.warning(
+                        "Skipping migration for %s -> %s: resolveuid %s "
+                        "does not resolve to a valid object",
+                        object_url, block_image_field, uid
+                    )
+                    skipped_invalid_uids += 1
+                    skipped_files.add(obj.absolute_url(1))
+                    # Remove invalid UID from cache if present
+                    if block_image_field in url_to_uid_cache:
+                        del url_to_uid_cache[block_image_field]
+                    continue
 
-                    # Cache the successful mapping
-                    url_to_uid_cache[block_image_field] = uid
-                    logger.info("Processing %s -> %s -> %s", object_url,
-                                block_image_field, uid)
+                # Cache the successful mapping
+                url_to_uid_cache[block_image_field] = uid
+                logger.info("Processing %s -> %s -> %s", object_url,
+                            block_image_field, uid)
 
                 block[image_field] = [
                     {
