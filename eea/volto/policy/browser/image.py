@@ -1,5 +1,5 @@
-""" Migrate image references in Volto blocks to the new format.
-"""
+"""Migrate image references in Volto blocks to the new format."""
+
 import json
 import logging
 
@@ -7,6 +7,7 @@ from Products.Five.browser import BrowserView
 
 try:
     from plone import api  # type: ignore
+
     _HAS_API = True
 except Exception:  # pragma: no cover
     _HAS_API = False
@@ -65,8 +66,7 @@ class ImageMigrateContent(BrowserView):
                 status=400,
             )
 
-        block_types = [t.strip()
-                       for t in block_types_param.split(",") if t.strip()]
+        block_types = [t.strip() for t in block_types_param.split(",") if t.strip()]
 
         # Get the portal
         if _HAS_API:

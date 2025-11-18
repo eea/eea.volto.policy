@@ -7,6 +7,7 @@ try:
         TeaserBlockSerializerBase,
         url_to_brain,
     )
+
     HAS_TEASER_BLOCK = True
 except ImportError:
     # Plone 5 doesn't have TeaserBlockSerializerBase

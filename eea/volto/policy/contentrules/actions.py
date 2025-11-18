@@ -1,5 +1,4 @@
-""" EEAContentTypes actions for plone.app.contentrules
-"""
+"""EEAContentTypes actions for plone.app.contentrules"""
 
 import logging
 from AccessControl import SpecialUsers, getSecurityManager
@@ -27,9 +26,7 @@ class SetPublicationDateToNullAction(SimpleItem):
     """Set publication date to null action"""
 
     element = "eea.volto.policy.set_publication_date_to_null"
-    summary = (
-        "I will set publication date to null"
-    )
+    summary = "I will set publication date to null"
 
 
 @implementer(IExecutable)
