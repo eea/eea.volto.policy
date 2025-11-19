@@ -1,6 +1,11 @@
 Changelog
 =========
 
+9.3 - (2025-11-19)
+---------------------------
+* Fix: migration script to handle missing catalog entries for images
+  [ichim-david refs #254622]
+
 9.2 - (2025-11-18)
 ---------------------------
 * Change: Replace Python linting to ruff
