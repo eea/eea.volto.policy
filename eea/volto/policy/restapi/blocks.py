@@ -142,7 +142,7 @@ class SlateBlockSerializer(SlateBlockSerializerBase):
 @implementer(IBlockFieldSerializationTransformer)
 @adapter(IBlocks, IBrowserRequest)
 class RestrictedBlockSerializationTransformer:
-    """Enhanced Restricted Block serialization with allow/deny logic"""
+    """Enhanced Restricted Block serialization with allow or deny logic"""
 
     order = 9999
     block_type = None
