@@ -159,8 +159,9 @@ class RestrictedBlockSerializationTransformer:
         # editors in context can see
         if api.user.has_permission("Modify portal content", obj=self.context):
             return value
-        
-        # First check: User MUST have the manage permission to see any restricted block
+
+        # First check: User MUST have the manage permission to see any
+        # restricted block
         if not api.user.has_permission(
             "EEA: Manage restricted blocks", obj=self.context
         ) and not value.get("deny_view") and not value.get("allow_view"):
@@ -170,62 +171,59 @@ class RestrictedBlockSerializationTransformer:
         current_user = api.user.get_current()
         deny_view = value.get("deny_view", [])
 
-
-        deny_view = value.get("deny_view", [])
-
         if deny_view:
             # If deny_view is set, users in the list can't see
             if self._check_user_access(current_user, deny_view):
                 return {"@type": "empty"}
-        
+
         # Check allow_view permissions
         allow_view = value.get("allow_view", [])
         if allow_view:
             # If allow_view is set, only users in the list can see
             if not self._check_user_access(current_user, allow_view):
-                 return {"@type": "empty"}
+                return {"@type": "empty"}
         return value
 
     def _check_user_access(self, current_user, access_list):
         """
         Check if current user has access based on allow/deny list
-        
+
         Args:
             current_user: Current Plone user object
             access_list: List of users/groups with access permissions
-            
+
         Returns:
             bool: True if user has access, False otherwise
         """
         current_user_id = current_user.getId()
-        
+
         # Get user's groups
         user_groups = api.group.get_groups(user=current_user)
         user_group_ids = [group.getId() for group in user_groups]
-        
+
         for access_item in access_list:
             access_type = access_item.get("type", "")
             access_id = access_item.get("id", "")
-            
+
             if access_type == "user":
-                # For users, check only by ID (which is the primary identifier)
+                # For users, check by ID (the primary identifier)
                 if access_id == current_user_id:
                     return True
-                    
+
             elif access_type == "group":
-                # For groups, check only by ID (which is the primary identifier)
+                # For groups, check by ID (the primary identifier)
                 if access_id in user_group_ids:
                     return True
-        
+
         return False
 
     def _get_user_groups(self, user):
         """
         Helper method to get all groups a user belongs to
-        
+
         Args:
             user: Plone user object
-            
+
         Returns:
             list: List of group IDs the user belongs to
         """
