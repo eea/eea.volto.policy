@@ -11,10 +11,10 @@ def process_image(obj, image_attr):
     """Process an image field if it's an SVG and needs updating."""
     image = getattr(obj, image_attr, None)
     if (
-        image and
-        hasattr(image, "_width") and
-        hasattr(image, "_height") and
-        (image._width < 5 or image._height < 5)  # Skip already upgraded images
+        image
+        and hasattr(image, "_width")
+        and hasattr(image, "_height")
+        and (image._width < 5 or image._height < 5)  # Skip already upgraded images
     ):
         contentType, width, height = getImageInfo(image.data)
         if contentType == "image/svg+xml":
@@ -47,10 +47,7 @@ def upgrade_svgs(portal):
             continue  # Skip object if it cannot be retrieved
 
         # Process both main and preview images
-        updated = (
-                process_image(obj, "image") or
-                process_image(obj, "preview_image")
-        )
+        updated = process_image(obj, "image") or process_image(obj, "preview_image")
         if updated:
             updated_count += 1
 

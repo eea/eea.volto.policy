@@ -1,6 +1,67 @@
 Changelog
 =========
 
+9.4-dev0 - (unreleased)
+---------------------------
+
+9.3 - (2025-11-19)
+---------------------------
+* Fix: migration script to handle missing catalog entries for images
+  [ichim-david refs #254622]
+
+9.2 - (2025-11-18)
+---------------------------
+* Change: Replace Python linting to ruff
+  [mihaidobrescu1111 = refs #286821]
+* Change: Add plone6 tests
+  [mihaidobrescu1111 = refs #293593]
+
+9.1 - (2025-10-24)
+---------------------------
+* Fix: tests for Plone 5
+  [ichim-david - refs #292589]
+
+9.0 - (2025-10-08)
+---------------------------
+* Fix: teaser block serializer to not clear href for non-http urls
+  [ichim-david - refs #292589]
+* Breaking: drop testing for Plone 5 that used plone.restapi 8.x
+  Version 8 was deprecated in 2023
+  [ichim-david - refs #292589]
+
+8.5 - (2025-08-27)
+---------------------------
+* Change: Release
+  [dobri1408]
+
+8.4 - (2025-08-20)
+---------------------------
+* Change: feat: Control Navigation Settings TTW - refs #288509
+  [avoinea]
+
+8.3 - (2025-08-19)
+---------------------------
+* Change: Release
+  [dobri1408]
+
+8.2 - (2025-08-11)
+---------------------------
+* Change: Release with an older python 3 version
+  [valentinab25]
+
+8.1 - (2025-08-04)
+---------------------------
+* Change: fix(upgrade): for images, allowing also to run @@image-migrate script
+  [ichim-david]
+
+8.0 - (2025-07-31)
+-----------------------
+* Create method to update all backend:8080 to resolveuid
+  [dobri1408 - refs #290024]
+* Feature: added migration script for `item`, `teaser` and `hero`
+  to new attachedimage array of object like object_browser widget
+  [ichim-david refs #254622]
+
 7.3 - (2025-05-29)
 ---------------------------
 * Fix: ComponentLookupError eea_breadcrumbs_view

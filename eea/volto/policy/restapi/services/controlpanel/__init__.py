@@ -1,1 +1,1 @@
-""" RestAPI controlpanel services """
+"""RestAPI controlpanel services"""

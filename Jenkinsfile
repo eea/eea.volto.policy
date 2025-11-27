@@ -28,22 +28,34 @@ pipeline {
             }
           },
 
-          "PEP8": {
+          "Ruff": {
             node(label: 'docker') {
               script {
-                sh '''docker run -i --rm --name="$BUILD_TAG-pep8" -e GIT_SRC="https://github.com/eea/$GIT_NAME.git" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/pep8'''
-              }
-            }
-          },
+                if (!(env.BRANCH_NAME != "master" && (env.CHANGE_ID == null || env.CHANGE_ID == ''))) {
+                  return
+                }
+                checkout scm
+                fix_result = sh(script: '''docker run --pull=always --name="$BUILD_TAG-ruff-fix" -e GIT_SRC="https://github.com/eea/$GIT_NAME.git" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/ruff format''', returnStatus: true)
+                sh '''docker cp $BUILD_TAG-ruff-fix:/code/$GIT_NAME .'''
+                sh '''cp -rf eea.volto.policy/* .'''
+                sh '''rm -rf eea.volto.policy'''
+                sh '''docker rm -v $BUILD_TAG-ruff-fix'''
+                FOUND_FIX = sh(script: '''git diff --name-only '*.py' | wc -l''', returnStdout: true).trim()
 
-          "PyLint": {
-            node(label: 'docker') {
-              script {
-                sh '''docker run -i --rm --name="$BUILD_TAG-pylint" -e GIT_SRC="https://github.com/eea/$GIT_NAME.git" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/pylint:py3'''
+                if (FOUND_FIX != '0') {
+                  withCredentials([string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN')]) {
+                    sh '''sed -i "s|url = .*|url = https://eea-jenkins:$GITHUB_TOKEN@github.com/eea/$GIT_NAME.git|" .git/config'''
+                  }
+                  sh '''git fetch origin $GIT_BRANCH:$GIT_BRANCH'''
+                  sh '''git checkout $GIT_BRANCH'''
+                  sh '''git add -- '*.py' '''
+                  sh '''git commit -m "style: Automated code fix" '''
+                  sh '''git push --set-upstream origin $GIT_BRANCH'''
+                  sh '''exit 1'''
+                }
               }
             }
           }
-
         )
       }
     }
@@ -64,9 +76,32 @@ pipeline {
             }
           },
 
-          "PyFlakes": {
+          "Ruff": {
             node(label: 'docker') {
-              sh '''docker run -i --rm --name="$BUILD_TAG-pyflakes" -e GIT_SRC="https://github.com/eea/$GIT_NAME.git" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/pyflakes:py3'''
+              script {
+                if (!(env.BRANCH_NAME != "master" && (env.CHANGE_ID == null || env.CHANGE_ID == ''))) {
+                  return
+                }
+                checkout scm
+                fix_result = sh(script: '''docker run --pull=always --name="$BUILD_TAG-ruff-fix" -e GIT_SRC="https://github.com/eea/$GIT_NAME.git" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/ruff check''', returnStatus: true)
+                sh '''docker cp $BUILD_TAG-ruff-fix:/code/$GIT_NAME .'''
+                sh '''cp -rf eea.volto.policy/* .'''
+                sh '''rm -rf eea.volto.policy'''
+                sh '''docker rm -v $BUILD_TAG-ruff-fix'''
+                FOUND_FIX = sh(script: '''git diff --name-only '*.py' | wc -l''', returnStdout: true).trim()
+
+                if (FOUND_FIX != '0') {
+                  withCredentials([string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN')]) {
+                    sh '''sed -i "s|url = .*|url = https://eea-jenkins:$GITHUB_TOKEN@github.com/eea/$GIT_NAME.git|" .git/config'''
+                  }
+                  sh '''git fetch origin $GIT_BRANCH:$GIT_BRANCH'''
+                  sh '''git checkout $GIT_BRANCH'''
+                  sh '''git add -- '*.py' '''
+                  sh '''git commit -m "lint: Automated code fix" '''
+                  sh '''git push --set-upstream origin $GIT_BRANCH'''
+                  sh '''exit 1'''
+                }
+              }
             }
           },
 
@@ -82,55 +117,14 @@ pipeline {
     stage('Tests') {
       steps {
         parallel(
-/*
-          "WWW": {
+          "Plone6 & Python3": {
             node(label: 'docker') {
-              script {
-                try {
-                  sh '''docker run -i --name="$BUILD_TAG-www" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/www-devel /debug.sh coverage'''
-                  sh '''mkdir -p xunit-reports; docker cp $BUILD_TAG-www:/plone/instance/parts/xmltestreport/testreports/. xunit-reports/'''
-                  stash name: "xunit-reports", includes: "xunit-reports/*.xml"
-                  sh '''docker cp $BUILD_TAG-www:/plone/instance/src/$GIT_NAME/coverage.xml coverage.xml'''
-                  stash name: "coverage.xml", includes: "coverage.xml"
-                } finally {
-                  sh '''docker rm -v $BUILD_TAG-www'''
-                }
-                junit 'xunit-reports/*.xml'
-              }
+              sh '''docker run --pull="always" -i --name="$BUILD_TAG-tests" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e DEVELOP="src/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plone-test:6'''
+              sh '''docker cp $BUILD_TAG-tests:/app/coverage ./coverage'''
+              sh '''docker rm -v $BUILD_TAG-tests'''
+              stash includes: 'coverage/**', name: 'coverage'
             }
-          },
-
-
-          "KGS": {
-            node(label: 'docker') {
-              sh '''docker run -i --rm --name="$BUILD_TAG-kgs" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/kgs-devel /debug.sh bin/test --test-path /plone/instance/src/$GIT_NAME -v -vv -s $GIT_NAME'''
-            }
-          },
-*/ /*
-          "Plone4": {
-            node(label: 'docker') {
-              sh '''docker run -i --rm --name="$BUILD_TAG-plone4" -e GIT_BRANCH="$BRANCH_NAME" -e ADDONS="$GIT_NAME" -e DEVELOP="src/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plone-test:4 -v -vv -s $GIT_NAME'''
-            }
-          },
-
-          "Plone5 & Python2": {
-            node(label: 'docker') {
-              sh '''docker run -i --rm --name="$BUILD_TAG-plone5" -e GIT_BRANCH="$BRANCH_NAME" -e ADDONS="$GIT_NAME" -e DEVELOP="src/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plone-test:5 -v -vv -s $GIT_NAME'''
-            }
-          },
-*/
-          "Plone5 & Python3": {
-            node(label: 'docker') {
-              sh '''docker pull eeacms/plone-test:5-python3'''
-              sh '''docker run -i --rm --name="$BUILD_TAG-python3" -e GIT_BRANCH="$BRANCH_NAME" -e ADDONS="$GIT_NAME" -e DEVELOP="src/$GIT_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plone-test:5-python3 -v -vv -s $GIT_NAME'''
-            }
-          },  
-
-//          "PloneSaaS": {
-//            node(label: 'docker') {
-//              sh '''docker pull eeacms/plonesaas-devel; docker run -i --rm --name="$BUILD_TAG-plonesaas" -e GIT_NAME="$GIT_NAME" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" eeacms/plonesaas-devel /debug.sh bin/test --test-path /plone/instance/src/$GIT_NAME -v -vv -s $GIT_NAME'''
-//            }
-//          }
+          }
         )
       }
     }
@@ -143,13 +137,18 @@ pipeline {
       }
       steps {
         node(label: 'swarm') {
-          script{
+          script {
             checkout scm
+            unstash 'coverage'
+            junit 'coverage/junit-results/testreports/*.xml'
             def scannerHome = tool 'SonarQubeScanner';
             def nodeJS = tool 'NodeJS11';
+            sh "sed -i 's|<source>/app</source>|<source>.</source>|g' coverage/coverage.xml"
+            sh "sed -i \"s|filename=\\\"src/$GIT_NAME/|filename=\\\"|g\" coverage/coverage.xml"
+            sh "sed -i \"s|package name=\\\"src\\.$GIT_NAME|package name=\\\"|g\" coverage/coverage.xml"
             withSonarQubeEnv('Sonarqube') {
-                sh "export PATH=$PATH:${scannerHome}/bin:${nodeJS}/bin; sonar-scanner -Dsonar.python.xunit.skipDetails=true -Dsonar.sources=./eea -Dsonar.projectKey=$GIT_NAME-$BRANCH_NAME -Dsonar.projectVersion=$BRANCH_NAME-$BUILD_NUMBER"
-                sh '''try=2; while [ \$try -gt 0 ]; do curl -s -XPOST -u "${SONAR_AUTH_TOKEN}:" "${SONAR_HOST_URL}api/project_tags/set?project=${GIT_NAME}-${BRANCH_NAME}&tags=${SONARQUBE_TAGS},${BRANCH_NAME}" > set_tags_result; if [ \$(grep -ic error set_tags_result ) -eq 0 ]; then try=0; else cat set_tags_result; echo "... Will retry"; sleep 60; try=\$(( \$try - 1 )); fi; done'''
+              sh "export PATH=$PATH:${scannerHome}/bin:${nodeJS}/bin; sonar-scanner -Dsonar.python.xunit.skipDetails=true -Dsonar.python.xunit.reportPath=coverage/junit-results/testreports/*.xml -Dsonar.python.coverage.reportPaths=coverage/coverage.xml -Dsonar.sources=./eea -Dsonar.exclusions=**/tests/**,**/setup.py -Dsonar.projectKey=$GIT_NAME-$BRANCH_NAME -Dsonar.projectVersion=$BRANCH_NAME-$BUILD_NUMBER"
+              sh '''try=2; while [ \$try -gt 0 ]; do curl -s -XPOST -u "${SONAR_AUTH_TOKEN}:" "${SONAR_HOST_URL}api/project_tags/set?project=${GIT_NAME}-${BRANCH_NAME}&tags=${SONARQUBE_TAGS},${BRANCH_NAME}" > set_tags_result; if [ \$(grep -ic error set_tags_result ) -eq 0 ]; then try=0; else cat set_tags_result; echo "... Will retry"; sleep 60; try=\$(( \$try - 1 )); fi; done'''
             }
           }
         }
@@ -170,6 +169,7 @@ pipeline {
                 error "Pipeline aborted due to PR not made from develop or hotfix branch"
             }
            withCredentials([string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN')]) {
+            sh '''docker pull eeacms/gitflow'''
             sh '''docker run -i --rm --name="$BUILD_TAG-gitflow-pr" -e GIT_CHANGE_BRANCH="$CHANGE_BRANCH" -e GIT_CHANGE_AUTHOR="$CHANGE_AUTHOR" -e GIT_CHANGE_TITLE="$CHANGE_TITLE" -e GIT_TOKEN="$GITHUB_TOKEN" -e GIT_BRANCH="$BRANCH_NAME" -e GIT_CHANGE_ID="$CHANGE_ID" -e GIT_ORG="$GIT_ORG" -e GIT_NAME="$GIT_NAME" eeacms/gitflow'''
            }
           }
@@ -187,6 +187,7 @@ pipeline {
       steps {
         node(label: 'docker') {
           withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'eea-jenkins', usernameVariable: 'EGGREPO_USERNAME', passwordVariable: 'EGGREPO_PASSWORD'],string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN'),[$class: 'UsernamePasswordMultiBinding', credentialsId: 'pypi-jenkins', usernameVariable: 'PYPI_USERNAME', passwordVariable: 'PYPI_PASSWORD']]) {
+            sh '''docker pull eeacms/gitflow'''
             sh '''docker run -i --rm --name="$BUILD_TAG-gitflow-master" -e GIT_BRANCH="$BRANCH_NAME" -e EGGREPO_USERNAME="$EGGREPO_USERNAME" -e EGGREPO_PASSWORD="$EGGREPO_PASSWORD" -e GIT_NAME="$GIT_NAME"  -e PYPI_USERNAME="$PYPI_USERNAME"  -e PYPI_PASSWORD="$PYPI_PASSWORD" -e GIT_ORG="$GIT_ORG" -e GIT_TOKEN="$GITHUB_TOKEN" eeacms/gitflow'''
           }
         }

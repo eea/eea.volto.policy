@@ -23,4 +23,10 @@
   <records interface="plone.restapi.bbb.INavigationSchema"
            prefix="plone"
   />
+  <records interface="eea.volto.policy.interfaces.IInternalApiPathSettings"
+           prefix="eea.volto.policy.internal_api_path"
+  />
+  <records interface="eea.volto.policy.interfaces.IInternalApiPathBatchSettings"
+          prefix="eea.volto.policy.last_batch"
+  />
 </registry>
