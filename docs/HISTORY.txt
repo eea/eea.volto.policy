@@ -1,6 +1,11 @@
 Changelog
 =========
 
+10.0 - (2025-12-03)
+---------------------------
+* Feature: Enhance restricted blocks serialization by two new fields: `allow_view` and `deny_view`
+  [dobri1408 - refs #294358]
+
 9.3 - (2025-11-19)
 ---------------------------
 * Fix: migration script to handle missing catalog entries for images
