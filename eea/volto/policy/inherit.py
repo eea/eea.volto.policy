@@ -25,7 +25,7 @@ def get_inheritable_fields():
         settings = registry.forInterface(
             IInheritableFieldsSettings,
             prefix="eea.volto.policy.inheritable_fields",
-            check=False
+            check=False,
         )
         return settings.inheritable_fields or []
     except (KeyError, ComponentLookupError):

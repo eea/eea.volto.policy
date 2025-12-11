@@ -33,12 +33,11 @@ from eea.volto.policy.image_scales.interfaces import (
 
 # Plone 6 imports
 try:
-    from plone.namedfile.adapters import (
-        ImageFieldScales as PloneImageFieldScales
-    )
+    from plone.namedfile.adapters import ImageFieldScales as PloneImageFieldScales
     from plone.base.interfaces import (
-        IImageScalesFieldAdapter as IPlone6ImageScalesFieldAdapter
+        IImageScalesFieldAdapter as IPlone6ImageScalesFieldAdapter,
     )
+
     HAS_PLONE6 = True
 except ImportError:
     PloneImageFieldScales = object
@@ -49,6 +48,7 @@ except ImportError:
 # =============================================================================
 # Plone 5: Full implementation
 # =============================================================================
+
 
 @implementer(IImageScalesAdapter)
 @adapter(IDexterityContent, Interface)
@@ -120,8 +120,7 @@ class ImageFieldScales:
 
         # Check inheritance if no local image
         if not image and field_name in get_inheritable_fields():
-            image, source_obj = get_inherited_field_value(
-                self.context, field_name)
+            image, source_obj = get_inherited_field_value(self.context, field_name)
 
         if not image:
             return None
@@ -213,7 +212,7 @@ class ImageFieldScales:
 
     def _scale_view_from_url(self, url):
         """Strip context URL to get relative scale path."""
-        context = getattr(self, '_images_context', self.context)
+        context = getattr(self, "_images_context", self.context)
         return url.replace(context.absolute_url(), "").lstrip("/")
 
 
@@ -222,6 +221,7 @@ class ImageFieldScales:
 # =============================================================================
 
 if HAS_PLONE6:
+
     @implementer(IPlone6ImageScalesFieldAdapter)
     @adapter(INamedImageField, IDexterityContent, Interface)
     class EEAImageFieldScales(PloneImageFieldScales):

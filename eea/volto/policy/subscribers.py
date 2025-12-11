@@ -26,7 +26,7 @@ def get_modified_field_names(event):
         if IAttributes.providedBy(desc):
             for attr in desc.attributes or []:
                 # Strip interface prefix if present (e.g., 'IPreview.preview_image' -> 'preview_image')
-                field_name = attr.split('.')[-1] if '.' in attr else attr
+                field_name = attr.split(".")[-1] if "." in attr else attr
                 modified.add(field_name)
     return modified
 
@@ -38,12 +38,10 @@ def reindex_inheriting_descendants(obj, field_names):
     Only reindexes objects that don't have their own value for at least
     one of the fields, meaning they would inherit from this object.
     """
-    catalog = api.portal.get_tool('portal_catalog')
-    path = '/'.join(obj.getPhysicalPath())
+    catalog = api.portal.get_tool("portal_catalog")
+    path = "/".join(obj.getPhysicalPath())
 
-    brains = catalog.unrestrictedSearchResults(
-        path={'query': path, 'depth': -1}
-    )
+    brains = catalog.unrestrictedSearchResults(path={"query": path, "depth": -1})
 
     reindexed = 0
     for brain in brains:
@@ -72,7 +70,9 @@ def reindex_inheriting_descendants(obj, field_names):
     if reindexed:
         logger.info(
             "Reindexed %d descendants of %s (inheritable fields changed: %s)",
-            reindexed, path, ', '.join(field_names)
+            reindexed,
+            path,
+            ", ".join(field_names),
         )
 
 
@@ -100,8 +100,7 @@ def on_content_modified(obj, event):
     else:
         # No descriptions - check all inheritable fields that have values
         fields_to_check = {
-            name for name in inheritable_fields
-            if getattr(aq_base(obj), name, None)
+            name for name in inheritable_fields if getattr(aq_base(obj), name, None)
         }
 
     if not fields_to_check:
@@ -109,8 +108,7 @@ def on_content_modified(obj, event):
 
     # Filter to fields that actually have values on this object
     fields_with_values = {
-        name for name in fields_to_check
-        if getattr(aq_base(obj), name, None)
+        name for name in fields_to_check if getattr(aq_base(obj), name, None)
     }
 
     if fields_with_values:

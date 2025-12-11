@@ -18,9 +18,9 @@ class IInternalApiPathSettings(Interface):
         title="URLs to Replace",
         description="List of URLs that should be replaced with resolveuid references",
         value_type=schema.TextLine(),
-        default=["http://localhost:8080", "http://backend:8080",
-                 "http://backend:6081"],
-        required=False,)
+        default=["http://localhost:8080", "http://backend:8080", "http://backend:6081"],
+        required=False,
+    )
 
 
 class IInternalApiPathBatchSettings(Interface):

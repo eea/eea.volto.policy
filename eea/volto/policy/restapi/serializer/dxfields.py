@@ -31,6 +31,7 @@ except ImportError:
 
 # Generic inheritance-aware serializers
 
+
 @implementer(IFieldSerializer)
 @adapter(INamedImageField, IDexterityContent, IEeaVoltoPolicyLayer)
 class InheritableImageFieldSerializer(ImageFieldSerializer):
@@ -112,6 +113,7 @@ class InheritableFieldSerializer(DefaultFieldSerializer):
 
 
 # Other serializers
+
 
 @adapter(IDatetime, IDexterityContent, IEeaVoltoPolicyLayer)
 @implementer(IFieldSerializer)
