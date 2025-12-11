@@ -3,7 +3,7 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     >
 
-  <!-- indexer -->
+  <!-- Plone 5: Full image_scales support (indexer + adapters) -->
   <adapter
       factory=".indexer.image_scales"
       name="image_scales"

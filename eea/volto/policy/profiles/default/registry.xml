@@ -29,4 +29,7 @@
   <records interface="eea.volto.policy.interfaces.IInternalApiPathBatchSettings"
           prefix="eea.volto.policy.last_batch"
   />
+  <records interface="eea.volto.policy.interfaces.IInheritableFieldsSettings"
+          prefix="eea.volto.policy.inheritable_fields"
+  />
 </registry>

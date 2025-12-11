@@ -17,4 +17,9 @@
     name="plone.app.vocabularies.Users"
     />
 
+  <!-- Plone 6: Override ImageFieldScales to add inheritance support -->
+  <configure zcml:condition="installed Products.CMFPlone.image_scales">
+    <adapter factory=".image_scales.adapters.EEAImageFieldScales" />
+  </configure>
+
 </configure>

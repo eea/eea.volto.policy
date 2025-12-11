@@ -22,4 +22,11 @@
     <include package=".image_scales" />
   </configure>
 
+  <!-- Reindex descendants when inheritable fields change -->
+  <subscriber
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler=".subscribers.on_content_modified"
+      />
+
 </configure>
