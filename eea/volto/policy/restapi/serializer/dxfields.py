@@ -40,6 +40,7 @@ class InheritableFieldSerializer(InheritableMixin, DefaultFieldSerializer):
     Generic field serializer with inheritance support.
     """
 
+
 # Other serializers
 
 

@@ -79,12 +79,11 @@ class InheritableMixin:
         for base in self.__class__.__bases__:
             if base is not InheritableMixin:
                 return base
-        raise TypeError(
-            "InheritableMixin must be used with a serializer base class")
+        raise TypeError("InheritableMixin must be used with a serializer base class")
 
     def _is_inheritable_field(self, field_name):
         """Check if field is inheritable, with request-level caching."""
-        cache = getattr(self.request, '_v_inheritable_fields', None)
+        cache = getattr(self.request, "_v_inheritable_fields", None)
         if cache is None:
             cache = set(get_inheritable_fields())
             self.request._v_inheritable_fields = cache
@@ -106,6 +105,4 @@ class InheritableMixin:
             return super().__call__()
 
         # Use base serializer with inherited context
-        return self._base_serializer_class(
-            self.field, source_obj, self.request
-        )()
+        return self._base_serializer_class(self.field, source_obj, self.request)()
