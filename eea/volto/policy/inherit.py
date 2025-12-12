@@ -68,3 +68,44 @@ def get_inherited_field_value(context, field_name):
                     return (value, None if is_local else obj)
 
     return (None, None)
+
+
+class InheritableMixin:
+    """Mixin that adds field inheritance support to any serializer."""
+
+    @property
+    def _base_serializer_class(self):
+        """Get the base serializer class (the non-mixin parent)."""
+        for base in self.__class__.__bases__:
+            if base is not InheritableMixin:
+                return base
+        raise TypeError(
+            "InheritableMixin must be used with a serializer base class")
+
+    def _is_inheritable_field(self, field_name):
+        """Check if field is inheritable, with request-level caching."""
+        cache = getattr(self.request, '_v_inheritable_fields', None)
+        if cache is None:
+            cache = set(get_inheritable_fields())
+            self.request._v_inheritable_fields = cache
+        return field_name in cache
+
+    def __call__(self):
+        # Check for local value first
+        if self.field.get(self.context):
+            return super().__call__()
+
+        # No local value - check if field is inheritable
+        field_name = self.field.__name__
+        if not self._is_inheritable_field(field_name):
+            return super().__call__()
+
+        # Get inherited value
+        value, source_obj = get_inherited_field_value(self.context, field_name)
+        if not value or source_obj is None:
+            return super().__call__()
+
+        # Use base serializer with inherited context
+        return self._base_serializer_class(
+            self.field, source_obj, self.request
+        )()
