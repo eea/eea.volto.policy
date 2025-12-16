@@ -33,9 +33,7 @@ from eea.volto.policy.image_scales.interfaces import (
 
 # Plone 6 imports
 try:
-    from plone.namedfile.adapters import (
-        ImageFieldScales as PloneImageFieldScales
-    )
+    from plone.namedfile.adapters import ImageFieldScales as PloneImageFieldScales
     from plone.base.interfaces import (
         IImageScalesFieldAdapter as IPlone6ImageScalesFieldAdapter,
     )
@@ -50,6 +48,7 @@ except ImportError:
 # =============================================================================
 # Plone 5: Full implementation
 # =============================================================================
+
 
 def _split_scale_info(allowed_size):
     """
