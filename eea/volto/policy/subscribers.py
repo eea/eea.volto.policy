@@ -25,7 +25,8 @@ def get_modified_field_names(event):
     for desc in event.descriptions or []:
         if IAttributes.providedBy(desc):
             for attr in desc.attributes or []:
-                # Strip interface prefix if present (e.g., 'IPreview.preview_image' -> 'preview_image')
+                # Strip interface prefix if present
+                # (e.g., 'IPreview.preview_image' -> 'preview_image')
                 field_name = attr.split(".")[-1] if "." in attr else attr
                 modified.add(field_name)
     return modified
@@ -41,7 +42,8 @@ def reindex_inheriting_descendants(obj, field_names):
     catalog = api.portal.get_tool("portal_catalog")
     path = "/".join(obj.getPhysicalPath())
 
-    brains = catalog.unrestrictedSearchResults(path={"query": path, "depth": -1})
+    brains = catalog.unrestrictedSearchResults(
+        path={"query": path, "depth": -1})
 
     reindexed = 0
     for brain in brains:
@@ -99,9 +101,7 @@ def on_content_modified(obj, event):
         fields_to_check = modified_fields & set(inheritable_fields)
     else:
         # No descriptions - check all inheritable fields that have values
-        fields_to_check = {
-            name for name in inheritable_fields if getattr(aq_base(obj), name, None)
-        }
+        fields_to_check = set(inheritable_fields)
 
     if not fields_to_check:
         return

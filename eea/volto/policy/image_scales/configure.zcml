@@ -3,14 +3,16 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     >
 
-  <!-- Plone 5: Full image_scales support (indexer + adapters) -->
-  <adapter
-      factory=".indexer.image_scales"
-      name="image_scales"
-      />
+  <configure zcml:condition="not-installed Products.CMFPlone.image_scales">
+    <!-- Plone 5: Full image_scales support (indexer + adapters) -->
+    <adapter
+        factory=".indexer.image_scales"
+        name="image_scales"
+        />
 
-  <!-- adapters -->
-  <adapter factory=".adapters.ImageScales" />
-  <adapter factory=".adapters.ImageFieldScales" />
+    <!-- adapters -->
+    <adapter factory=".adapters.ImageScales" />
+    <adapter factory=".adapters.ImageFieldScales" />
+  </configure>
 
 </configure>

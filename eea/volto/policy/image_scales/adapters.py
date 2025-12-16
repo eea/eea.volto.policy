@@ -33,7 +33,9 @@ from eea.volto.policy.image_scales.interfaces import (
 
 # Plone 6 imports
 try:
-    from plone.namedfile.adapters import ImageFieldScales as PloneImageFieldScales
+    from plone.namedfile.adapters import (
+        ImageFieldScales as PloneImageFieldScales
+    )
     from plone.base.interfaces import (
         IImageScalesFieldAdapter as IPlone6ImageScalesFieldAdapter,
     )
@@ -48,6 +50,26 @@ except ImportError:
 # =============================================================================
 # Plone 5: Full implementation
 # =============================================================================
+
+def _split_scale_info(allowed_size):
+    """
+    get desired attr(name,width,height) from scale names
+    """
+    name, dims = allowed_size.split(" ")
+    width, height = list(map(int, dims.split(":")))
+    return name, width, height
+
+
+def _get_scale_infos():
+    """Returns list of (name, width, height) of the available image scales."""
+    if IImagingSchema is None:
+        return []
+    registry = getUtility(IRegistry)
+    imaging_settings = registry.forInterface(
+        IImagingSchema, prefix="plone", omit=("picture_variants")
+    )
+    allowed_sizes = imaging_settings.allowed_sizes
+    return [_split_scale_info(size) for size in allowed_sizes]
 
 
 @implementer(IImageScalesAdapter)
@@ -77,27 +99,6 @@ class ImageScales:
         return res
 
 
-def _split_scale_info(allowed_size):
-    """
-    get desired attr(name,width,height) from scale names
-    """
-    name, dims = allowed_size.split(" ")
-    width, height = list(map(int, dims.split(":")))
-    return name, width, height
-
-
-def _get_scale_infos():
-    """Returns list of (name, width, height) of the available image scales."""
-    if IImagingSchema is None:
-        return []
-    registry = getUtility(IRegistry)
-    imaging_settings = registry.forInterface(
-        IImagingSchema, prefix="plone", omit=("picture_variants")
-    )
-    allowed_sizes = imaging_settings.allowed_sizes
-    return [_split_scale_info(size) for size in allowed_sizes]
-
-
 @implementer(IPlone5ImageScalesFieldAdapter)
 @adapter(INamedImageField, IDexterityContent, Interface)
 class ImageFieldScales:
@@ -120,7 +121,10 @@ class ImageFieldScales:
 
         # Check inheritance if no local image
         if not image and field_name in get_inheritable_fields():
-            image, source_obj = get_inherited_field_value(self.context, field_name)
+            image, source_obj = get_inherited_field_value(
+                self.context,
+                field_name,
+            )
 
         if not image:
             return None
@@ -138,6 +142,7 @@ class ImageFieldScales:
             return None
 
         self._images_context = images_context
+        self._inherited = True if source_obj else False
         width, height = image.getImageSize()
         url = self.get_original_image_url(field_name, width, height)
         scales = self.get_scales(self.field, width, height)
@@ -213,6 +218,8 @@ class ImageFieldScales:
     def _scale_view_from_url(self, url):
         """Strip context URL to get relative scale path."""
         context = getattr(self, "_images_context", self.context)
+        if self._inherited:
+            return url
         return url.replace(context.absolute_url(), "").lstrip("/")
 
 
