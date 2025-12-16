@@ -42,6 +42,14 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="to_101"
+      title="eea.volto.policy to 101"
+      directory="profiles/to_101"
+      description="Upgrade profile to 10.1 for inheritable fields registry settings."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <utility
       factory=".setuphandlers.HiddenProfiles"
       name="eea.volto.policy-hiddenprofiles"
