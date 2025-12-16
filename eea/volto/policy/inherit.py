@@ -127,9 +127,9 @@ def indexer_with_inheritance(indexer, obj, field_names, validator=None):
     for field_name in field_names:
         if field_name not in inheritable_fields:
             continue
-        value, source_obj = get_inherited_field_value(obj, field_name)
+        field_value, source_obj = get_inherited_field_value(obj, field_name)
         if source_obj:
-            if validator and not validator(field_name, value):
+            if validator and not validator(field_name, field_value):
                 continue
             v = None
             try:

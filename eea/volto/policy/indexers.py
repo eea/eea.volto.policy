@@ -12,6 +12,7 @@ try:
     from plone.volto.behaviors.preview import IPreview
 except ImportError:
     plone_image_field_indexer = None
+    ploneHasPreviewImage = None
     IPreview = Interface
 
 
