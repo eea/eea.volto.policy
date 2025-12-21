@@ -5,7 +5,7 @@ from zope.interface import Interface
 from eea.volto.policy.inherit import indexer_with_inheritance
 
 try:
-    from plone.volto.indexers import (
+    from plone.volto.indexers.indexers import (
         image_field_indexer as plone_image_field_indexer,
         hasPreviewImage as ploneHasPreviewImage,
     )

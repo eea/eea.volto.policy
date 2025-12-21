@@ -43,10 +43,10 @@
       />
 
   <genericsetup:registerProfile
-      name="to_101"
-      title="eea.volto.policy to 101"
-      directory="profiles/to_101"
-      description="Upgrade profile to 10.1 for inheritable fields registry settings."
+      name="to_110"
+      title="eea.volto.policy to 110"
+      directory="profiles/to_110"
+      description="Upgrade profile to 11.0 for inheritable fields registry settings."
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 

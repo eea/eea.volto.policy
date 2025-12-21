@@ -124,13 +124,13 @@
 
   <genericsetup:upgradeSteps
       source="8.3"
-      destination="10.1"
+      destination="11.0"
       profile="eea.volto.policy:default">
 
     <genericsetup:upgradeDepends
         title="Add registry record for IInheritableFieldsSettings"
         description="Adds the inheritable fields settings to registry."
-        import_profile="eea.volto.policy:to_101"
+        import_profile="eea.volto.policy:to_110"
         />
   </genericsetup:upgradeSteps>
 </configure>
