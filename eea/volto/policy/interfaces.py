@@ -35,8 +35,31 @@ class IInternalApiPathBatchSettings(Interface):
     )
 
 
+class IInheritableFieldsSettings(Interface):
+    """Settings for fields that support inheritance from ancestors."""
+
+    fields = schema.List(
+        title="Inheritable Fields",
+        description="List of field names that can be inherited from "
+        "ancestor objects when not set on the current object.",
+        value_type=schema.TextLine(),
+        default=["preview_image", "preview_caption"],
+        required=False,
+    )
+
+    reindex_fields = schema.List(
+        title="Inheritable fields to Reindex",
+        description="List of field names that should trigger reindexing "
+        "when inherited from ancestors.",
+        value_type=schema.TextLine(),
+        default=[],
+        required=False,
+    )
+
+
 __all__ = [
     IVoltoSettings.__name__,
     "IInternalApiPathSettings",
     "IInternalApiPathBatchSettings",
+    "IInheritableFieldsSettings",
 ]
