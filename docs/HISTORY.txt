@@ -1,6 +1,11 @@
 Changelog
 =========
 
+11.0 - (2025-12-21)
+---------------------------
+* Feature: Inheritable fields, for example inherit preview_image from parent if context doesn't have a preview_image
+  [razvanMiu - refs #295495]
+
 10.0 - (2025-12-03)
 ---------------------------
 * Feature: Enhance restricted blocks serialization by two new fields: `allow_view` and `deny_view`
