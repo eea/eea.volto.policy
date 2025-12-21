@@ -42,8 +42,7 @@ def reindex_inheriting_descendants(obj, field_names):
     catalog = api.portal.get_tool("portal_catalog")
     path = "/".join(obj.getPhysicalPath())
 
-    brains = catalog.unrestrictedSearchResults(
-        path={"query": path, "depth": -1})
+    brains = catalog.unrestrictedSearchResults(path={"query": path, "depth": -1})
 
     reindexed = 0
     for brain in brains:
