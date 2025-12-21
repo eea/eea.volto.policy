@@ -10,7 +10,7 @@ from plone import api
 from plone.dexterity.interfaces import IDexterityContent
 from zope.lifecycleevent.interfaces import IAttributes
 
-from eea.volto.policy.inherit import get_inheritable_fields
+from eea.volto.policy.inherit import get_reindex_fields
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,8 @@ def reindex_inheriting_descendants(obj, field_names):
     catalog = api.portal.get_tool("portal_catalog")
     path = "/".join(obj.getPhysicalPath())
 
-    brains = catalog.unrestrictedSearchResults(path={"query": path, "depth": -1})
+    brains = catalog.unrestrictedSearchResults(
+        path={"query": path, "depth": -1})
 
     reindexed = 0
     for brain in brains:
@@ -88,7 +89,7 @@ def on_content_modified(obj, event):
     if not IDexterityContent.providedBy(obj):
         return
 
-    inheritable_fields = get_inheritable_fields()
+    inheritable_fields = get_reindex_fields()
     if not inheritable_fields:
         return
 

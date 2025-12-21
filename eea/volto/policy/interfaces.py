@@ -18,9 +18,9 @@ class IInternalApiPathSettings(Interface):
         title="URLs to Replace",
         description="List of URLs that should be replaced with resolveuid references",
         value_type=schema.TextLine(),
-        default=["http://localhost:8080", "http://backend:8080", "http://backend:6081"],
-        required=False,
-    )
+        default=["http://localhost:8080", "http://backend:8080",
+                 "http://backend:6081"],
+        required=False,)
 
 
 class IInternalApiPathBatchSettings(Interface):
@@ -38,7 +38,7 @@ class IInternalApiPathBatchSettings(Interface):
 class IInheritableFieldsSettings(Interface):
     """Settings for fields that support inheritance from ancestors."""
 
-    inheritable_fields = schema.List(
+    fields = schema.List(
         title="Inheritable Fields",
         description="List of field names that can be inherited from "
         "ancestor objects when not set on the current object.",
@@ -46,6 +46,14 @@ class IInheritableFieldsSettings(Interface):
         default=["preview_image", "preview_caption"],
         required=False,
     )
+
+    reindex_fields = schema.List(
+        title="Inheritable fields to Reindex",
+        description="List of field names that should trigger reindexing "
+                    "when inherited from ancestors.",
+        value_type=schema.TextLine(),
+        default=[],
+        required=False,)
 
 
 __all__ = [

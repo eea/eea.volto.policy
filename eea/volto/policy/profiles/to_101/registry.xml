@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <registry>
   <records interface="eea.volto.policy.interfaces.IInheritableFieldsSettings"
-          prefix="eea.volto.policy.inheritable_fields"
+          prefix="eea.volto.policy.inherit"
   />
 </registry>
