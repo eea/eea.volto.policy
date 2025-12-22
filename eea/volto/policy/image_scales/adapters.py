@@ -21,6 +21,9 @@ from zope.interface import Interface
 from zope.interface.interfaces import ComponentLookupError
 from zope.schema import getFields
 
+from urllib.parse import urlparse
+import os
+
 from eea.volto.policy.inherit import (
     get_inheritable_fields,
     get_inherited_field_value,
@@ -216,10 +219,43 @@ class ImageFieldScales:
 
     def _scale_view_from_url(self, url):
         """Strip context URL to get relative scale path."""
-        context = getattr(self, "_images_context", self.context)
-        if self._inherited:
-            return url
-        return url.replace(context.absolute_url(), "").lstrip("/")
+        # Use urlparse to extract just the path component from the URL
+        parsed_url = urlparse(url)
+        path = parsed_url.path or url
+
+        # Extract just the @@images/... portion from the URL
+        if '@@images' in path:
+            images_start = path.find('@@images')
+            images_suffix = path[images_start:]
+
+            # Get the parent context (where the image is stored)
+            parent_context = getattr(self, "_images_context", self.context)
+
+            # If it's the same context, just return the images suffix
+            if self.context == parent_context:
+                return images_suffix
+
+            # Use getPhysicalPath to get the physical paths
+            child_path = "/".join(self.context.getPhysicalPath())
+            parent_path = "/".join(parent_context.getPhysicalPath())
+
+            # Calculate relative path from child to parent
+            relative_parent = os.path.relpath(parent_path, child_path)
+
+            # Ensure relative_parent doesn't start with './'
+            if relative_parent == '.':
+                return images_suffix
+            elif relative_parent.startswith('./'):
+                relative_parent = relative_parent[2:]
+
+            # Combine relative path with images suffix
+            if relative_parent:
+                return f"{relative_parent}/{images_suffix}"
+            else:
+                return images_suffix
+
+        # Fallback: if no @@images found, return the path as is
+        return path.lstrip("/")
 
 
 # =============================================================================
