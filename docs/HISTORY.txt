@@ -1,6 +1,11 @@
 Changelog
 =========
 
+11.1 - (2025-12-22)
+---------------------------
+* Fix: Handle NoInteraction during inherited field lookup in indexing
+  [avoinea - refs #295495]
+
 11.0 - (2025-12-21)
 ---------------------------
 * Feature: Inheritable fields, for example inherit preview_image from parent if context doesn't have a preview_image

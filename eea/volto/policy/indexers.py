@@ -22,12 +22,18 @@ def hasPreviewImage(obj):
     Indexer for knowing in a catalog search if a content with the IPreview
     behavior has a preview_image
     """
+    if not ploneHasPreviewImage:
+        return False
     return indexer_with_inheritance(ploneHasPreviewImage, obj, ["preview_image"])
 
 
 @indexer(IDexterityContent)
 def image_field_indexer(obj):
     """Indexer for knowing in a catalog search if a content has any image."""
+    if not plone_image_field_indexer:
+        return False
     return indexer_with_inheritance(
-        plone_image_field_indexer, obj, ["preview_image_link", "preview_image", "image"]
+        plone_image_field_indexer,
+        obj,
+        ["preview_image_link", "preview_image", "image"],
     )

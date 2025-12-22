@@ -14,6 +14,7 @@ from zope.schema import getFields
 from zope.security import checkPermission
 from zope.component import getUtility
 from zope.interface.interfaces import ComponentLookupError
+from zope.security.interfaces import NoInteraction
 
 from eea.volto.policy.interfaces import IInheritableFieldsSettings
 
@@ -66,8 +67,12 @@ def get_inherited_field_value(context, field_name):
             continue
 
         # Security check - ensure user can view the object
-        if not checkPermission("zope2.View", obj):
-            break
+        try:
+            if not checkPermission("zope2.View", obj):
+                break
+        except NoInteraction:
+            # Allow traversal during scripts without a security interaction.
+            pass
 
         # Check if this object has the field in any of its schemas
         for schema in iterSchemata(obj):
