@@ -224,8 +224,8 @@ class ImageFieldScales:
         path = parsed_url.path or url
 
         # Extract just the @@images/... portion from the URL
-        if '@@images' in path:
-            images_start = path.find('@@images')
+        if "@@images" in path:
+            images_start = path.find("@@images")
             images_suffix = path[images_start:]
 
             # Get the parent context (where the image is stored)
@@ -243,9 +243,9 @@ class ImageFieldScales:
             relative_parent = os.path.relpath(parent_path, child_path)
 
             # Ensure relative_parent doesn't start with './'
-            if relative_parent == '.':
+            if relative_parent == ".":
                 return images_suffix
-            elif relative_parent.startswith('./'):
+            elif relative_parent.startswith("./"):
                 relative_parent = relative_parent[2:]
 
             # Combine relative path with images suffix
