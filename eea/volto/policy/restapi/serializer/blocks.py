@@ -27,6 +27,12 @@ def patched_process_data(self, data, field=None):
     print("Patched TeaserBlockSerializerBase._process_data called")
     value = data.get("href", "")
     if value:
+        if "overwrite" not in data:
+            # A block without this option is old and keeps the behavior
+            # where data is not dynamically pulled from the href
+            data["overwrite"] = True
+            return data
+
         if isinstance(value, str):
             url = value
             value = [{"@id": url}]
