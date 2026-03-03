@@ -3,6 +3,8 @@ Changelog
 
 11.3-dev0 - (unreleased)
 ---------------------------
+* Fix: Override titles on cards when target is selected
+  [tedw87 - refs #298262]
 
 11.2 - (2025-12-22)
 ---------------------------
