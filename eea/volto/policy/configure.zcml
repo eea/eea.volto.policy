@@ -8,6 +8,7 @@
   <i18n:registerTranslations directory="locales" />
 
   <include package="plone.volto" />
+  <include file="viewlets.zcml" />
   <include file="profiles.zcml" />
   <include file="permissions.zcml" />
 
