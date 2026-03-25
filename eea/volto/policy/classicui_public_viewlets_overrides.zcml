@@ -1,0 +1,205 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:browser="http://namespaces.zope.org/browser">
+
+  <browser:viewletManager
+      name="plone.htmlhead"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      provides="plone.app.layout.viewlets.interfaces.IHtmlHead"
+      class="plone.app.viewletmanager.manager.BaseOrderedViewletManager"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="plone.scripts"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      provides="plone.app.layout.viewlets.interfaces.IScripts"
+      class="plone.app.viewletmanager.manager.BaseOrderedViewletManager"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="plone.htmlhead.links"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      provides="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+      class="plone.app.viewletmanager.manager.BaseOrderedViewletManager"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="plone.portaltop"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      provides="plone.app.layout.viewlets.interfaces.IPortalTop"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="plone.mainnavigation"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      provides="plone.app.layout.viewlets.interfaces.IMainNavigation"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="plone.globalstatusmessage"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      provides="plone.app.layout.viewlets.interfaces.IGlobalStatusMessage"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="plone.portalheader"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      provides="plone.app.layout.viewlets.interfaces.IPortalHeader"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope.Public"
+      />
+
+  <browser:viewletManager
+      name="plone.abovecontent"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      provides="plone.app.layout.viewlets.interfaces.IAboveContent"
+      class="plone.app.viewletmanager.manager.OrderedViewletManager"
+      permission="zope.Public"
+      />
+
+  <configure package="Products.CMFPlone.resources.browser">
+    <browser:viewlet
+        name="plone.resourceregistries.scripts"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager="plone.app.layout.viewlets.interfaces.IScripts"
+        class=".resource.ScriptsView"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.resourceregistries.styles"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+        class=".resource.StylesView"
+        permission="zope.Public"
+        />
+  </configure>
+
+  <configure package="plone.app.layout.viewlets">
+    <browser:viewlet
+        name="plone.searchbox"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IPortalHeader"
+        class=".common.SearchBoxViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.anontools"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IPortalHeader"
+        class=".common.PersonalBarViewlet"
+        template="anontools.pt"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.logo"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IPortalHeader"
+        class=".common.LogoViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.global_sections"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IMainNavigation"
+        class=".common.GlobalSectionsViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.htmlhead.title"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IHtmlHead"
+        class=".common.TitleViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.htmlhead.socialtags"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IHtmlHead"
+        class=".social.SocialTagsViewlet"
+        template="social_tags.pt"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.htmlhead.viewport"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IHtmlHead"
+        template="viewport.pt"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.path_bar"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IAboveContent"
+        class=".common.PathBarViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.globalstatusmessage"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager=".interfaces.IGlobalStatusMessage"
+        class=".globalstatusmessage.GlobalStatusMessage"
+        permission="zope.Public"
+        />
+  </configure>
+
+  <configure package="plone.app.layout.links">
+    <browser:viewlet
+        name="plone.links.favicon"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+        class=".viewlets.FaviconViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.links.search"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+        class=".viewlets.SearchViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.links.author"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+        class=".viewlets.AuthorViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.links.RSS"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+        class=".viewlets.RSSViewlet"
+        permission="zope.Public"
+        />
+
+    <browser:viewlet
+        name="plone.links.canonical_url"
+        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+        manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+        class=".viewlets.CanonicalURL"
+        permission="zope.Public"
+        />
+  </configure>
+
+</configure>
