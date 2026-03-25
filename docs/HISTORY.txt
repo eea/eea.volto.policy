@@ -1,6 +1,9 @@
 Changelog
 =========
 
+11.5-dev0 - (unreleased)
+---------------------------
+
 11.4 - (2026-03-25)
 ---------------------------
 * Change: (FIX): Fix 404 page when parent is private refs #284281
