@@ -3,6 +3,9 @@ Changelog
 
 11.5-dev0 - (unreleased)
 ---------------------------
+* Change: added `README.md` file inside policy folder with extra details on package
+  contents 
+  [ichim-david]
 
 11.4 - (2026-03-25)
 ---------------------------
