@@ -19,6 +19,15 @@ The addon changes behavior in these areas:
 - GenericSetup profiles and upgrades (registry records, multilingual query
   support, browser layer wiring).
 
+# Table of Contents
+
+- [REST API and Volto integration](#rest-api-and-volto-integration)
+- [Block and content serialization](#block-and-content-serialization)
+- [Images and catalog data](#images-and-catalog-data)
+- [Workflow and administration](#workflow-and-administration)
+- [Profiles and upgrades](#profiles-and-upgrades)
+- [Installation](#installation)
+
 # REST API and Volto integration
 
 - `restapi/navigation/navigation.py` (`@navigation`):
