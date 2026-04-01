@@ -3,7 +3,7 @@ pipeline {
 
   environment {
         GIT_NAME = "eea.volto.policy"
-        SONARQUBE_TAGS = "demo-www.eea.europa.eu,www.eea.europa.eu-en,www.eea.europa.eu,biodiversity.europa.eu,industry.eea.europa.eu,forest.eea.europa.eu,land.copernicus.eu,clmsdemo.devel6cph.eea.europa.eu,ask.copernicus.eu"
+        SONARQUBE_TAGS = "demo-www.eea.europa.eu,www.eea.europa.eu-en,www.eea.europa.eu,biodiversity.europa.eu,industry.eea.europa.eu,forest.eea.europa.eu,land.copernicus.eu,clmsdemo.devel6cph.eea.europa.eu,water.europa.eu-marine"
     }
 
   stages {
