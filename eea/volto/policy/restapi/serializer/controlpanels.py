@@ -69,9 +69,7 @@ class EEASettingsControlpanelSerializer:
             provider_title = getattr(provider, "title", name)
 
             # Build JSON schema for this provider
-            proxy = _ProviderProxy(
-                self.controlpanel, provider_schema, provider_prefix
-            )
+            proxy = _ProviderProxy(self.controlpanel, provider_schema, provider_prefix)
             json_schema = get_jsonschema_for_controlpanel(
                 proxy,
                 self.controlpanel.context,
@@ -79,12 +77,8 @@ class EEASettingsControlpanelSerializer:
             )
 
             # Merge properties
-            result["schema"]["properties"].update(
-                json_schema.get("properties", {})
-            )
-            result["schema"]["required"].extend(
-                json_schema.get("required", [])
-            )
+            result["schema"]["properties"].update(json_schema.get("properties", {}))
+            result["schema"]["required"].extend(json_schema.get("required", []))
 
             # Create a fieldset per provider
             field_names = list(json_schema.get("properties", {}).keys())
@@ -105,9 +99,7 @@ class EEASettingsControlpanelSerializer:
                 continue
 
             alsoProvides(registry_proxy, IDexterityContent)
-            for field_name, field in zope.schema.getFields(
-                provider_schema
-            ).items():
+            for field_name, field in zope.schema.getFields(provider_schema).items():
                 serializer = queryMultiAdapter(
                     (field, registry_proxy, self.controlpanel.request),
                     IFieldSerializer,

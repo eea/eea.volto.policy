@@ -76,12 +76,8 @@ class IControlPanelProvider(Interface):
     Adapts (context, request).
     """
 
-    schema = Attribute(
-        "The zope.schema Interface for this provider's registry records"
-    )
-    schema_prefix = Attribute(
-        "Optional registry prefix for this provider"
-    )
+    schema = Attribute("The zope.schema Interface for this provider's registry records")
+    schema_prefix = Attribute("Optional registry prefix for this provider")
     title = Attribute(
         "Human-readable title used as fieldset label in the unified panel"
     )

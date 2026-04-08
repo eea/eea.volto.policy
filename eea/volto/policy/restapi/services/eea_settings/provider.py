@@ -28,14 +28,10 @@ class HeaderSearchBoxProvider:
         self.request = request
 
     def __call__(self):
-        raw = get_registry_record(
-            "headerSearchBox", interface=IHeaderSearchBox
-        )
+        raw = get_registry_record("headerSearchBox", interface=IHeaderSearchBox)
         if raw:
             try:
                 return {"headerSearchBox": json.loads(raw)}
             except (json.JSONDecodeError, TypeError):
-                logger.warning(
-                    "Invalid JSON in headerSearchBox registry record"
-                )
+                logger.warning("Invalid JSON in headerSearchBox registry record")
         return {"headerSearchBox": []}
