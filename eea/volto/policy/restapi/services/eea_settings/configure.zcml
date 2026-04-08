@@ -1,0 +1,26 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    >
+
+  <adapter
+      factory=".provider.HeaderSearchBoxProvider"
+      name="headerSearchBox"
+      />
+
+  <adapter
+      factory=".controlpanel.EEASettingsControlpanel"
+      provides="plone.restapi.controlpanels.interfaces.IControlpanel"
+      name="eea-settings"
+      />
+
+  <plone:service
+      method="GET"
+      factory=".get.EEASettingsGet"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+      permission="zope2.View"
+      name="@eea.settings"
+      />
+
+</configure>

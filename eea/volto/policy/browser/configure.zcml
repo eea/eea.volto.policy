@@ -59,4 +59,13 @@
     permission="cmf.ManagePortal"
     />
 
+  <!-- EEA Settings control panel -->
+  <browser:page
+    name="eea-settings-controlpanel"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    class=".controlpanel.EEAControlPanelFormWrapper"
+    layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+    permission="cmf.ManagePortal"
+  />
+
 </configure>
