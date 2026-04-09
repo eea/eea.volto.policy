@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Module where all interfaces, events and exceptions live."""
 
+import json
+from plone.schema import JSONField
 from plone.restapi.controlpanels.interfaces import IControlpanel
 from plone.volto.interfaces import IVoltoSettings
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
@@ -9,6 +11,9 @@ from zope.interface import Attribute
 from zope.interface import Interface
 
 from eea.volto.policy import EEAMessageFactory as _
+
+
+headerSearchBoxSchema = json.dumps({"type": "array", "items": {}})
 
 
 class IEeaVoltoPolicyLayer(IDefaultBrowserLayer):
@@ -89,9 +94,27 @@ class IControlPanelProvider(Interface):
 class IHeaderSearchBox(Interface):
     """Registry record for header search box configuration"""
 
-    headerSearchBox = schema.Text(
+    headerSearchBox = JSONField(
         title=_("Header search box configuration"),
         description=("JSON configuration for the header search box"),
+        schema=headerSearchBoxSchema,
+        default=[],
+        required=False,
+    )
+
+
+class IBannerSchema(Interface):
+    """Registry record for banner configuration"""
+
+    title = schema.Text(
+        title=_("Banner title"),
+        description=("Title for the banner"),
+        required=False,
+    )
+
+    description = schema.Text(
+        title=_("Banner description"),
+        description=("Description for the banner"),
         required=False,
     )
 
@@ -104,4 +127,5 @@ __all__ = [
     "IEEASettingsControlpanel",
     "IControlPanelProvider",
     "IHeaderSearchBox",
+    "IBannerSchema",
 ]

@@ -8,6 +8,11 @@
       name="headerSearchBox"
       />
 
+    <adapter
+      factory=".provider.BannerProvider"
+      name="bannerSettings"
+      />
+
   <adapter
       factory=".controlpanel.EEASettingsControlpanel"
       provides="plone.restapi.controlpanels.interfaces.IControlpanel"

@@ -10,7 +10,6 @@ from zope.interface import implementer
 from zope.interface import Interface
 from Products.statusmessages.interfaces import IStatusMessage
 
-from eea.volto.policy.interfaces import IHeaderSearchBox
 from eea.volto.policy.interfaces import IInternalApiPathSettings
 
 
@@ -66,17 +65,3 @@ class InternalApiPathControlPanelView(ControlPanelFormWrapper):
         "resolveuid references. Use the 'Fix Internal API Paths' button to "
         "run the correction process on all content."
     )
-
-
-class EEAControlPanelForm(RegistryEditForm):
-    """EEA Settings Control Panel Form."""
-
-    schema = IHeaderSearchBox
-    id = "eea-settings"
-    label = "EEA Settings"
-
-
-class EEAControlPanelFormWrapper(ControlPanelFormWrapper):
-    """EEA Settings Control Panel Form Wrapper."""
-
-    form = EEAControlPanelForm

@@ -9,7 +9,7 @@ from zope.interface import implementer
 from zope.interface import Interface
 
 from eea.volto.policy.interfaces import IControlPanelProvider
-from eea.volto.policy.interfaces import IHeaderSearchBox
+from eea.volto.policy.interfaces import IHeaderSearchBox, IBannerSchema
 
 logger = logging.getLogger(__name__)
 
@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 @implementer(IControlPanelProvider)
 @adapter(Interface, Interface)
 class HeaderSearchBoxProvider:
-    """Provides header search box configuration."""
+    """Provides headerconfiguration."""
 
     schema = IHeaderSearchBox
     schema_prefix = None
-    title = "Header Search Box"
+    title = "Header"
 
     def __init__(self, context, request):
         self.context = context
@@ -35,3 +35,28 @@ class HeaderSearchBoxProvider:
             except (json.JSONDecodeError, TypeError):
                 logger.warning("Invalid JSON in headerSearchBox registry record")
         return {"headerSearchBox": []}
+
+
+@implementer(IControlPanelProvider)
+@adapter(Interface, Interface)
+class BannerProvider:
+    """Provides banner configuration."""
+
+    schema = IBannerSchema
+    schema_prefix = None
+    title = "Banner"
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        title = get_registry_record("title", interface=IBannerSchema)
+        description = get_registry_record(
+            "description", interface=IBannerSchema
+        )
+        if title or description:
+            return {
+                "bannerSettings": {"title": title, "description": description}
+            }
+        return {"bannerSettings": {"title": "", "description": ""}}

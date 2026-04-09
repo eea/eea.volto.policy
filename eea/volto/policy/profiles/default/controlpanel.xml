@@ -11,15 +11,4 @@
       visible="True">
     <permission>Manage portal</permission>
   </configlet>
-  <configlet
-      title="EEA Settings"
-      action_id="eea-settings"
-      appId="eea.volto.policy"
-      category="Products"
-      condition_expr=""
-      icon_expr=""
-      url_expr="string:${portal_url}/@@eea-settings-controlpanel"
-      visible="True">
-    <permission>Manage portal</permission>
-  </configlet>
 </object>

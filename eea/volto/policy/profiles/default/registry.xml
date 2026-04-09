@@ -68,4 +68,5 @@
   }
 ]</value>
   </records>
+  <records interface="eea.volto.policy.interfaces.IBannerSchema" />
 </registry>
