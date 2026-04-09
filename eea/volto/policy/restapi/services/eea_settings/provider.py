@@ -52,11 +52,7 @@ class BannerProvider:
 
     def __call__(self):
         title = get_registry_record("title", interface=IBannerSchema)
-        description = get_registry_record(
-            "description", interface=IBannerSchema
-        )
+        description = get_registry_record("description", interface=IBannerSchema)
         if title or description:
-            return {
-                "bannerSettings": {"title": title, "description": description}
-            }
+            return {"bannerSettings": {"title": title, "description": description}}
         return {"bannerSettings": {"title": "", "description": ""}}
