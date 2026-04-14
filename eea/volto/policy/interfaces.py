@@ -91,30 +91,19 @@ class IControlPanelProvider(Interface):
         """Return a dict like {"section_name": {... settings ...}}"""
 
 
-class IHeaderSearchBox(Interface):
-    """Registry record for header search box configuration"""
+class IHeaderProviderSchema(Interface):
+    """Registry record for header provider settings"""
 
-    headerSearchBox = JSONField(
-        title=_("Header search box configuration"),
-        description=("JSON configuration for the header search box"),
+    aiSearchIcon = schema.Bool(
+        title=_("Use AI Search Icon?"),
+        default=False,
+        required=False,
+    )
+
+    searchBox = JSONField(
+        title=_("Search box configuration"),
         schema=headerSearchBoxSchema,
         default=[],
-        required=False,
-    )
-
-
-class IBannerSchema(Interface):
-    """Registry record for banner configuration"""
-
-    title = schema.Text(
-        title=_("Banner title"),
-        description=("Title for the banner"),
-        required=False,
-    )
-
-    description = schema.Text(
-        title=_("Banner description"),
-        description=("Description for the banner"),
         required=False,
     )
 
@@ -126,6 +115,5 @@ __all__ = [
     "IInheritableFieldsSettings",
     "IEEASettingsControlpanel",
     "IControlPanelProvider",
-    "IHeaderSearchBox",
-    "IBannerSchema",
+    "IHeaderProviderSchema",
 ]

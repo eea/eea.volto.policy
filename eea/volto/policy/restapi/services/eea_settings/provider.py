@@ -9,18 +9,30 @@ from zope.interface import implementer
 from zope.interface import Interface
 
 from eea.volto.policy.interfaces import IControlPanelProvider
-from eea.volto.policy.interfaces import IHeaderSearchBox, IBannerSchema
+from eea.volto.policy.interfaces import IHeaderProviderSchema
 
 logger = logging.getLogger(__name__)
 
 
+def process_registry_list(key, interface):
+    """Process a registry list value."""
+    value = get_registry_record(key, interface=interface)
+    if isinstance(value, list):
+        return value
+    elif value:
+        try:
+            return json.loads(value)
+        except (json.JSONDecodeError, TypeError):
+            logger.warning(f"Invalid JSON in {key} registry record")
+    return []
+
+
 @implementer(IControlPanelProvider)
 @adapter(Interface, Interface)
-class HeaderSearchBoxProvider:
-    """Provides headerconfiguration."""
+class HeaderProvider:
+    """Provides header configuration."""
 
-    schema = IHeaderSearchBox
-    schema_prefix = None
+    schema = IHeaderProviderSchema
     title = "Header"
 
     def __init__(self, context, request):
@@ -28,31 +40,10 @@ class HeaderSearchBoxProvider:
         self.request = request
 
     def __call__(self):
-        raw = get_registry_record("headerSearchBox", interface=IHeaderSearchBox)
-        if raw:
-            try:
-                return {"headerSearchBox": json.loads(raw)}
-            except (json.JSONDecodeError, TypeError):
-                logger.warning("Invalid JSON in headerSearchBox registry record")
-        return {"headerSearchBox": []}
-
-
-@implementer(IControlPanelProvider)
-@adapter(Interface, Interface)
-class BannerProvider:
-    """Provides banner configuration."""
-
-    schema = IBannerSchema
-    schema_prefix = None
-    title = "Banner"
-
-    def __init__(self, context, request):
-        self.context = context
-        self.request = request
-
-    def __call__(self):
-        title = get_registry_record("title", interface=IBannerSchema)
-        description = get_registry_record("description", interface=IBannerSchema)
-        if title or description:
-            return {"bannerSettings": {"title": title, "description": description}}
-        return {"bannerSettings": {"title": "", "description": ""}}
+        # Get registry record
+        searchBox = process_registry_list("searchBox", IHeaderProviderSchema)
+        return {
+            "header": {
+                "searchBox": searchBox
+            }
+        }

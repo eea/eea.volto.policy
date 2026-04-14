@@ -1,10 +1,8 @@
 """Custom deserializer for the unified EEA Settings controlpanel."""
 
-from plone.dexterity.interfaces import IDexterityContent
 from plone.registry.interfaces import IRegistry
 from plone.restapi.deserializer import json_body
 from plone.restapi.interfaces import IDeserializeFromJson
-from plone.restapi.interfaces import IFieldDeserializer
 from z3c.form.interfaces import IManagerValidator
 from zExceptions import BadRequest
 from zope.component import adapter
@@ -17,11 +15,6 @@ from zope.schema.interfaces import ValidationError
 from zope.interface.exceptions import Invalid
 
 from eea.volto.policy.interfaces import IEEASettingsControlpanel
-
-
-@implementer(IDexterityContent)
-class FakeDXContext:
-    """Fake DX content class, so we can reuse the DX field deserializers."""
 
 
 @implementer(IDeserializeFromJson)
@@ -39,7 +32,6 @@ class EEASettingsControlpanelDeserializer:
         data = json_body(self.request)
         errors = []
         schema_data = {}
-        fake_context = FakeDXContext()
 
         for name, provider in self.controlpanel.get_providers():
             provider_schema = getattr(provider, "schema", None)
@@ -56,24 +48,32 @@ class EEASettingsControlpanelDeserializer:
                 continue
 
             for field_name, field in getFields(provider_schema).items():
-                if field.readonly or field_name not in data:
+                full_field_name = f"{name}.{field_name}"
+                if field.readonly or full_field_name not in data:
                     continue
 
                 field_data = schema_data.setdefault(provider_schema, {})
 
-                deserializer = queryMultiAdapter(
-                    (field, fake_context, self.request),
-                    IFieldDeserializer,
-                )
-
                 try:
-                    value = deserializer(data[field_name])
+                    value = data[full_field_name]
                     field.validate(value)
                     setattr(proxy, field_name, value)
                 except ValidationError as e:
-                    errors.append({"message": e.doc(), "field": field_name, "error": e})
+                    errors.append(
+                        {
+                            "message": e.doc(),
+                            "field": full_field_name,
+                            "error": e,
+                        }
+                    )
                 except (ValueError, Invalid) as e:
-                    errors.append({"message": str(e), "field": field_name, "error": e})
+                    errors.append(
+                        {
+                            "message": str(e),
+                            "field": full_field_name,
+                            "error": e,
+                        }
+                    )
                 else:
                     field_data[field_name] = value
 

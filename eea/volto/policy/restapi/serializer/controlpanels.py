@@ -1,18 +1,13 @@
 """Custom serializer for the unified EEA Settings controlpanel."""
 
-from plone.dexterity.interfaces import IDexterityContent
 from plone.registry.interfaces import IRegistry
-from plone.restapi.interfaces import IFieldSerializer
 from plone.restapi.interfaces import ISerializeToJson
 from plone.restapi.serializer.controlpanels import (
     get_jsonschema_for_controlpanel,
 )
 from zope.component import adapter
 from zope.component import getUtility
-from zope.component import queryMultiAdapter
-from zope.interface import alsoProvides
 from zope.interface import implementer
-from zope.interface import noLongerProvides
 
 from eea.volto.policy.interfaces import IEEASettingsControlpanel
 
@@ -69,19 +64,28 @@ class EEASettingsControlpanelSerializer:
             provider_title = getattr(provider, "title", name)
 
             # Build JSON schema for this provider
-            proxy = _ProviderProxy(self.controlpanel, provider_schema, provider_prefix)
+            proxy = _ProviderProxy(
+                self.controlpanel, provider_schema, provider_prefix
+            )
             json_schema = get_jsonschema_for_controlpanel(
                 proxy,
                 self.controlpanel.context,
                 self.controlpanel.request,
             )
+            properties = {
+                f"{name}.{key}": value
+                for key, value in json_schema.get("properties", {}).items()
+            }
+            required = [
+                f"{name}.{key}" for key in json_schema.get("required", [])
+            ]
 
             # Merge properties
-            result["schema"]["properties"].update(json_schema.get("properties", {}))
-            result["schema"]["required"].extend(json_schema.get("required", []))
+            result["schema"]["properties"].update(properties)
+            result["schema"]["required"].extend(required)
 
             # Create a fieldset per provider
-            field_names = list(json_schema.get("properties", {}).keys())
+            field_names = list(properties.keys())
             result["schema"]["fieldsets"].append(
                 {
                     "id": name,
@@ -98,17 +102,8 @@ class EEASettingsControlpanelSerializer:
             except KeyError:
                 continue
 
-            alsoProvides(registry_proxy, IDexterityContent)
-            for field_name, field in zope.schema.getFields(provider_schema).items():
-                serializer = queryMultiAdapter(
-                    (field, registry_proxy, self.controlpanel.request),
-                    IFieldSerializer,
-                )
-                if serializer:
-                    value = serializer()
-                else:
-                    value = getattr(registry_proxy, field_name, None)
-                result["data"][field_name] = value
-            noLongerProvides(registry_proxy, IDexterityContent)
+            for field_name in zope.schema.getFields(provider_schema).keys():
+                value = getattr(registry_proxy, field_name, None)
+                result["data"][f"{name}.{field_name}"] = value
 
         return result

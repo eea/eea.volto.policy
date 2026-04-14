@@ -32,8 +32,9 @@
   <records interface="eea.volto.policy.interfaces.IInheritableFieldsSettings"
           prefix="eea.volto.policy.inherit"
   />
-  <records interface="eea.volto.policy.interfaces.IHeaderSearchBox">
-<value key="headerSearchBox">[
+  <records interface="eea.volto.policy.interfaces.IHeaderProviderSchema">
+    <value key="aiSearchIcon">true</value>
+<value key="searchBox">[
   {
     "type": "search-input",
     "searchSuggestions": {},
@@ -68,5 +69,4 @@
   }
 ]</value>
   </records>
-  <records interface="eea.volto.policy.interfaces.IBannerSchema" />
 </registry>
