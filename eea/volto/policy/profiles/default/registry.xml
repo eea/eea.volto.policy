@@ -33,7 +33,7 @@
           prefix="eea.volto.policy.inherit"
   />
   <records interface="eea.volto.policy.interfaces.IHeaderProviderSchema">
-    <value key="aiSearchIcon">true</value>
+    <value key="useAISearchIcon">true</value>
 <value key="searchBox">[
   {
     "type": "search-input",

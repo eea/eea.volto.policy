@@ -94,9 +94,9 @@ class IControlPanelProvider(Interface):
 class IHeaderProviderSchema(Interface):
     """Registry record for header provider settings"""
 
-    aiSearchIcon = schema.Bool(
+    useAISearchIcon = schema.Bool(
         title=_("Use AI Search Icon?"),
-        default=False,
+        default=True,
         required=False,
     )
 
