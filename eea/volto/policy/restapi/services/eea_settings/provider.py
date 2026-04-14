@@ -45,9 +45,4 @@ class HeaderProvider:
         useAISearchIcon = get_registry_record(
             "useAISearchIcon", interface=IHeaderProviderSchema
         )
-        return {
-            "header": {
-                "searchBox": searchBox,
-                "useAISearchIcon": useAISearchIcon
-            }
-        }
+        return {"header": {"searchBox": searchBox, "useAISearchIcon": useAISearchIcon}}
