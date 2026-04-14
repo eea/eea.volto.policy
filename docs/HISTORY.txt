@@ -1,7 +1,7 @@
 Changelog
 =========
 
-11.5-dev0 - (unreleased)
+11.5 - (2026-04-14)
 ---------------------------
 * Change: added `README.md` file inside policy folder with extra details on package
   contents 
