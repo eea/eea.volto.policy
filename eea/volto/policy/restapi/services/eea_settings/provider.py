@@ -42,8 +42,4 @@ class HeaderProvider:
     def __call__(self):
         # Get registry record
         searchBox = process_registry_list("searchBox", IHeaderProviderSchema)
-        return {
-            "header": {
-                "searchBox": searchBox
-            }
-        }
+        return {"header": {"searchBox": searchBox}}

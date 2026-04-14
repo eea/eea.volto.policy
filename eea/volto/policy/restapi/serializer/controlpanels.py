@@ -64,9 +64,7 @@ class EEASettingsControlpanelSerializer:
             provider_title = getattr(provider, "title", name)
 
             # Build JSON schema for this provider
-            proxy = _ProviderProxy(
-                self.controlpanel, provider_schema, provider_prefix
-            )
+            proxy = _ProviderProxy(self.controlpanel, provider_schema, provider_prefix)
             json_schema = get_jsonschema_for_controlpanel(
                 proxy,
                 self.controlpanel.context,
@@ -76,9 +74,7 @@ class EEASettingsControlpanelSerializer:
                 f"{name}.{key}": value
                 for key, value in json_schema.get("properties", {}).items()
             }
-            required = [
-                f"{name}.{key}" for key in json_schema.get("required", [])
-            ]
+            required = [f"{name}.{key}" for key in json_schema.get("required", [])]
 
             # Merge properties
             result["schema"]["properties"].update(properties)
