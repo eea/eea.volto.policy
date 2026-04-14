@@ -32,4 +32,41 @@
   <records interface="eea.volto.policy.interfaces.IInheritableFieldsSettings"
           prefix="eea.volto.policy.inherit"
   />
+  <records interface="eea.volto.policy.interfaces.IHeaderProviderSchema">
+    <value key="useAISearchIcon">true</value>
+<value key="searchBox">[
+  {
+    "type": "search-input",
+    "searchSuggestions": {},
+    "path": "/en/advanced-search",
+    "placeholder": "Search or ask your question...",
+    "maxToShow": 6,
+    "suggestionsTitle": "Try our suggestions",
+    "suggestions": [
+      "What is PFAS?",
+      "Which transport mode has the lowest pollution?",
+      "Which countries use most renewable energy?",
+      "How many premature deaths are attributed to PM2.5?",
+      "How many premature deaths are attributed to air pollution?",
+      "How much have new cars co2 emissions decreased?",
+      "What countries had the highest land take in the EEA-39?",
+      "How many people are exposed to air pollution?"
+    ]
+  },
+  {
+    "type": "info",
+    "content": "For more search options"
+  },
+  {
+    "type": "button-link",
+    "title": "Go to advanced search",
+    "url": "/en/advanced-search"
+  },
+  {
+    "type": "button-link",
+    "title": "Ask AI",
+    "url": "/en/ask-ai"
+  }
+]</value>
+  </records>
 </registry>

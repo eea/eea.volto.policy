@@ -5,4 +5,5 @@
   <include package=".contextnavigation" />
   <include package=".breadcrumbs" />
   <include package=".actions" />
+  <include package=".eea_settings" />
 </configure>
