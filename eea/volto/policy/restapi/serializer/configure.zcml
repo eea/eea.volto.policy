@@ -16,4 +16,10 @@
       name="plone.restapi.eea_summary_serializer_metadata"
       />
 
+  <!-- EEA Settings controlpanel serializer -->
+  <adapter factory=".controlpanels.EEASettingsControlpanelSerializer"
+      for="eea.volto.policy.interfaces.IEEASettingsControlpanel"
+      provides="plone.restapi.interfaces.ISerializeToJson"
+      />
+
 </configure>

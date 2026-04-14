@@ -5,4 +5,11 @@
 
   <adapter factory=".dxfields.DatetimeFieldDeserializer" />
 
+
+  <!-- EEA Settings controlpanel deserializer -->
+  <adapter factory=".controlpanels.EEASettingsControlpanelDeserializer"
+      for="eea.volto.policy.interfaces.IEEASettingsControlpanel"
+      provides="plone.restapi.interfaces.IDeserializeFromJson"
+      />
+
 </configure>

@@ -133,4 +133,16 @@
         import_profile="eea.volto.policy:to_110"
         />
   </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="11.0"
+      destination="12.0"
+      profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeDepends
+        title="Add EEA Settings control panel and header search box registry records"
+        import_steps="plone.app.registry controlpanel"
+        import_profile="eea.volto.policy:default"
+        />
+  </genericsetup:upgradeSteps>
 </configure>

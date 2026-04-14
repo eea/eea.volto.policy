@@ -3,7 +3,7 @@ pipeline {
 
   environment {
         GIT_NAME = "eea.volto.policy"
-        SONARQUBE_TAGS = "demo-www.eea.europa.eu,www.eea.europa.eu-en,www.eea.europa.eu,biodiversity.europa.eu,industry.eea.europa.eu,forest.eea.europa.eu,land.copernicus.eu,clmsdemo.devel6cph.eea.europa.eu,ask.copernicus.eu"
+        SONARQUBE_TAGS = "demo-www.eea.europa.eu,www.eea.europa.eu-en,www.eea.europa.eu,biodiversity.europa.eu,industry.eea.europa.eu,forest.eea.europa.eu,land.copernicus.eu,clmsdemo.devel6cph.eea.europa.eu,demo-wise.02pre.eea.europa.eu-marine,water.europa.eu-marine,demo-wise.02pre.eea.europa.eu-msfd,water.europa.eu-msfd"
     }
 
   stages {
@@ -140,14 +140,14 @@ pipeline {
           script {
             checkout scm
             unstash 'coverage'
-            junit 'coverage/junit-results/testreports/*.xml'
+            // junit 'coverage/junit-results/testreports/*.xml'
             def scannerHome = tool 'SonarQubeScanner';
             def nodeJS = tool 'NodeJS11';
             sh "sed -i 's|<source>/app</source>|<source>.</source>|g' coverage/coverage.xml"
             sh "sed -i \"s|filename=\\\"src/$GIT_NAME/|filename=\\\"|g\" coverage/coverage.xml"
             sh "sed -i \"s|package name=\\\"src\\.$GIT_NAME|package name=\\\"|g\" coverage/coverage.xml"
             withSonarQubeEnv('Sonarqube') {
-              sh "export PATH=$PATH:${scannerHome}/bin:${nodeJS}/bin; sonar-scanner -Dsonar.python.xunit.skipDetails=true -Dsonar.python.xunit.reportPath=coverage/junit-results/testreports/*.xml -Dsonar.python.coverage.reportPaths=coverage/coverage.xml -Dsonar.sources=./eea -Dsonar.exclusions=**/tests/**,**/setup.py  -Dsonar.projectKey=$GIT_NAME -Dsonar.projectName=$GIT_NAME -Dsonar.branch.name=$BRANCH_NAME"
+              sh "export PATH=$PATH:${scannerHome}/bin:${nodeJS}/bin; sonar-scanner -Dsonar.python.coverage.reportPaths=coverage/coverage.xml -Dsonar.sources=./eea -Dsonar.exclusions=**/tests/**,**/setup.py  -Dsonar.projectKey=$GIT_NAME -Dsonar.projectName=$GIT_NAME -Dsonar.branch.name=$BRANCH_NAME"
               sh '''try=2; while [ \$try -gt 0 ]; do curl -s -XPOST -u "${SONAR_AUTH_TOKEN}:" "${SONAR_HOST_URL}api/project_tags/set?project=${GIT_NAME}&tags=${SONARQUBE_TAGS}" > set_tags_result; if [ \$(grep -ic error set_tags_result ) -eq 0 ]; then try=0; else cat set_tags_result; echo "... Will retry"; sleep 60; try=\$(( \$try - 1 )); fi; done'''
             }
           }

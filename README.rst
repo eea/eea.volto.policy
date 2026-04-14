@@ -8,7 +8,16 @@ eea.volto.policy
   :target: https://ci.eionet.europa.eu/job/eea/job/eea.volto.policy/job/master/display/redirect
   :alt: Master
 
+eea.volto.policy is the EEA Volto policy package for Plone.
 The eea.volto.policy is a Plone add-on
+
+It keeps stock Plone in place and layers EEA-specific REST API, navigation,
+imaging, moderation, and admin behavior on top of it for Volto sites.
+
+Check the `README.md <https://github.com/eea/eea.volto.policy/blob/master/eea/volto/policy/README.md>`_
+for more details on the features and changes of this package.
+
+
 
 .. contents::
 
@@ -45,14 +54,12 @@ Install
 Buildout installation
 =====================
 
-- `Plone 4+ <https://github.com/eea/eea.volto.policy/tree/master/buildouts/plone4>`_
 - `Plone 5+ <https://github.com/eea/eea.volto.policy/tree/master/buildouts/plone5>`_
 
 
 Source code
 ===========
 
-- `Plone 4+ on github <https://github.com/eea/eea.volto.policy>`_
 - `Plone 5+ on github <https://github.com/eea/eea.volto.policy>`_
 
 
@@ -65,7 +72,7 @@ Eggs repository
 
 Plone versions
 ==============
-It has been developed and tested for Plone 4 and 5. See buildouts section above.
+It has been developed and tested for Plone 5 and 6. See buildout section above.
 
 
 How to contribute

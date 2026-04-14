@@ -1,10 +1,19 @@
 # -*- coding: utf-8 -*-
 """Module where all interfaces, events and exceptions live."""
 
+import json
+from plone.schema import JSONField
+from plone.restapi.controlpanels.interfaces import IControlpanel
 from plone.volto.interfaces import IVoltoSettings
 from zope.publisher.interfaces.browser import IDefaultBrowserLayer
 from zope import schema
+from zope.interface import Attribute
 from zope.interface import Interface
+
+from eea.volto.policy import EEAMessageFactory as _
+
+
+headerSearchBoxSchema = json.dumps({"type": "array", "items": {}})
 
 
 class IEeaVoltoPolicyLayer(IDefaultBrowserLayer):
@@ -57,9 +66,54 @@ class IInheritableFieldsSettings(Interface):
     )
 
 
+class IEEASettingsControlpanel(IControlpanel):
+    """Marker interface for the unified EEA Settings controlpanel.
+
+    Extends IControlpanel so that serializer/deserializer adapters
+    registered for this interface take priority over the defaults.
+    """
+
+
+class IControlPanelProvider(Interface):
+    """Named adapter that addons implement to contribute settings.
+
+    Each provider returns a dict with its section name as key.
+    Adapts (context, request).
+    """
+
+    schema = Attribute("The zope.schema Interface for this provider's registry records")
+    schema_prefix = Attribute("Optional registry prefix for this provider")
+    title = Attribute(
+        "Human-readable title used as fieldset label in the unified panel"
+    )
+
+    def __call__():
+        """Return a dict like {"section_name": {... settings ...}}"""
+
+
+class IHeaderProviderSchema(Interface):
+    """Registry record for header provider settings"""
+
+    useAISearchIcon = schema.Bool(
+        title=_("Use AI Search Icon?"),
+        default=True,
+        required=False,
+    )
+
+    searchBox = JSONField(
+        title=_("Search box configuration"),
+        schema=headerSearchBoxSchema,
+        default=[],
+        required=False,
+    )
+
+
 __all__ = [
     IVoltoSettings.__name__,
     "IInternalApiPathSettings",
     "IInternalApiPathBatchSettings",
     "IInheritableFieldsSettings",
+    "IEEASettingsControlpanel",
+    "IControlPanelProvider",
+    "IHeaderProviderSchema",
 ]
