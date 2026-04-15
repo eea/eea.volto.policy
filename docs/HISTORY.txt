@@ -1,8 +1,10 @@
 Changelog
 =========
 
-12.1-dev0 - (unreleased)
+12.1 - (2026-04-15)
 ---------------------------
+* Change: Change header defaults
+  [razvanMiu]
 
 11.5 - (2026-04-14)
 ---------------------------
