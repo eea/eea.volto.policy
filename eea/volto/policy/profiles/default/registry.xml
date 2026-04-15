@@ -33,7 +33,7 @@
           prefix="eea.volto.policy.inherit"
   />
   <records interface="eea.volto.policy.interfaces.IHeaderProviderSchema">
-    <value key="useAISearchIcon">true</value>
+    <value key="useAISearchIcon">false</value>
 <value key="searchBox">[
   {
     "type": "search-input",
@@ -61,11 +61,6 @@
     "type": "button-link",
     "title": "Go to advanced search",
     "url": "/en/advanced-search"
-  },
-  {
-    "type": "button-link",
-    "title": "Ask AI",
-    "url": "/en/ask-ai"
   }
 ]</value>
   </records>
