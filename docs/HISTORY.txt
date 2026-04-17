@@ -1,6 +1,9 @@
 Changelog
 =========
 
+12.3-dev0 - (unreleased)
+---------------------------
+
 12.2 - (2026-04-17)
 ---------------------------
 * Change: update default registry
