@@ -54,8 +54,21 @@
     ]
   },
   {
-    "type": "info",
-    "content": "For more search options"
+    "path": "/en/datahub",
+    "placeholder": "Search Datahub...",
+    "type": "search-input"
+  },
+  {
+    "content": [
+      {
+        "text": "For more search options"
+      },
+      {
+        "path": "/en/datahub",
+        "text": "Looking for more information?"
+      }
+    ],
+    "type": "info"
   },
   {
     "type": "button-link",
