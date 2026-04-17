@@ -1,8 +1,10 @@
 Changelog
 =========
 
-12.2-dev0 - (unreleased)
+12.2 - (2026-04-17)
 ---------------------------
+* Change: update default registry
+  [razvanMiu]
 
 12.1 - (2026-04-15)
 ---------------------------
