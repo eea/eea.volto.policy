@@ -11,4 +11,15 @@
       visible="True">
     <permission>Manage portal</permission>
   </configlet>
+  <configlet
+      title="Header Settings"
+      action_id="header-settings"
+      appId="eea.volto.policy"
+      category="Products"
+      condition_expr=""
+      icon_expr=""
+      url_expr="string:${portal_url}/@@header-settings-controlpanel"
+      visible="True">
+    <permission>Manage portal</permission>
+  </configlet>
 </object>

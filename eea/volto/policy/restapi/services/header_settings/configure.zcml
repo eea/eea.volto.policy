@@ -1,0 +1,15 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:plone="http://namespaces.plone.org/plone"
+>
+
+  <plone:service
+    method="GET"
+    factory=".get.HeaderSettingsGet"
+    for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+    layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+    permission="zope2.View"
+    name="@header-settings"
+  />
+
+</configure>

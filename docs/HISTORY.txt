@@ -1,6 +1,11 @@
 Changelog
 =========
 
+12.3 - (2026-04-21)
+---------------------------
+* Change: Rename header settings control panel and add @layout-blocks-duplicates endpoint
+  [razvanMiu]
+
 12.2 - (2026-04-17)
 ---------------------------
 * Change: update default registry

@@ -20,6 +20,11 @@
   <include package=".upgrades" />
   <include package=".image_scales" />
 
+  <adapter
+      factory=".controlpanel.HeaderControlpanel"
+      name="header-settings"
+  />
+
   <!-- Reindex descendants when inheritable fields change -->
   <subscriber
       for="plone.dexterity.interfaces.IDexterityContent
