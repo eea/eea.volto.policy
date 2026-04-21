@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Control panel for Internal API Path settings"""
+"""Control panels"""
 
 from plone.app.registry.browser.controlpanel import (
     ControlPanelFormWrapper,
@@ -10,6 +10,7 @@ from zope.interface import implementer
 from zope.interface import Interface
 from Products.statusmessages.interfaces import IStatusMessage
 
+from eea.volto.policy.interfaces import IHeaderProviderSchema
 from eea.volto.policy.interfaces import IInternalApiPathSettings
 
 
@@ -50,7 +51,6 @@ class InternalApiPathControlPanel(RegistryEditForm):
     @button.buttonAndHandler("Fix Internal API Paths", name="update_paths")
     def handleUpdatePaths(self, action):
         """Handle the fix paths button"""
-        # Redirect to the update view
         update_url = self.context.absolute_url() + "/@@update-internal-api-path"
         self.request.response.redirect(update_url)
 
@@ -65,3 +65,17 @@ class InternalApiPathControlPanelView(ControlPanelFormWrapper):
         "resolveuid references. Use the 'Fix Internal API Paths' button to "
         "run the correction process on all content."
     )
+
+
+class HeaderRegistryEditForm(RegistryEditForm):
+    """Header Registry Edit Form"""
+
+    schema = IHeaderProviderSchema
+    id = "header-settings"
+    label = "Header Settings"
+
+
+class HeaderControlPanelFormWrapper(ControlPanelFormWrapper):
+    """Header Control Panel Form Wrapper"""
+
+    form = HeaderRegistryEditForm
