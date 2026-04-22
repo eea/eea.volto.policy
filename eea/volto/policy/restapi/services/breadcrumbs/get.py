@@ -4,7 +4,7 @@ from zope.component import getMultiAdapter, queryMultiAdapter
 from zope.component import adapter
 from zope.interface import implementer
 from zope.interface import Interface
-from plone.restapi.interfaces import IExpandableElement, IPloneRestapiLayer
+from plone.restapi.interfaces import IExpandableElement
 from plone.restapi.services.breadcrumbs.get import Breadcrumbs
 from eea.volto.policy.interfaces import IEeaVoltoPolicyLayer
 
