@@ -1,2 +1,1 @@
-""" Content rules
-"""
+"""Content rules"""

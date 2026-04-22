@@ -1,2 +1,1 @@
-""" RestAPI deserializer
-"""
+"""RestAPI deserializer"""

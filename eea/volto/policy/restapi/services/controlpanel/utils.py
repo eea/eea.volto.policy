@@ -1,4 +1,4 @@
-""" Controlpanel utils """
+"""Controlpanel utils"""
 
 from zope.component import getUtilitiesFor
 from zope.security.interfaces import IPermission
@@ -7,7 +7,7 @@ from Products.CMFCore.utils import getToolByName
 
 
 def get_permission(name):
-    """ Get permission by name """
+    """Get permission by name"""
     for _, permission in getUtilitiesFor(IPermission):
         if name in (permission.id, permission.title):
             return permission
@@ -15,15 +15,15 @@ def get_permission(name):
 
 
 def has_controlpanel_permission(context, request, panel):
-    """ Check if user has permission to access controlpanel """
+    """Check if user has permission to access controlpanel"""
     if panel is None:
         request.response.setStatus(404)
         return None
 
     controlpanel_tool = getToolByName(context, "portal_controlpanel")
-    panel_config = controlpanel_tool.getActionObject("%s/%s" % (
-        panel.configlet_category_id, panel.configlet_id
-    ))
+    panel_config = controlpanel_tool.getActionObject(
+        "%s/%s" % (panel.configlet_category_id, panel.configlet_id)
+    )
 
     permissionless = True
 
@@ -49,7 +49,7 @@ def has_controlpanel_permission(context, request, panel):
 
 
 def send_unauthorized(context, request):
-    """ Send unauthorized """
+    """Send unauthorized"""
     pm = getToolByName(context, "portal_membership")
     if bool(pm.isAnonymousUser()):
         request.response.setStatus(401)

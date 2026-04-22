@@ -9,8 +9,16 @@ from plone.app.vocabularies.principals import (
     # merge_principal_infos,
     token_from_principal_info,
 )
+from plone.restapi.serializer.vocabularies import SerializeTermToJson
+from plone.restapi.interfaces import ISerializeToJson
+
+# Zope imports
 from zope.schema.vocabulary import SimpleTerm
 from zope.component.hooks import getSite
+from zope.interface import Interface, implementer
+from zope.component import adapter
+
+# CMFCore imports
 from Products.CMFCore.utils import getToolByName
 from zope.globalrequest import getRequest
 
@@ -65,6 +73,10 @@ def unique_terms(objects):
     return unique_objects
 
 
+class SimpleUserTerm(SimpleTerm):
+    """A simple term representing a user, storing token, value, and title."""
+
+
 class UsersFactory(BaseUsersFactory):
     """Factory creating a UsersVocabulary"""
 
@@ -77,14 +89,20 @@ class UsersFactory(BaseUsersFactory):
             return
         acl_users = getToolByName(getSite(), "acl_users")
         userids = set(u.get("id") for u in acl_users.searchUsers())
+
         for userid in userids:
             user = api.user.get(userid)
             if not user:
                 continue
+
             fullname = user.getProperty("fullname", "")
             if not fullname:
                 continue
-            yield SimpleTerm(userid, userid, fullname)
+
+            email = user.getProperty("email", "")
+            simpleTerm = SimpleUserTerm(userid, userid, fullname)
+            simpleTerm.email = email
+            yield simpleTerm
 
     def should_search(self, query):
         if self._needs_search:
@@ -150,3 +168,15 @@ class UsersFactory(BaseUsersFactory):
         vocabulary = PrincipalsVocabulary(terms)
         vocabulary.principal_source = self.source
         return vocabulary
+
+
+@implementer(ISerializeToJson)
+@adapter(SimpleUserTerm, Interface)
+class SerializeUserTermToJson(SerializeTermToJson):
+    """Serializer for SimpleUserTerm."""
+
+    def __call__(self):
+        """Serialize user term to JSON."""
+        termData = super().__call__()
+        termData["email"] = self.context.email
+        return termData

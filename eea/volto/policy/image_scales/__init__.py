@@ -1,1 +1,1 @@
-""" Image scales fallback for Plone 5 """
+"""Image scales fallback for Plone 5"""

@@ -1,6 +1,5 @@
-""" Custom setup
-"""
-# pylint: disable = C0301
+"""Custom setup"""
+
 import logging
 
 from Products.CMFPlone.interfaces import INonInstallable
@@ -12,25 +11,22 @@ logger = logging.getLogger("eea.volto.policy")
 
 @implementer(INonInstallable)
 class HiddenProfiles:
-    """ Hidden profiles
-    """
+    """Hidden profiles"""
 
     def getNonInstallableProfiles(self):
-        """ Hide uninstall profile from site-creation and quickinstaller.
-        """
+        """Hide uninstall profile from site-creation and quickinstaller."""
         return [
-            'eea.volto.policy:multilingual',
-            'eea.volto.policy:uninstall',
+            "eea.volto.policy:multilingual",
+            "eea.volto.policy:uninstall",
+            "eea.volto.policy:to_83",
         ]
 
 
 def post_install(context):
-    """ Post install script
-    """
+    """Post install script"""
     # Do something at the end of the installation of this package.
 
 
 def uninstall(context):
-    """ Uninstall script
-    """
+    """Uninstall script"""
     # Do something at the end of the uninstallation of this package.

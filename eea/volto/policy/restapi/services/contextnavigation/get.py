@@ -27,8 +27,7 @@ class IEEANavigationPortlet(original_get.INavigationPortlet):
 
     portal_type = schema.Tuple(
         title=_("Displayed content types"),
-        description=_("The content types that should be shown in the navigati"
-                      "on"),
+        description=_("The content types that should be shown in the navigation"),
         required=False,
         default=(),
         missing_value=(),
@@ -43,8 +42,7 @@ class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
 
     side_nav_types = schema.Tuple(
         title=_("Displayed content types within the side navigation"),
-        description=_("The content types that should be shown in the "
-                      "side navigation"),
+        description=_("The content types that should be shown in the side navigation"),
         required=False,
         default=("Document",),
         missing_value=(),
@@ -101,26 +99,30 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
         if root is not None:
             rootPath = "/".join(root.getPhysicalPath())
         else:
-            rootPath = getNavigationRoot(context) if not currentFolderOnly \
+            rootPath = (
+                getNavigationRoot(context)
+                if not currentFolderOnly
                 else "/".join(context.getPhysicalPath())
+            )
 
         # avoid large queries on layout pages where context is site
         if currentFolderOnly:
             request = getRequest()
             # don't query when we add a new page and we use report_navigation
             is_site = ISiteRoot.providedBy(context)
-            if is_site or 'add?type' in request.get('HTTP_REFERER', '') and \
-                    request.form.get('expand.contextnavigation.variation', '')\
-                    == 'report_navigation':
+            if (
+                is_site
+                or "add?type" in request.get("HTTP_REFERER", "")
+                and request.form.get("expand.contextnavigation.variation", "")
+                == "report_navigation"
+            ):
                 self.query = {}
                 return
 
         # EEA modification to always use the rootPath for query
-        self.query["path"] = {"query": rootPath, "depth": depth,
-                              "navtree": 1}
+        self.query["path"] = {"query": rootPath, "depth": depth, "navtree": 1}
 
-        self.query["portal_type"] = data.portal_type or self.getSideNavTypes(
-            context)
+        self.query["portal_type"] = data.portal_type or self.getSideNavTypes(context)
 
         topLevel = data.topLevel
         if topLevel and topLevel > 0:
@@ -167,8 +169,7 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
             else:
                 root_url = original_get.get_url(root)
 
-            root_title = "Home" if root_is_portal else \
-                root.pretty_title_or_id()
+            root_title = "Home" if root_is_portal else root.pretty_title_or_id()
             root_type = (
                 "plone-site"
                 if root_is_portal
@@ -204,7 +205,7 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
         return res
 
     def title(self):
-        """ title """
+        """title"""
         # Allow to have empty title without Navigation fallback
         name = self.data.name
         # handle bug where empty title is set to undefined from Volto
@@ -212,7 +213,7 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
 
     @memoize
     def getNavTree(self, _marker=None):
-        """ Get the navigation tree """
+        """Get the navigation tree"""
 
         if _marker is None:
             _marker = []
@@ -284,8 +285,11 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
 
             nodechildren = node["children"]
 
-            if (nodechildren and show_children and
-                    ((level <= bottomLevel) or (bottomLevel == 0))):
+            if (
+                nodechildren
+                and show_children
+                and ((level <= bottomLevel) or (bottomLevel == 0))
+            ):
                 item["items"] = self.recurse(
                     nodechildren, level=level + 1, bottomLevel=bottomLevel
                 )
@@ -312,18 +316,14 @@ class EEAContextNavigation:
         }
         if not expand:
             return result
-        data = eea_extract_data(
-            IEEANavigationPortlet,
-            self.request.form,
-            prefix)
-        renderer = EEANavigationPortletRenderer(
-            self.context, self.request, data)
+        data = eea_extract_data(IEEANavigationPortlet, self.request.form, prefix)
+        renderer = EEANavigationPortletRenderer(self.context, self.request, data)
         res = renderer.render()
         result["contextnavigation"].update(res)
         return result
 
     def getNavTree(self):
-        """ getNavTree"""
+        """getNavTree"""
         # compatibility method with NavigationPortletRenderer, only for tests
         return self.__call__(expand=True)["contextnavigation"]
 

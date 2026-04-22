@@ -5,4 +5,6 @@
   <include package=".contextnavigation" />
   <include package=".breadcrumbs" />
   <include package=".actions" />
+  <include package=".header_settings" />
+  <include package=".layout_blocks_duplicates" />
 </configure>

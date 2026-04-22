@@ -1,4 +1,3 @@
-# pylint: disable=ungrouped-imports
 """
 Indexer
 """

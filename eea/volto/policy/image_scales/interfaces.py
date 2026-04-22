@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Module where all interfaces, events and exceptions live."""
+
 import json
 from plone import schema
 from zope.interface import Interface
@@ -117,9 +118,7 @@ class IImagingSchema(Interface):
 
     picture_variants = schema.JSONField(
         title=_("Picture variants"),
-        description=_(
-            "Enter a JSON-formatted picture variants configuration."
-        ),
+        description=_("Enter a JSON-formatted picture variants configuration."),
         schema=json.dumps(
             {
                 "title": "Image srcset definition",

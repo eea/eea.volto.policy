@@ -1,4 +1,5 @@
 """Summary serializer metadata for EEA Volto Policy."""
+
 from plone.restapi.interfaces import IJSONSummarySerializerMetadata
 from plone.restapi.serializer.summary import JSONSummarySerializerMetadata
 from zope.interface import implementer

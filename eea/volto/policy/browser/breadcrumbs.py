@@ -42,8 +42,7 @@ class PhysicalNavigationBreadcrumbs(BrowserView):
         if INavigationRoot.providedBy(context):
             return ()
 
-        view = getMultiAdapter((container, request),
-                               name="eea_breadcrumbs_view")
+        view = getMultiAdapter((container, request), name="eea_breadcrumbs_view")
         base = tuple(view.breadcrumbs())
 
         # Some things want to be hidden from the breadcrumbs

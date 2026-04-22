@@ -1,8 +1,127 @@
 Changelog
 =========
 
-7.2-dev0 - (unreleased)
+12.4-dev0 - (unreleased)
 ---------------------------
+
+12.3 - (2026-04-21)
+---------------------------
+* Change: Rename header settings control panel and add @layout-blocks-duplicates endpoint
+  [razvanMiu]
+
+12.2 - (2026-04-17)
+---------------------------
+* Change: update default registry
+  [razvanMiu]
+
+12.1 - (2026-04-15)
+---------------------------
+* Change: Change header defaults
+  [razvanMiu]
+
+11.5 - (2026-04-14)
+---------------------------
+* Change: added `README.md` file inside policy folder with extra details on package
+  contents 
+  [ichim-david]
+
+11.4 - (2026-03-25)
+---------------------------
+* Change: (FIX): Fix 404 page when parent is private refs #284281
+  [dobri1408]
+
+11.3 - (2026-03-04)
+---------------------------
+* Fix: Override titles on cards when target is selected
+  [tedw87 - refs #298262]
+
+11.2 - (2025-12-22)
+---------------------------
+* Fix: Index image scales with relative_path to context
+  [avoinea - refs #295495]
+
+11.1 - (2025-12-22)
+---------------------------
+* Fix: Handle NoInteraction during inherited field lookup in indexing
+  [avoinea - refs #295495]
+
+11.0 - (2025-12-21)
+---------------------------
+* Feature: Inheritable fields, for example inherit preview_image from parent if context doesn't have a preview_image
+  [razvanMiu - refs #295495]
+
+10.0 - (2025-12-03)
+---------------------------
+* Feature: Enhance restricted blocks serialization by two new fields: `allow_view` and `deny_view`
+  [dobri1408 - refs #294358]
+
+9.3 - (2025-11-19)
+---------------------------
+* Fix: migration script to handle missing catalog entries for images
+  [ichim-david refs #254622]
+
+9.2 - (2025-11-18)
+---------------------------
+* Change: Replace Python linting to ruff
+  [mihaidobrescu1111 = refs #286821]
+* Change: Add plone6 tests
+  [mihaidobrescu1111 = refs #293593]
+
+9.1 - (2025-10-24)
+---------------------------
+* Fix: tests for Plone 5
+  [ichim-david - refs #292589]
+
+9.0 - (2025-10-08)
+---------------------------
+* Fix: teaser block serializer to not clear href for non-http urls
+  [ichim-david - refs #292589]
+* Breaking: drop testing for Plone 5 that used plone.restapi 8.x
+  Version 8 was deprecated in 2023
+  [ichim-david - refs #292589]
+
+8.5 - (2025-08-27)
+---------------------------
+* Change: Release
+  [dobri1408]
+
+8.4 - (2025-08-20)
+---------------------------
+* Change: feat: Control Navigation Settings TTW - refs #288509
+  [avoinea]
+
+8.3 - (2025-08-19)
+---------------------------
+* Change: Release
+  [dobri1408]
+
+8.2 - (2025-08-11)
+---------------------------
+* Change: Release with an older python 3 version
+  [valentinab25]
+
+8.1 - (2025-08-04)
+---------------------------
+* Change: fix(upgrade): for images, allowing also to run @@image-migrate script
+  [ichim-david]
+
+8.0 - (2025-07-31)
+-----------------------
+* Create method to update all backend:8080 to resolveuid
+  [dobri1408 - refs #290024]
+* Feature: added migration script for `item`, `teaser` and `hero`
+  to new attachedimage array of object like object_browser widget
+  [ichim-david refs #254622]
+
+7.3 - (2025-05-29)
+---------------------------
+* Fix: ComponentLookupError eea_breadcrumbs_view
+  [avoinea]
+
+7.2 - (2025-04-30)
+---------------------------
+* Feature: Add email field to Users vocabulary
+  [tedw87 - refs #274362]
 
 7.1 - (2025-03-05)
 ---------------------------
