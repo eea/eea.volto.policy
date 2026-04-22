@@ -144,19 +144,15 @@ class UsersFactory(BaseUsersFactory):
 
                 for principal_id, types_infos in infotree.items():
                     if len(types_infos) > 1 and not cfg["prefix"]:
-                        raise ValueError(
-                            f"Principal ID not unique: {principal_id}")
+                        raise ValueError(f"Principal ID not unique: {principal_id}")
                     for principal_type, principal_infos in types_infos.items():
                         if principal_type == "user":
                             pass
                         value = principal_id
-                        info = merge_principal_infos(
-                            principal_infos, acl_users)
+                        info = merge_principal_infos(principal_infos, acl_users)
                         if cfg["prefix"]:
-                            value = "{}:{}".format(
-                                info["principal_type"], value)
-                        token = token_from_principal_info(
-                            info, prefix=cfg["prefix"])
+                            value = "{}:{}".format(info["principal_type"], value)
+                        token = token_from_principal_info(info, prefix=cfg["prefix"])
                         yield (value, token, info["title"])
 
         terms = unique_terms(
