@@ -5,9 +5,11 @@ from plone.dexterity.interfaces import IDexterityContent
 from plone.namedfile.interfaces import INamedFileField
 from plone.namedfile.interfaces import INamedImageField
 from plone.restapi.interfaces import IFieldSerializer
+from plone.restapi.serializer.blocks import BlocksJSONFieldSerializer
 from plone.restapi.serializer.dxfields import DefaultFieldSerializer
 from plone.restapi.serializer.dxfields import DefaultPrimaryFieldTarget
 from plone.restapi.serializer.dxfields import ImageFieldSerializer
+from plone.schema import IJSONField
 from zope.component import adapter
 from zope.interface import implementer
 from zope.schema.interfaces import IDatetime
@@ -15,6 +17,11 @@ from zope.schema.interfaces import IField
 
 from eea.volto.policy.inherit import InheritableMixin
 from eea.volto.policy.interfaces import IEeaVoltoPolicyLayer
+
+try:
+    from eea.geolocation.grouping import grouped_geolocation
+except ImportError:
+    grouped_geolocation = None
 
 try:
     from eea.coremetadata.metadata import ICoreMetadata
@@ -39,6 +46,27 @@ class InheritableFieldSerializer(InheritableMixin, DefaultFieldSerializer):
     """
     Generic field serializer with inheritance support.
     """
+
+
+@implementer(IFieldSerializer)
+@adapter(IJSONField, IDexterityContent, IEeaVoltoPolicyLayer)
+class EEAJSONFieldSerializer(InheritableMixin, BlocksJSONFieldSerializer):
+    """JSON field serializer with EEA additions."""
+
+    def __call__(self):
+        value = super().__call__()
+
+        if (
+            grouped_geolocation is not None
+            and self.field.__name__ == "geo_coverage"
+            and isinstance(value, dict)
+        ):
+            value = value.copy()
+            value["grouped_geolocation"] = grouped_geolocation(
+                value, context=self.context
+            )
+
+        return value
 
 
 # Other serializers
