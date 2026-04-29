@@ -1,6 +1,11 @@
 Changelog
 =========
 
+12.4 - (2026-04-29)
+---------------------------
+* Change: Cleanup printf - TeaserBlockSerializerBase._process_data called
+  [avoinea]
+
 12.3 - (2026-04-21)
 ---------------------------
 * Change: Rename header settings control panel and add @layout-blocks-duplicates endpoint
