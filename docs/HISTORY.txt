@@ -1,7 +1,7 @@
 Changelog
 =========
 
-12.4 - (unreleased)
+12.4 - (2026-04-29)
 ---------------------------
 * Change: Cleanup printf - TeaserBlockSerializerBase._process_data called
   [avoinea]
