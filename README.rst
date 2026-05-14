@@ -26,8 +26,8 @@ Main features
 =============
 
 1. Easy to install/uninstall via Site Setup > Add-ons
-2.
-3.
+2. GET @layout-blocks-duplicates - scans IBlocks content via the catalog, returns each affected item with UID, URL, and per-UUID occurrence locations. Supports path, portal_type, and b_size filters.
+3. POST @layout-blocks-duplicates - repairs the reported items: deep-copies each duplicate block, assigns a fresh UUID, regenerates every UUID in the copied subtree, and patches blocks_layout.items in lockstep. Supports dry_run=1 for preview. Idempotent - a no-op on clean content.
 
 Install
 =======

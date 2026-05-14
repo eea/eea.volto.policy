@@ -2,6 +2,8 @@
 eea.volto.policy.restapi.serializer.blocks overrides
 """
 
+import logging
+
 try:
     from plone.restapi.serializer.blocks import (
         TeaserBlockSerializerBase,
@@ -21,10 +23,12 @@ except ImportError:
 from plone.restapi.interfaces import ISerializeToJsonSummary
 from zope.component import getMultiAdapter
 
+logger = logging.getLogger(__name__)
+
 
 def patched_process_data(self, data, field=None):
     """Override _process_data to remove the href clearing logic for non-http"""
-    print("Patched TeaserBlockSerializerBase._process_data called")
+    logger.debug("Patched TeaserBlockSerializerBase._process_data called")
     value = data.get("href", "")
     if value:
         if "overwrite" not in data:
