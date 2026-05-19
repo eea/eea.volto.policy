@@ -1,8 +1,10 @@
 Changelog
 =========
 
-12.5-dev0 - (unreleased)
+12.5 - (2026-05-19)
 ---------------------------
+* Fix: Point Scripts/Styles viewlets to their split modules (.scripts/.styles)
+  [valipod]
 
 12.4 - (2026-04-29)
 ---------------------------
