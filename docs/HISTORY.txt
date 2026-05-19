@@ -1,6 +1,10 @@
 Changelog
 =========
 
+12.5 - (unreleased)
+* Fix: Point Scripts/Styles viewlets to their split modules (.scripts/.styles)
+  [valipod]
+
 12.4 - (2026-04-29)
 ---------------------------
 * Change: Cleanup printf - TeaserBlockSerializerBase._process_data called

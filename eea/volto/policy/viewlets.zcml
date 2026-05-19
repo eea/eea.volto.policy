@@ -62,7 +62,7 @@
         name="plone.resourceregistries.scripts"
         layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
         manager="plone.app.layout.viewlets.interfaces.IScripts"
-        class=".resource.ScriptsView"
+        class=".scripts.ScriptsView"
         permission="zope.Public"
         />
 
@@ -70,7 +70,7 @@
         name="plone.resourceregistries.styles"
         layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
         manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
-        class=".resource.StylesView"
+        class=".styles.StylesView"
         permission="zope.Public"
         />
   </configure>
