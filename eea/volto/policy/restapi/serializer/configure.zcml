@@ -6,6 +6,7 @@
   <!-- Inheritance-aware field serializers -->
   <adapter factory=".dxfields.InheritableImageFieldSerializer" />
   <adapter factory=".dxfields.InheritableFieldSerializer" />
+  <adapter factory=".dxfields.EEAJSONFieldSerializer" />
 
   <!-- Other serializers -->
   <adapter factory=".dxfields.DateTimeFieldSerializer" />
