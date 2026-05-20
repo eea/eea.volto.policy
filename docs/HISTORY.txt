@@ -1,7 +1,7 @@
 Changelog
 =========
 
-12.6-dev0 - (unreleased)
+12.6 - (2026-05-20)
 ---------------------------
 * Fix: Restore Plone 5.2 / Plone 6 compatibility for Scripts/Styles viewlets
   (try scripts/styles modules, fall back to resource)
