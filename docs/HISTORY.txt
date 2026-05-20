@@ -3,6 +3,9 @@ Changelog
 
 12.6-dev0 - (unreleased)
 ---------------------------
+* Fix: Restore Plone 5.2 / Plone 6 compatibility for Scripts/Styles viewlets
+  (try scripts/styles modules, fall back to resource)
+  [valipod]
 
 12.5 - (2026-05-19)
 ---------------------------
