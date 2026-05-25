@@ -27,6 +27,14 @@
     name="image_field"
     />
 
+  <browser:page
+    name="search_rss"
+    for="*"
+    class="Products.CMFPlone.browser.syndication.views.SearchFeedView"
+    template="browser/search-rss.pt"
+    permission="zope2.View"
+    />
+
   <!-- Plone 6: Override ImageFieldScales to add inheritance support -->
   <configure zcml:condition="installed Products.CMFPlone.image_scales">
     <adapter factory=".image_scales.adapters.EEAImageFieldScales" />
