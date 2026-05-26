@@ -1,0 +1,4 @@
+32c32
+<     <title tal:content="python:item.Title()">Title</title>
+---
+>     <title tal:content="item/title">Title</title>
