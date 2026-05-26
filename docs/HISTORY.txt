@@ -3,6 +3,8 @@ Changelog
 
 12.7-dev0 - (unreleased)
 ---------------------------
+* Fix: Override Plone search RSS template to use feed item title property
+  [dobri1408]
 
 12.6 - (2026-05-20)
 ---------------------------
