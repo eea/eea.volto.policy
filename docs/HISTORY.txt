@@ -1,7 +1,7 @@
 Changelog
 =========
 
-13.0-dev0 - (unreleased)
+13.0 - (2026-06-25)
 ---------------------------
 * Feature: Scope geo_coverage serializer to IGeoCoverageField marker interface
   instead of all JSON fields. Add eea.geolocation as explicit dependency.
