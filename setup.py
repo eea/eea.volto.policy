@@ -49,6 +49,8 @@ setup(
     install_requires=[
         "setuptools",
         "plone.volto",
+        "eea.geolocation",
+        "eea.coremetadata",
         # -*- Extra requirements: -*-
     ],
     extras_require={
