@@ -57,23 +57,21 @@
       permission="zope.Public"
       />
 
-  <configure package="Products.CMFPlone.resources.browser">
-    <browser:viewlet
-        name="plone.resourceregistries.scripts"
-        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
-        manager="plone.app.layout.viewlets.interfaces.IScripts"
-        class=".resource.ScriptsView"
-        permission="zope.Public"
-        />
+  <browser:viewlet
+      name="plone.resourceregistries.scripts"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      manager="plone.app.layout.viewlets.interfaces.IScripts"
+      class=".cmfplone_compat.ScriptsView"
+      permission="zope.Public"
+      />
 
-    <browser:viewlet
-        name="plone.resourceregistries.styles"
-        layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
-        manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
-        class=".resource.StylesView"
-        permission="zope.Public"
-        />
-  </configure>
+  <browser:viewlet
+      name="plone.resourceregistries.styles"
+      layer=".interfaces.IEeaVoltoPolicyLayer"
+      manager="plone.app.layout.viewlets.interfaces.IHtmlHeadLinks"
+      class=".cmfplone_compat.StylesView"
+      permission="zope.Public"
+      />
 
   <configure package="plone.app.layout.viewlets">
     <browser:viewlet
