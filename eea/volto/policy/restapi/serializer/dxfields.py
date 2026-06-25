@@ -8,19 +8,15 @@ from plone.restapi.interfaces import IFieldSerializer
 from plone.restapi.serializer.dxfields import DefaultFieldSerializer
 from plone.restapi.serializer.dxfields import DefaultPrimaryFieldTarget
 from plone.restapi.serializer.dxfields import ImageFieldSerializer
-from plone.schema import IJSONField
 from zope.component import adapter
 from zope.interface import implementer
 from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField
 
+from eea.coremetadata.interfaces import IGeoCoverageField
+from eea.geolocation.grouping import serialize_grouped_geolocation
 from eea.volto.policy.inherit import InheritableMixin
 from eea.volto.policy.interfaces import IEeaVoltoPolicyLayer
-
-try:
-    from eea.geolocation.grouping import serialize_grouped_geolocation
-except ImportError:
-    serialize_grouped_geolocation = None
 
 try:
     from eea.coremetadata.metadata import ICoreMetadata
@@ -48,18 +44,14 @@ class InheritableFieldSerializer(InheritableMixin, DefaultFieldSerializer):
 
 
 @implementer(IFieldSerializer)
-@adapter(IJSONField, IDexterityContent, IEeaVoltoPolicyLayer)
-class EEAJSONFieldSerializer(InheritableMixin, DefaultFieldSerializer):
-    """JSON field serializer with EEA additions."""
+@adapter(IGeoCoverageField, IDexterityContent, IEeaVoltoPolicyLayer)
+class GeoCoverageFieldSerializer(InheritableMixin, DefaultFieldSerializer):
+    """Geo coverage field serializer with grouping and inheritance support."""
 
     def __call__(self):
         value = super().__call__()
 
-        if (
-            serialize_grouped_geolocation is not None
-            and self.field.__name__ == "geo_coverage"
-            and isinstance(value, dict)
-        ):
+        if isinstance(value, dict):
             value = serialize_grouped_geolocation(
                 value,
                 context=self.context,

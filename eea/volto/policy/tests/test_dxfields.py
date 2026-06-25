@@ -26,8 +26,15 @@ class DummyContext:
     """Context double with field values as attributes."""
 
 
-class EEAJSONFieldSerializerTest(unittest.TestCase):
-    """Test EEA JSON field serialization additions."""
+class DummyRequest:
+    """Request double that supports attribute assignment for caching."""
+
+    def __init__(self):
+        pass
+
+
+class GeoCoverageFieldSerializerTest(unittest.TestCase):
+    """Test GeoCoverageFieldSerializer serialization additions."""
 
     def tearDown(self):
         dxfields.serialize_grouped_geolocation = self.original_serializer
@@ -38,14 +45,26 @@ class EEAJSONFieldSerializerTest(unittest.TestCase):
         self.original_json_compatible = restapi_dxfields.json_compatible
         restapi_dxfields.json_compatible = lambda value: value
 
+    def _make_geo_coverage_field(self, value, interface_context=None):
+        """Create a DummyField marked with IGeoCoverageField."""
+        from zope.interface import directlyProvides
+        from eea.coremetadata.interfaces import IGeoCoverageField
+
+        field = DummyField(
+            "geo_coverage",
+            value,
+            interface_context=interface_context,
+        )
+        directlyProvides(field, IGeoCoverageField)
+        return field
+
     def test_adds_grouped_geolocation_to_geo_coverage_from_behavior_value(self):
         context = DummyContext()
         metadata = DummyContext()
         metadata.geo_coverage = {
             "geolocation": [{"value": "geo-a", "label": "Austria"}]
         }
-        field = DummyField(
-            "geo_coverage",
+        field = self._make_geo_coverage_field(
             metadata.geo_coverage,
             interface_context=metadata,
         )
@@ -58,23 +77,49 @@ class EEAJSONFieldSerializerTest(unittest.TestCase):
         dxfields.serialize_grouped_geolocation = serializer
 
         self.assertEqual(
-            dxfields.EEAJSONFieldSerializer(field, context, object())(),
+            dxfields.GeoCoverageFieldSerializer(field, context, DummyRequest())(),
             {
                 "geolocation": [{"value": "geo-a", "label": "Austria"}],
                 "grouped_geolocation": {"groups": [], "ungrouped": []},
             },
         )
 
-    def test_leaves_other_json_fields_untouched(self):
+    def test_adds_grouped_geolocation_from_context_attribute(self):
         context = DummyContext()
-        context.some_json = {"value": "unchanged"}
-        field = DummyField("some_json", context.some_json)
-        dxfields.serialize_grouped_geolocation = None
+        context.geo_coverage = {
+            "geolocation": [{"value": "geo-b", "label": "Belgium"}]
+        }
+        field = self._make_geo_coverage_field(
+            context.geo_coverage,
+            interface_context=context,
+        )
+
+        def serializer(value, context=None):
+            value = value.copy()
+            value["grouped_geolocation"] = {"groups": [], "ungrouped": []}
+            return value
+
+        dxfields.serialize_grouped_geolocation = serializer
 
         self.assertEqual(
-            dxfields.EEAJSONFieldSerializer(field, context, object())(),
-            {"value": "unchanged"},
+            dxfields.GeoCoverageFieldSerializer(field, context, DummyRequest())(),
+            {
+                "geolocation": [{"value": "geo-b", "label": "Belgium"}],
+                "grouped_geolocation": {"groups": [], "ungrouped": []},
+            },
         )
+
+    def test_handles_non_dict_value_gracefully(self):
+        context = DummyContext()
+        field = self._make_geo_coverage_field(None)
+
+        # When value is None, serializer returns None and we don't call
+        # serialize_grouped_geolocation (isinstance check fails)
+        result = dxfields.GeoCoverageFieldSerializer(
+            field, context, DummyRequest()
+        )()
+        # DefaultFieldSerializer returns None for missing values
+        self.assertIsNone(result)
 
 
 def test_suite():
