@@ -13,6 +13,8 @@ from zope.interface import implementer
 from zope.schema.interfaces import IDatetime
 from zope.schema.interfaces import IField
 
+from eea.coremetadata.interfaces import IGeoCoverageField
+from eea.geolocation.grouping import serialize_grouped_geolocation
 from eea.volto.policy.inherit import InheritableMixin
 from eea.volto.policy.interfaces import IEeaVoltoPolicyLayer
 
@@ -39,6 +41,23 @@ class InheritableFieldSerializer(InheritableMixin, DefaultFieldSerializer):
     """
     Generic field serializer with inheritance support.
     """
+
+
+@implementer(IFieldSerializer)
+@adapter(IGeoCoverageField, IDexterityContent, IEeaVoltoPolicyLayer)
+class GeoCoverageFieldSerializer(InheritableMixin, DefaultFieldSerializer):
+    """Geo coverage field serializer with grouping and inheritance support."""
+
+    def __call__(self):
+        value = super().__call__()
+
+        if isinstance(value, dict):
+            value = serialize_grouped_geolocation(
+                value,
+                context=self.context,
+            )
+
+        return value
 
 
 # Other serializers

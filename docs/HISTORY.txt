@@ -1,6 +1,14 @@
 Changelog
 =========
 
+13.0 - (2026-06-25)
+---------------------------
+* Feature: Scope geo_coverage serializer to IGeoCoverageField marker interface
+  instead of all JSON fields. Add eea.geolocation as explicit dependency.
+  [avoinea - refs #296992]
+* Feature: Serialize grouped geographic coverage
+  [tedw87 - refs #296992]
+
 12.7 - (2026-05-26)
 ---------------------------
 * Fix: Override Plone search RSS template to use feed item title property
