@@ -86,9 +86,7 @@ class GeoCoverageFieldSerializerTest(unittest.TestCase):
 
     def test_adds_grouped_geolocation_from_context_attribute(self):
         context = DummyContext()
-        context.geo_coverage = {
-            "geolocation": [{"value": "geo-b", "label": "Belgium"}]
-        }
+        context.geo_coverage = {"geolocation": [{"value": "geo-b", "label": "Belgium"}]}
         field = self._make_geo_coverage_field(
             context.geo_coverage,
             interface_context=context,
@@ -115,9 +113,7 @@ class GeoCoverageFieldSerializerTest(unittest.TestCase):
 
         # When value is None, serializer returns None and we don't call
         # serialize_grouped_geolocation (isinstance check fails)
-        result = dxfields.GeoCoverageFieldSerializer(
-            field, context, DummyRequest()
-        )()
+        result = dxfields.GeoCoverageFieldSerializer(field, context, DummyRequest())()
         # DefaultFieldSerializer returns None for missing values
         self.assertIsNone(result)
 
