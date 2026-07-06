@@ -35,7 +35,7 @@ def strip_internal_url_prefix(value):
         if value == prefix:
             return "/"
         if value.startswith(prefix + "/"):
-            suffix = value[len(prefix):]
+            suffix = value[len(prefix) :]
             return suffix or "/"
     return value
 
@@ -48,7 +48,9 @@ def normalize_url_fields(data, active_field=None):
         return data
 
     if isinstance(data, list):
-        return [normalize_url_fields(value, active_field=active_field) for value in data]
+        return [
+            normalize_url_fields(value, active_field=active_field) for value in data
+        ]
 
     if isinstance(data, dict):
         result = deepcopy(data)

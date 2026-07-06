@@ -9,7 +9,7 @@ from plone import api
 from plone.restapi.behaviors import IBlocks
 from plone.restapi.interfaces import (
     IBlockFieldDeserializationTransformer,
-    IBlockFieldSerializationTransformer
+    IBlockFieldSerializationTransformer,
 )
 from plone.restapi.serializer.blocks import (
     SlateBlockSerializerBase,
@@ -27,7 +27,7 @@ from eea.volto.policy.restapi.services.contextnavigation.get import (
 from eea.volto.policy.restapi.url_normalizer import (
     normalize_html_attribute_url,
     normalize_url_fields,
-    strip_internal_url_prefix
+    strip_internal_url_prefix,
 )
 
 try:
@@ -164,8 +164,7 @@ class HTMLBlockSerializerBase:
         if "/resolveuid/" in url:
             resolved_url = uid_to_url(url)
             if is_image and "/resolveuid/" not in resolved_url:
-                return strip_internal_url_prefix(
-                    f"{resolved_url} /@@download/image")
+                return strip_internal_url_prefix(f"{resolved_url} /@@download/image")
             return strip_internal_url_prefix(resolved_url or url)
         return strip_internal_url_prefix(url)
 
@@ -309,11 +308,9 @@ class ContextNavigationBlockSerializationTransformer:
 
             data = eea_extract_data(IEEANavigationPortlet, value, prefix=None)
 
-            renderer = EEANavigationPortletRenderer(
-                self.context, self.request, data)
+            renderer = EEANavigationPortletRenderer(self.context, self.request, data)
             res = renderer.render()
-            is_data_available = res.get(
-                "available", True)  # or get res[items]?
+            is_data_available = res.get("available", True)  # or get res[items]?
             value["results"] = is_data_available
 
         return value
