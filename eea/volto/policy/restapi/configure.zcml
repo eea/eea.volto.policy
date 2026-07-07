@@ -8,6 +8,16 @@
   <include package=".serializer" />
   <include package=".services" />
   
+  <!--  URL prefix normalization -->
+  <subscriber
+    provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"
+    factory=".blocks.InternalURLPrefixDeserializationTransformer"
+    for="plone.restapi.behaviors.IBlocks zope.publisher.interfaces.browser.IBrowserRequest" />
+  <subscriber
+    provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
+    factory=".blocks.InternalURLPrefixSerializationTransformer"
+    for="plone.restapi.behaviors.IBlocks zope.publisher.interfaces.browser.IBrowserRequest" />
+
   <!--  Serializations -->
   <subscriber
     provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
