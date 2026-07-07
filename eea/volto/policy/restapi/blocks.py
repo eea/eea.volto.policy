@@ -7,7 +7,10 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from plone import api
 from plone.restapi.behaviors import IBlocks
-from plone.restapi.interfaces import IBlockFieldSerializationTransformer
+from plone.restapi.interfaces import (
+    IBlockFieldDeserializationTransformer,
+    IBlockFieldSerializationTransformer,
+)
 from plone.restapi.serializer.blocks import (
     SlateBlockSerializerBase,
     uid_to_url,
@@ -20,6 +23,11 @@ from eea.volto.policy.restapi.services.contextnavigation.get import (
     EEANavigationPortletRenderer,
     eea_extract_data,
     IEEANavigationPortlet,
+)
+from eea.volto.policy.restapi.url_normalizer import (
+    normalize_html_attribute_url,
+    normalize_url_fields,
+    strip_internal_url_prefix,
 )
 
 try:
@@ -38,6 +46,38 @@ def getLink(path):
     if URL.netloc.startswith("localhost") and URL.scheme:
         return path.replace(URL.scheme + "://" + URL.netloc, "")
     return path
+
+
+@implementer(IBlockFieldDeserializationTransformer)
+@adapter(IBlocks, IBrowserRequest)
+class InternalURLPrefixDeserializationTransformer:
+    """Strip configured internal backend URL prefixes before resolveuid transform."""
+
+    order = 0
+    block_type = None
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self, value):
+        return normalize_url_fields(value)
+
+
+@implementer(IBlockFieldSerializationTransformer)
+@adapter(IBlocks, IBrowserRequest)
+class InternalURLPrefixSerializationTransformer:
+    """Strip configured internal backend URL prefixes after block serialization."""
+
+    order = 10000
+    block_type = None
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self, value):
+        return normalize_url_fields(value)
 
 
 class HTMLBlockDeserializerBase:
@@ -70,11 +110,12 @@ class HTMLBlockDeserializerBase:
         for tag in soup.find_all(["a", "img"]):
             if tag.name == "a" and tag.has_attr("href"):
                 tag["href"] = self._clean_download_image(tag["href"])
-
+                tag["href"] = normalize_html_attribute_url(tag["href"])
                 tag["href"] = path2uid(context=self.context, link=tag["href"])
 
             elif tag.name == "img" and tag.has_attr("src"):
                 tag["src"] = self._clean_download_image(tag["src"])
+                tag["src"] = normalize_html_attribute_url(tag["src"])
                 tag["src"] = path2uid(context=self.context, link=tag["src"])
 
         # Serialize the modified HTML back into the block
@@ -123,9 +164,9 @@ class HTMLBlockSerializerBase:
         if "/resolveuid/" in url:
             resolved_url = uid_to_url(url)
             if is_image and "/resolveuid/" not in resolved_url:
-                return f"{resolved_url}/@@download/image"
-            return resolved_url or url
-        return url
+                return strip_internal_url_prefix(f"{resolved_url}/@@download/image")
+            return strip_internal_url_prefix(resolved_url or url)
+        return strip_internal_url_prefix(url)
 
 
 class SlateBlockSerializer(SlateBlockSerializerBase):
@@ -140,7 +181,7 @@ class SlateBlockSerializer(SlateBlockSerializerBase):
                 url = uid_to_url(child["url"])
                 if "resolveuid/" not in url:
                     url = "%s/@@download/image" % url
-                child["url"] = url
+                child["url"] = strip_internal_url_prefix(url)
 
 
 @implementer(IBlockFieldSerializationTransformer)
