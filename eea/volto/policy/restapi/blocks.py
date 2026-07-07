@@ -164,7 +164,7 @@ class HTMLBlockSerializerBase:
         if "/resolveuid/" in url:
             resolved_url = uid_to_url(url)
             if is_image and "/resolveuid/" not in resolved_url:
-                return strip_internal_url_prefix(f"{resolved_url} /@@download/image")
+                return strip_internal_url_prefix(f"{resolved_url}/@@download/image")
             return strip_internal_url_prefix(resolved_url or url)
         return strip_internal_url_prefix(url)
 
