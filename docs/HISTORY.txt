@@ -1,7 +1,7 @@
 Changelog
 =========
 
-13.1-dev0 - (unreleased)
+13.1 - (2026-07-07)
 ---------------------------
 * Fix: Normalize internal backend URLs (e.g. backend:8080) saved in volto blocks
   by SSR to avoid broken links. Add unit tests for URL normalizer.
