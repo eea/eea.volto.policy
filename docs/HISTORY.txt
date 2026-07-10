@@ -1,6 +1,9 @@
 Changelog
 =========
 
+13.3-dev0 - (unreleased)
+---------------------------
+
 13.2 - (2026-07-10)
 ---------------------------
 * Fix: Delegate to collective.exportimport's image serializers when one of its
