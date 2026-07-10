@@ -1,6 +1,12 @@
 Changelog
 =========
 
+13.2 - (2026-07-10)
+---------------------------
+* Fix: Delegate to collective.exportimport's image serializers when one of its
+  export markers is present on the request.
+  [claudiaifrim - refs #304938]
+
 13.1 - (2026-07-07)
 ---------------------------
 * Fix: Normalize internal backend URLs (e.g. backend:8080) saved in volto blocks
