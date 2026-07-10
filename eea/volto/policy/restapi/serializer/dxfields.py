@@ -23,6 +23,18 @@ try:
 except ImportError:
     ICoreMetadata = IPublication
 
+try:
+    from collective.exportimport.interfaces import IBase64BlobsMarker
+    from collective.exportimport.interfaces import IPathBlobsMarker
+    from collective.exportimport.serializer import ImageFieldSerializerWithBlobs
+    from collective.exportimport.serializer import (
+        ImageFieldSerializerWithBlobPaths,
+    )
+
+    HAS_EXPORTIMPORT = True
+except ImportError:
+    HAS_EXPORTIMPORT = False
+
 
 # Generic inheritance-aware serializers
 
@@ -32,7 +44,24 @@ except ImportError:
 class InheritableImageFieldSerializer(InheritableMixin, ImageFieldSerializer):
     """
     Image field serializer with inheritance support.
+
+    This registration is more specific than collective.exportimport's
+    request-marker based serializers, so it would shadow them and image
+    blobs would be exported as download urls instead of base64/blob-paths.
+    Defer to them when an export marker is on the request.
     """
+
+    def __call__(self):
+        if HAS_EXPORTIMPORT:
+            if IBase64BlobsMarker.providedBy(self.request):
+                return ImageFieldSerializerWithBlobs(
+                    self.field, self.context, self.request
+                )()
+            if IPathBlobsMarker.providedBy(self.request):
+                return ImageFieldSerializerWithBlobPaths(
+                    self.field, self.context, self.request
+                )()
+        return super().__call__()
 
 
 @implementer(IFieldSerializer)
