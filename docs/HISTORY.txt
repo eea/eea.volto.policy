@@ -3,6 +3,9 @@ Changelog
 
 13.4-dev0 - (unreleased)
 ---------------------------
+* Fix: Override ``@@download`` view to return 404 instead of TypeError (500)
+  when the content type has no primary file field.
+  [avoinea - refs #306552]
 
 13.3 - (2026-07-13)
 ---------------------------
