@@ -68,4 +68,12 @@
     permission="cmf.ManagePortal"
     />
 
+  <browser:page
+    name="download"
+    for="*"
+    class=".download.SafeDownload"
+    permission="zope2.View"
+    layer="eea.volto.policy.interfaces.IEeaVoltoPolicyLayer"
+    />
+
 </configure>
