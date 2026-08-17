@@ -52,9 +52,7 @@ def get_id(item):
 def get_view_url(context):
     """Get view url."""
     registry = getUtility(IRegistry)
-    view_action_types = registry.get(
-        "plone.types_use_view_action_in_listings", []
-    )
+    view_action_types = registry.get("plone.types_use_view_action_in_listings", [])
     item_url = get_url(context)
     name = get_id(context)
 
@@ -176,11 +174,7 @@ class Siblings:
         self.request = request
 
     def __call__(self, expand=False):
-        result = {
-            "siblings": {
-                "@id": f"{self.context.absolute_url()}/@siblings"
-            }
-        }
+        result = {"siblings": {"@id": f"{self.context.absolute_url()}/@siblings"}}
 
         # unlike other expandable elements, expand is always True here
 
@@ -193,9 +187,7 @@ class Siblings:
             return result
 
         tabObj = self.context.aq_parent.aq_inner
-        items = tabObj.restrictedTraverse(
-            "localtabs_view"
-        ).topLevelTabs(actions=())
+        items = tabObj.restrictedTraverse("localtabs_view").topLevelTabs(actions=())
 
         result["siblings"]["items"] = items
 
