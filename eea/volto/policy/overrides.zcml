@@ -5,6 +5,8 @@
 
     <include file="restapi/overrides.zcml" />
 
+    <utility factory=".cache.CacheChooser" />
+
     <configure package="zmi.styles">
         <browser:resourceDirectory
             name="zmi"

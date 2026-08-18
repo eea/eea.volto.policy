@@ -184,6 +184,16 @@ The addon changes behavior in these areas:
   - Replaces users vocabulary factory with one that returns users having
     `fullname` and includes user email in serialized term JSON.
 
+# Cache policy
+
+- `cache.py` and `overrides.zcml` replace the global `plone.memoize`
+  `ICacheChooser` for all memoized functions.
+- Cache backends are tried in `CACHE_BACKEND_ORDER` order, which defaults to
+  `redis,memcached,ram`. Redis and Memcached are disabled unless enabled with
+  `REDIS_ENABLED` or `MEMCACHED_ENABLED`; RAM is the final fallback.
+- `CACHE_TTL` controls Redis and Memcached entry lifetime and defaults to 300
+  seconds. Connection settings are documented by `CacheChooser` in `cache.py`.
+
 # Profiles and upgrades
 
 - `profiles/multilingual/registry/plone.app.querystring.field.Language.xml`:
