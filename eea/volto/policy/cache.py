@@ -43,7 +43,12 @@ class MemcacheAdapter(AbstractDict):
         return json.loads(value)
 
     def __setitem__(self, key, value):
-        self.client.set(self._storage_key(key), json.dumps(value), time=self.ttl)
+        try:
+            serialized = json.dumps(value)
+        except (TypeError, ValueError) as err:
+            logger.warning("Cannot serialize cache value for %s: %s", key, err)
+            return
+        self.client.set(self._storage_key(key), serialized, time=self.ttl)
 
     def __delitem__(self, key):
         self.client.delete(self._storage_key(key))
@@ -71,7 +76,12 @@ class RedisCacheAdapter(AbstractDict):
         return json.loads(value)
 
     def __setitem__(self, key, value):
-        self.client.setex(self._redis_key(key), self.ttl, json.dumps(value))
+        try:
+            serialized = json.dumps(value)
+        except (TypeError, ValueError) as err:
+            logger.warning("Cannot serialize cache value for %s: %s", key, err)
+            return
+        self.client.setex(self._redis_key(key), self.ttl, serialized)
 
     def __delitem__(self, key):
         self.client.delete(self._redis_key(key))

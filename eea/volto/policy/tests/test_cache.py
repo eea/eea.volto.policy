@@ -1,6 +1,7 @@
 """Tests for the global plone.memoize cache policy."""
 
 import os
+from datetime import datetime
 from pathlib import Path
 import unittest
 from unittest.mock import patch
@@ -79,6 +80,62 @@ class CacheAdapterTest(unittest.TestCase):
         self.assertEqual(next(iter(client.expirations.values())), 120)
         del cache["key"]
         self.assertNotIn("key", cache)
+
+    def test_redis_adapter_skips_non_serializable_values(self):
+        """Non-JSON-serializable values must not raise; they are skipped."""
+        client = FakeRedisClient()
+        cache = RedisCacheAdapter(client, "example.function", ttl=60)
+
+        cache["datetime"] = datetime(2026, 1, 1)
+        cache["set"] = {1, 2, 3}
+        cache["bytes"] = b"hello"
+
+        # Nothing was stored — retrieval raises KeyError
+        self.assertNotIn("datetime", cache)
+        self.assertNotIn("set", cache)
+        self.assertNotIn("bytes", cache)
+        with self.assertRaises(KeyError):
+            cache["datetime"]
+
+    def test_memcache_adapter_skips_non_serializable_values(self):
+        """Non-JSON-serializable values must not raise; they are skipped."""
+        client = FakeMemcacheClient()
+        cache = MemcacheAdapter(client, "example.function", ttl=120)
+
+        cache["datetime"] = datetime(2026, 1, 1)
+        cache["set"] = {1, 2, 3}
+        cache["bytes"] = b"hello"
+
+        # Nothing was stored — retrieval raises KeyError
+        self.assertNotIn("datetime", cache)
+        self.assertNotIn("set", cache)
+        self.assertNotIn("bytes", cache)
+        with self.assertRaises(KeyError):
+            cache["datetime"]
+
+    def test_redis_adapter_serializable_after_skipped_value(self):
+        """Cache remains usable after a skipped non-serializable value."""
+        client = FakeRedisClient()
+        cache = RedisCacheAdapter(client, "example.function", ttl=60)
+
+        cache["bad"] = {1, 2, 3}      # skipped (set is not JSON-serializable)
+        cache["good"] = {"value": 1}  # stored normally
+
+        self.assertNotIn("bad", cache)
+        self.assertIn("good", cache)
+        self.assertEqual(cache["good"], {"value": 1})
+
+    def test_memcache_adapter_serializable_after_skipped_value(self):
+        """Cache remains usable after a skipped non-serializable value."""
+        client = FakeMemcacheClient()
+        cache = MemcacheAdapter(client, "example.function", ttl=120)
+
+        cache["bad"] = {1, 2, 3}      # skipped (set is not JSON-serializable)
+        cache["good"] = {"value": 1}  # stored normally
+
+        self.assertNotIn("bad", cache)
+        self.assertIn("good", cache)
+        self.assertEqual(cache["good"], {"value": 1})
 
 
 class CacheChooserTest(unittest.TestCase):
