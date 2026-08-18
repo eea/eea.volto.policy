@@ -1,0 +1,25 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    >
+
+  <browser:page
+    for="*"
+    name="localtabs_view"
+    class=".get.CatalogNavigationTabs"
+    permission="zope.Public"
+    allowed_attributes="topLevelTabs"
+    />
+
+  <adapter factory=".get.Siblings" name="siblings"/>
+
+  <plone:service
+    method="GET"
+    for="zope.interface.Interface"
+    factory=".get.SiblingsGet"
+    name="@siblings"
+    permission="zope2.View"
+    />
+
+</configure>
