@@ -3,6 +3,9 @@ Changelog
 
 13.5-dev0 - (unreleased)
 ---------------------------
+* Feature: Move ``@siblings`` REST API endpoint and its ``localtabs_view``
+  dependency from ``eea.restapi`` to ``eea.volto.policy``.
+  [nileshgulia1]
 
 13.4 - (2026-08-05)
 ---------------------------
