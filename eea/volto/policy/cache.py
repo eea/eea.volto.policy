@@ -86,11 +86,11 @@ class CacheChooser:
     - CACHE_TTL: Cache TTL in seconds (default: 300)
 
     Redis configuration:
-    - REDIS_ENABLED: Enable/disable Redis (default: false)
-    - REDIS_SERVER: Redis host (default: localhost)
-    - REDIS_PORT: Redis port (default: 6379)
-    - REDIS_DB: Redis database index (default: 0)
-    - REDIS_TIMEOUT: Socket connect timeout (default: 5)
+    - CACHE_REDIS_ENABLED: Enable/disable Redis (default: false)
+    - CACHE_REDIS_SERVER: Redis host (default: localhost)
+    - CACHE_REDIS_PORT: Redis port (default: 6379)
+    - CACHE_REDIS_DB: Redis database index (default: 1)
+    - CACHE_REDIS_TIMEOUT: Socket connect timeout (default: 5)
 
     Memcached configuration:
     - MEMCACHED_ENABLED: Enable/disable Memcached (default: false)
@@ -114,7 +114,7 @@ class CacheChooser:
 
     @property
     def redis_enabled(self):
-        return os.environ.get("REDIS_ENABLED", "false").lower() != "false"
+        return os.environ.get("CACHE_REDIS_ENABLED", "false").lower() != "false"
 
     @property
     def memcached_enabled(self):
@@ -123,25 +123,25 @@ class CacheChooser:
     @property
     def redis_timeout(self):
         try:
-            return int(os.environ.get("REDIS_TIMEOUT", 5))
+            return int(os.environ.get("CACHE_REDIS_TIMEOUT", 5))
         except ValueError:
             return 5
 
     @property
     def redis_db(self):
         try:
-            return int(os.environ.get("REDIS_DB", 0))
+            return int(os.environ.get("CACHE_REDIS_DB", 1))
         except ValueError:
-            return 0
+            return 1
 
     @property
     def redis_server(self):
-        return os.environ.get("REDIS_SERVER", "localhost")
+        return os.environ.get("CACHE_REDIS_SERVER", "localhost")
 
     @property
     def redis_port(self):
         try:
-            return int(os.environ.get("REDIS_PORT", 6379))
+            return int(os.environ.get("CACHE_REDIS_PORT", 6379))
         except Exception:
             return 6379
 

@@ -87,6 +87,12 @@ class CacheChooserTest(unittest.TestCase):
     def test_implements_cache_chooser(self):
         self.assertTrue(verifyObject(ICacheChooser, CacheChooser()))
 
+    def test_cache_redis_db_defaults_to_1(self):
+        """Redis DB defaults to 1 to avoid collision with eea.api.redirector."""
+        with patch.dict(os.environ, {}, clear=True):
+            chooser = CacheChooser()
+            self.assertEqual(chooser.redis_db, 1)
+
     def test_reads_backend_order_and_ttl(self):
         environment = {
             "CACHE_BACKEND_ORDER": "memcached, redis, ram",
