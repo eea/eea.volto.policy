@@ -3,6 +3,9 @@ Changelog
 
 13.7-dev0 - (unreleased)
 ---------------------------
+* Fix: Apply ``CACHE_TTL`` consistently to the RAM fallback as well as Redis
+  and Memcached.
+  [razvanMiu]
 
 13.6 - (2026-08-18)
 ---------------------------

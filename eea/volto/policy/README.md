@@ -191,8 +191,11 @@ The addon changes behavior in these areas:
 - Cache backends are tried in `CACHE_BACKEND_ORDER` order, which defaults to
   `redis,memcached,ram`. Redis and Memcached are disabled unless enabled with
   `CACHE_REDIS_ENABLED` or `MEMCACHED_ENABLED`; RAM is the final fallback.
-- `CACHE_TTL` controls Redis and Memcached entry lifetime and defaults to 300
-  seconds. Connection settings are documented by `CacheChooser` in `cache.py`.
+- `CACHE_TTL` limits Redis, Memcached, and RAM entry lifetime and defaults to
+  300 seconds. RAM entries expire from their write time; the underlying
+  `zope.ramcache` may still evict them earlier according to its own capacity or
+  expiration policy. Invalid, zero, or negative TTLs use the 300-second default.
+  Connection settings are documented by `CacheChooser` in `cache.py`.
 
 # Profiles and upgrades
 
