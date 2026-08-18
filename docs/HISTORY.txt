@@ -1,10 +1,12 @@
 Changelog
 =========
 
-13.6-dev0 - (unreleased)
+13.6 - (2026-08-18)
 ---------------------------
+* Change: Release Move @siblings endpoint from eea.restapi to eea.volto.policy (#123)
+  [avoinea]
 
-13.6-dev0 - (unreleased)
+13.6 - (2026-08-18)
 ---------------------------
 * Feature: Move ``@siblings`` REST API endpoint and its ``localtabs_view``
   dependency from ``eea.restapi`` to ``eea.volto.policy``.
