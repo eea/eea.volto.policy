@@ -1,7 +1,7 @@
 Changelog
 =========
 
-13.5-dev0 - (unreleased)
+13.5 - (2026-08-18)
 ---------------------------
 * Change: Own the global ``plone.memoize`` cache chooser and its Redis,
   Memcached, and RAM backends.
