@@ -1,6 +1,12 @@
 Changelog
 =========
 
+13.6-dev0 - (unreleased)
+---------------------------
+* Feature: Move ``@siblings`` REST API endpoint and its ``localtabs_view``
+  dependency from ``eea.restapi`` to ``eea.volto.policy``.
+  [nileshgulia1]
+
 13.5 - (2026-08-18)
 ---------------------------
 * Change: Own the global ``plone.memoize`` cache chooser and its Redis,

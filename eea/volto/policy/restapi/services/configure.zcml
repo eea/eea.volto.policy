@@ -7,4 +7,5 @@
   <include package=".actions" />
   <include package=".header_settings" />
   <include package=".layout_blocks_duplicates" />
+  <include package=".siblings" />
 </configure>
