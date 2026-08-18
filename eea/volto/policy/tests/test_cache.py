@@ -118,7 +118,7 @@ class CacheAdapterTest(unittest.TestCase):
         client = FakeRedisClient()
         cache = RedisCacheAdapter(client, "example.function", ttl=60)
 
-        cache["bad"] = {1, 2, 3}      # skipped (set is not JSON-serializable)
+        cache["bad"] = {1, 2, 3}  # skipped (set is not JSON-serializable)
         cache["good"] = {"value": 1}  # stored normally
 
         self.assertNotIn("bad", cache)
@@ -130,7 +130,7 @@ class CacheAdapterTest(unittest.TestCase):
         client = FakeMemcacheClient()
         cache = MemcacheAdapter(client, "example.function", ttl=120)
 
-        cache["bad"] = {1, 2, 3}      # skipped (set is not JSON-serializable)
+        cache["bad"] = {1, 2, 3}  # skipped (set is not JSON-serializable)
         cache["good"] = {"value": 1}  # stored normally
 
         self.assertNotIn("bad", cache)
