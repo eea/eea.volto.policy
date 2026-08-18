@@ -1,6 +1,9 @@
 Changelog
 =========
 
+13.7-dev0 - (unreleased)
+---------------------------
+
 13.6 - (2026-08-18)
 ---------------------------
 * Change: Release Move @siblings endpoint from eea.restapi to eea.volto.policy (#123)
