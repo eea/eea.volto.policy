@@ -51,6 +51,8 @@ setup(
         "plone.volto",
         "eea.geolocation",
         "eea.coremetadata",
+        "redis",
+        "python-memcached",
         # -*- Extra requirements: -*-
     ],
     extras_require={
