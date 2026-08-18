@@ -1,6 +1,12 @@
 Changelog
 =========
 
+13.5 - (2026-08-18)
+---------------------------
+* Change: Own the global ``plone.memoize`` cache chooser and its Redis,
+  Memcached, and RAM backends.
+  [razvanMiu]
+
 13.4 - (2026-08-05)
 ---------------------------
 * Fix: Override ``@@download`` view to return 404 instead of TypeError (500)
