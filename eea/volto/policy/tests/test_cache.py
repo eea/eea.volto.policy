@@ -8,10 +8,13 @@ from unittest.mock import patch
 from xml.etree import ElementTree
 
 from plone.memoize.interfaces import ICacheChooser
+from plone.memoize.ram import RAMCacheAdapter
 from zope.interface.verify import verifyObject
+from zope.ramcache.ram import RAMCache
 
 from eea.volto.policy.cache import CacheChooser
 from eea.volto.policy.cache import MemcacheAdapter
+from eea.volto.policy.cache import RAMCacheTTLAdapter
 from eea.volto.policy.cache import RedisCacheAdapter
 
 
@@ -54,8 +57,21 @@ class FakeMemcacheClient:
         self.values.pop(key, None)
 
 
+class FakeClock:
+    """Controllable monotonic clock for RAM TTL tests."""
+
+    def __init__(self):
+        self.now = 0
+
+    def __call__(self):
+        return self.now
+
+    def advance(self, seconds):
+        self.now += seconds
+
+
 class CacheAdapterTest(unittest.TestCase):
-    """Verify distributed adapters preserve values and TTLs."""
+    """Verify cache adapters preserve values and TTLs."""
 
     def test_redis_adapter_roundtrip(self):
         client = FakeRedisClient()
@@ -137,6 +153,50 @@ class CacheAdapterTest(unittest.TestCase):
         self.assertIn("good", cache)
         self.assertEqual(cache["good"], {"value": 1})
 
+    def test_ram_adapter_expires_from_write_time(self):
+        clock = FakeClock()
+        cache = RAMCacheTTLAdapter(
+            RAMCache(),
+            "example.function",
+            ttl=10,
+            clock=clock,
+        )
+        cache["key"] = {"value": [1, 2]}
+
+        clock.advance(9)
+        self.assertEqual(cache["key"], {"value": [1, 2]})
+        clock.advance(1)
+        self.assertIsNone(cache.get("key"))
+
+    def test_ram_adapter_rewrite_resets_expiration(self):
+        clock = FakeClock()
+        cache = RAMCacheTTLAdapter(
+            RAMCache(),
+            "example.function",
+            ttl=10,
+            clock=clock,
+        )
+        cache["key"] = "first"
+        clock.advance(9)
+        cache["key"] = "second"
+        clock.advance(9)
+
+        self.assertEqual(cache["key"], "second")
+
+    def test_ram_adapter_ignores_entries_without_ttl_metadata(self):
+        ramcache = RAMCache()
+        legacy = RAMCacheAdapter(ramcache, "example.function")
+        cache = RAMCacheTTLAdapter(
+            ramcache,
+            "example.function",
+            ttl=10,
+            clock=FakeClock(),
+        )
+        legacy["key"] = "legacy"
+
+        self.assertIsNone(cache.get("key"))
+        self.assertEqual(legacy.get("key"), "legacy")
+
 
 class CacheChooserTest(unittest.TestCase):
     """Verify the policy utility contract and environment configuration."""
@@ -162,6 +222,26 @@ class CacheChooserTest(unittest.TestCase):
                 ["memcached", "redis", "ram"],
             )
             self.assertEqual(chooser.ttl, 90)
+
+    def test_invalid_or_non_positive_ttl_uses_default(self):
+        for value in ("invalid", "0", "-10"):
+            with self.subTest(value=value):
+                with patch.dict(os.environ, {"CACHE_TTL": value}, clear=True):
+                    self.assertEqual(CacheChooser().ttl, 300)
+
+    @patch("eea.volto.policy.cache.component.queryUtility")
+    def test_ram_backend_receives_configured_ttl(self, query_utility):
+        query_utility.return_value = RAMCache()
+        environment = {
+            "CACHE_BACKEND_ORDER": "ram",
+            "CACHE_TTL": "90",
+        }
+
+        with patch.dict(os.environ, environment, clear=True):
+            cache = CacheChooser()("example.function")
+
+        self.assertIsInstance(cache, RAMCacheTTLAdapter)
+        self.assertEqual(cache.ttl, 90)
 
     def test_policy_registers_global_cache_chooser_override(self):
         overrides = Path(__file__).parents[1] / "overrides.zcml"

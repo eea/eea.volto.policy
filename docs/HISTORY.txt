@@ -1,6 +1,12 @@
 Changelog
 =========
 
+13.7 - (2026-08-18)
+---------------------------
+* Fix: Apply ``CACHE_TTL`` consistently to the RAM fallback as well as Redis
+  and Memcached.
+  [razvanMiu]
+
 13.6 - (2026-08-18)
 ---------------------------
 * Change: Release Move @siblings endpoint from eea.restapi to eea.volto.policy (#123)

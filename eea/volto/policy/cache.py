@@ -5,6 +5,7 @@ import logging
 import os
 import hashlib
 from threading import local
+from time import monotonic
 
 from zope import component
 from zope.interface import implementer
@@ -52,6 +53,48 @@ class MemcacheAdapter(AbstractDict):
 
     def __delitem__(self, key):
         self.client.delete(self._storage_key(key))
+
+
+class _RAMCacheEntry:
+    """Stored RAM value with explicit expiration metadata."""
+
+    __slots__ = ("expires_at", "value")
+
+    def __init__(self, expires_at, value):
+        self.expires_at = expires_at
+        self.value = value
+
+
+class RAMCacheTTLAdapter(RAMCacheAdapter):
+    """RAM cache adapter with fixed-from-write TTL semantics."""
+
+    def __init__(self, ramcache, globalkey="", ttl=300, clock=None):
+        super().__init__(ramcache=ramcache, globalkey=globalkey)
+        self.ttl = ttl
+        self.clock = clock or monotonic
+
+    def _invalidate(self, key):
+        self.ramcache.invalidate(
+            self.globalkey,
+            dict(key=self._make_key(key)),
+        )
+
+    def __getitem__(self, key):
+        entry = super().__getitem__(key)
+        if not isinstance(entry, _RAMCacheEntry):
+            raise KeyError(key)
+
+        if self.clock() >= entry.expires_at:
+            raise KeyError(key)
+        return entry.value
+
+    def __setitem__(self, key, value):
+        entry = _RAMCacheEntry(self.clock() + self.ttl, value)
+        super().__setitem__(key, entry)
+        return value
+
+    def __delitem__(self, key):
+        self._invalidate(key)
 
 
 class RedisCacheAdapter(AbstractDict):
@@ -118,9 +161,10 @@ class CacheChooser:
     @property
     def ttl(self):
         try:
-            return int(os.environ.get("CACHE_TTL", 300))
+            ttl = int(os.environ.get("CACHE_TTL", 300))
         except ValueError:
             return 300
+        return ttl if ttl > 0 else 300
 
     @property
     def redis_enabled(self):
@@ -257,13 +301,15 @@ class CacheChooser:
 
             elif backend == "ram":
                 logger.debug("Using RAM cache for %s", fun_name)
-                return RAMCacheAdapter(
+                return RAMCacheTTLAdapter(
                     ramcache=component.queryUtility(IRAMCache),
                     globalkey=fun_name,
+                    ttl=self.ttl,
                 )
 
         logger.debug("Using RAM cache for %s", fun_name)
-        return RAMCacheAdapter(
+        return RAMCacheTTLAdapter(
             ramcache=component.queryUtility(IRAMCache),
             globalkey=fun_name,
+            ttl=self.ttl,
         )
