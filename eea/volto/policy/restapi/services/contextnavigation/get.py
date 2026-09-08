@@ -88,6 +88,10 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
     def __init__(self, context, data):
         super().__init__(context, data)
 
+        # EEA: navigation must respect the user's view permissions, not a
+        # hard-coded workflow state filter (e.g. published only).
+        self.query.pop("review_state", None)
+
         depth = data.bottomLevel
 
         if depth == 0:
@@ -126,8 +130,9 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
 
         topLevel = data.topLevel
         if topLevel and topLevel > 0:
-            # EEA modification to use bottomLevel for depth of navtree_start
-            self.query["path"]["navtree_start"] = depth
+            # EEA: start the navtree at the navigation root so that the
+            # whole tree (up to bottomLevel) is returned, not an empty result.
+            self.query["path"]["navtree_start"] = 1
 
 
 class EEANavtreeStrategy(original_get.NavtreeStrategy):
