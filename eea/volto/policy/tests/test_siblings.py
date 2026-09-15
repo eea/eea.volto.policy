@@ -33,9 +33,7 @@ class TestSiblingsWorkflow(unittest.TestCase):
 
         # Publish the section and one child; leave the other private.
         self.portal.portal_workflow.doActionFor(section, "publish")
-        self.portal.portal_workflow.doActionFor(
-            section["published-child"], "publish"
-        )
+        self.portal.portal_workflow.doActionFor(section["published-child"], "publish")
 
         # Force the site-wide workflow filter to "published only". The fix
         # must remove this hard-coded restriction from the siblings query
