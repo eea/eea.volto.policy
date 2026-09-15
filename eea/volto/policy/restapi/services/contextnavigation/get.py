@@ -51,6 +51,18 @@ class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
         ),
     )
 
+    side_nav_depth = schema.Int(
+        title=_("Maximum side navigation depth"),
+        description=_(
+            "Maximum number of folder levels shown in the side navigation "
+            "when the portlet 'Navigation tree depth' (bottomLevel) is 0, "
+            "meaning no limit."
+        ),
+        required=False,
+        default=4,
+        min=1,
+    )
+
 
 restapi_bbb.INavigationSchema = IEEAContextNavigationSchema
 
@@ -85,13 +97,33 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
         registry = getUtility(IRegistry)
         return registry.get("plone.side_nav_types", ())
 
+    def getSideNavDepth(self, context):
+        """Get the maximum side navigation depth
+
+        Bound applied when bottomLevel is 0 (no limit), to avoid
+        unbounded navigation trees that could load the whole site.
+        """
+        registry = getUtility(IRegistry)
+        depth = registry.get("plone.side_nav_depth", 4)
+        try:
+            depth = int(depth)
+        except (TypeError, ValueError):
+            return 4
+        return depth if depth > 0 else 4
+
     def __init__(self, context, data):
         super().__init__(context, data)
+
+        # EEA: navigation must respect the user's view permissions, not a
+        # hard-coded workflow state filter (e.g. published only).
+        self.query.pop("review_state", None)
 
         depth = data.bottomLevel
 
         if depth == 0:
-            depth = 999
+            # EEA: "no limit" (bottomLevel == 0) is bounded to the
+            # plone.side_nav_depth setting to avoid loading the whole site
+            depth = self.getSideNavDepth(context)
 
         currentFolderOnly = data.currentFolderOnly
 
@@ -126,8 +158,9 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
 
         topLevel = data.topLevel
         if topLevel and topLevel > 0:
-            # EEA modification to use bottomLevel for depth of navtree_start
-            self.query["path"]["navtree_start"] = depth
+            # EEA: start the navtree at the navigation root so that the
+            # whole tree (up to bottomLevel) is returned, not an empty result.
+            self.query["path"]["navtree_start"] = 1
 
 
 class EEANavtreeStrategy(original_get.NavtreeStrategy):
