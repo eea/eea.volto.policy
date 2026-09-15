@@ -145,4 +145,17 @@
         import_profile="eea.volto.policy:default"
         />
   </genericsetup:upgradeSteps>
+
+  <genericsetup:upgradeSteps
+      source="12.0"
+      destination="13.0"
+      profile="eea.volto.policy:default">
+
+    <genericsetup:upgradeDepends
+      title="Add registry record plone.side_nav_depth"
+      description="Maximum side navigation depth applied when the context navigation bottomLevel is 0 (no limit)."
+      import_steps="plone.app.registry"
+      import_profile="eea.volto.policy:default"
+      />
+  </genericsetup:upgradeSteps>
 </configure>

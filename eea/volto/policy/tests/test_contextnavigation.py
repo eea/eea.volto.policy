@@ -38,6 +38,14 @@ class TestContextNavigationWorkflow(unittest.TestCase):
         # Add a nested draft page to verify bottomLevel=0 expands fully.
         section["draft-child"].invokeFactory("Document", "sub-draft", title="Sub Draft")
 
+        # Deep nesting to verify the plone.side_nav_depth bound:
+        # level 1: published-child / draft-child, level 2: sub-draft,
+        # level 3: deep-1, level 4: deep-2, level 5: deep-3
+        sub = section["draft-child"]["sub-draft"]
+        sub.invokeFactory("Document", "deep-1", title="Deep 1")
+        sub["deep-1"].invokeFactory("Document", "deep-2", title="Deep 2")
+        sub["deep-1"]["deep-2"].invokeFactory("Document", "deep-3", title="Deep 3")
+
         # Force the site-wide workflow filter to "published only".  The fix
         # must remove this hard-coded restriction from the lateral nav query
         # so that users with view permission still see draft/private items.
@@ -84,11 +92,41 @@ class TestContextNavigationWorkflow(unittest.TestCase):
         self.assertNotIn("Draft Child", titles)
         self.assertNotIn("Sub Draft", titles)
 
-    def test_bottom_level_zero_returns_all_descendants(self):
-        """bottomLevel=0 must return the whole tree, not just current page."""
+    def test_bottom_level_zero_is_bounded_by_side_nav_depth(self):
+        """bottomLevel=0 (no limit) must be bounded to plone.side_nav_depth.
+
+        Default side_nav_depth is 4: items down to level 4 are shown,
+        deeper ones (deep-3 at level 5) are cut off to avoid loading
+        the whole site.
+        """
+        registry = getUtility(IRegistry)
+        self.assertEqual(registry.get("plone.side_nav_depth"), 4)
+
         data = self._nav(self.portal.section, bottomLevel="0")
         titles = self._titles(data.get("items", []))
 
         self.assertIn("Published Child", titles)
         self.assertIn("Draft Child", titles)
         self.assertIn("Sub Draft", titles)
+        self.assertIn("Deep 1", titles)
+        self.assertIn("Deep 2", titles)
+        self.assertNotIn("Deep 3", titles)
+
+    def test_side_nav_depth_bound_is_configurable(self):
+        """Raising plone.side_nav_depth shows more levels for bottomLevel=0."""
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_depth"] = 5
+
+        data = self._nav(self.portal.section, bottomLevel="0")
+        titles = self._titles(data.get("items", []))
+
+        self.assertIn("Deep 2", titles)
+        self.assertIn("Deep 3", titles)
+
+    def test_explicit_bottom_level_is_not_bounded(self):
+        """An explicit bottomLevel is honored as-is, not clamped."""
+        data = self._nav(self.portal.section, bottomLevel="5")
+        titles = self._titles(data.get("items", []))
+
+        self.assertIn("Deep 2", titles)
+        self.assertIn("Deep 3", titles)
