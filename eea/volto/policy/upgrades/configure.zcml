@@ -155,7 +155,7 @@
       title="Add registry record plone.side_nav_depth"
       description="Maximum side navigation depth applied when the context navigation bottomLevel is 0 (no limit)."
       import_steps="plone.app.registry"
-      import_profile="eea.volto.policy:default"
+      import_profile="eea.volto.policy:to_13"
       />
   </genericsetup:upgradeSteps>
 </configure>

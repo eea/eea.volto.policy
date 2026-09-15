@@ -2,7 +2,14 @@
 
 import unittest
 
-from plone.app.testing import TEST_USER_ID, TEST_USER_NAME, login, logout, setRoles
+from plone.app.testing import (
+    TEST_USER_ID,
+    TEST_USER_NAME,
+    applyProfile,
+    login,
+    logout,
+    setRoles,
+)
 from plone.base.interfaces import INavigationSchema
 from plone.registry.interfaces import IRegistry
 from zope.component import getUtility
@@ -130,3 +137,17 @@ class TestContextNavigationWorkflow(unittest.TestCase):
 
         self.assertIn("Deep 2", titles)
         self.assertIn("Deep 3", titles)
+
+    def test_to_13_upgrade_keeps_existing_registry_values(self):
+        """The to_13 upgrade profile must not override registry values.
+
+        It only creates the missing plone.side_nav_depth record via
+        <records/>, which never writes values, so that TTW changes to
+        other navigation settings survive the upgrade.
+        """
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_depth"] = 6
+
+        applyProfile(self.portal, "eea.volto.policy:to_13")
+
+        self.assertEqual(registry.get("plone.side_nav_depth"), 6)
