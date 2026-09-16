@@ -3,6 +3,21 @@ Changelog
 
 13.8-dev0 - (unreleased)
 ---------------------------
+* Fix: Lateral navigation (``@contextnavigation``) does not respect user view
+  permissions: drop the hard-coded review state filter so users with view
+  permission see draft items; anonymous users still see published only
+  (#128, #307867).
+  [nileshgulia1]
+* Fix: Return the full navigation tree for the side navigation: query from
+  the navigation root and honor the ``topLevel``/``bottomLevel`` settings.
+  (#128, #307867)
+  [nileshgulia1]
+* Fix: Side navigation showed only the current page for sections whose
+  content types are not listed in ``plone.side_nav_types`` (e.g. Eionet
+  pages while the registry is set to ``web_report*`` types). The
+  ``portal_type`` filter can now be inherited from the nearest ancestor
+  page holding a ``contextNavigation`` (accordion) block.
+  [avoinea]
 
 13.7 - (2026-08-18)
 ---------------------------

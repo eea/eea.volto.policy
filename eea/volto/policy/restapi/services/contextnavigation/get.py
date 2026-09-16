@@ -21,6 +21,8 @@ from plone import schema
 from plone import api
 from plone.memoize.instance import memoize
 
+from eea.volto.policy.inherit import get_inherited_nav_config
+
 
 class IEEANavigationPortlet(original_get.INavigationPortlet):
     """Custom schema for navigation portlet"""
@@ -350,6 +352,14 @@ class EEAContextNavigation:
         if not expand:
             return result
         data = eea_extract_data(IEEANavigationPortlet, self.request.form, prefix)
+        if not data.portal_type:
+            # EEA: blocks only apply to the page they are defined on, so
+            # inherit the portal type filter from the nearest ancestor page
+            # holding a contextNavigation (accordion) block. Explicit request
+            # parameters always win; the union fallback applies otherwise.
+            nav_config = get_inherited_nav_config(self.context)
+            if nav_config and nav_config.get("portal_type"):
+                data["portal_type"] = tuple(nav_config["portal_type"])
         renderer = EEANavigationPortletRenderer(self.context, self.request, data)
         res = renderer.render()
         result["contextnavigation"].update(res)

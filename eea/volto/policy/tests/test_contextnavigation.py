@@ -151,3 +151,194 @@ class TestContextNavigationWorkflow(unittest.TestCase):
         applyProfile(self.portal, "eea.volto.policy:to_13")
 
         self.assertEqual(registry.get("plone.side_nav_depth"), 6)
+
+
+class TestContextNavigationPortalType(unittest.TestCase):
+    """Test the portal_type fallback and inheritance from ancestor blocks.
+
+    Resolution order: explicit request param > nearest ancestor
+    contextNavigation (accordion) block > ``plone.side_nav_types``.
+    """
+
+    layer = EEA_VOLTO_POLICY_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        self.request = self.layer["request"]
+        login(self.portal, TEST_USER_NAME)
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        self.populateSite()
+
+    def populateSite(self):
+        """Create a section tree with private Document children."""
+        self.portal.invokeFactory("Document", "subsite", title="Subsite")
+        subsite = self.portal.subsite
+        subsite.invokeFactory("Document", "child-a", title="Child A")
+        subsite.invokeFactory("Document", "child-b", title="Child B")
+        subsite["child-a"].invokeFactory("Document", "grandchild", title="Grandchild")
+
+    def _titles(self, items):
+        """Flatten item titles recursively."""
+        result = []
+        for item in items:
+            result.append(item["title"])
+            result.extend(self._titles(item.get("items", [])))
+        return result
+
+    def _nav(self, context, **params):
+        """Call the context navigation endpoint adapter directly."""
+        self.request.form.clear()
+        for key, value in params.items():
+            self.request.form[f"expand.contextnavigation.{key}"] = value
+        return EEAContextNavigation(context, self.request)(expand=True)[
+            "contextnavigation"
+        ]
+
+    def _set_ancestor_block(self, portal_type=None, variation="accordion"):
+        """Attach a contextNavigation block to the subsite page."""
+        block = {"@type": "contextNavigation", "variation": variation}
+        if portal_type is not None:
+            block["portal_type"] = portal_type
+        self.portal.subsite.blocks = {"nav-block": block}
+
+    def test_no_block_falls_back_to_registry_side_nav_types(self):
+        """Without a block anywhere, the registry value is used as-is.
+
+        With side_nav_types set to web_report* types, Document pages don't
+        match and only the current page (injected via showAllParents) is
+        listed. This pins the untouched registry fallback behavior: sections
+        needing different types get an accordion block.
+        """
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_types"] = (
+            "web_report",
+            "web_report_page",
+            "web_report_section",
+        )
+
+        data = self._nav(self.portal.subsite["child-a"])
+        titles = self._titles(data.get("items", []))
+
+        self.assertIn("Child A", titles)
+        self.assertNotIn("Child B", titles)
+
+    def test_portal_type_inherited_from_ancestor_block(self):
+        """A page without its own block inherits portal_type from the nearest
+        ancestor holding a contextNavigation accordion block."""
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_types"] = ("web_report",)
+        self._set_ancestor_block(portal_type=["Document"])
+
+        data = self._nav(self.portal.subsite["child-a"])
+        titles = self._titles(data.get("items", []))
+
+        self.assertIn("Child B", titles)
+
+    def test_nearest_ancestor_block_wins(self):
+        """When nested ancestors both have blocks, the nearest one is used."""
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_types"] = ("Document",)
+        self._set_ancestor_block(portal_type=["Document"])
+        self.portal.subsite["child-a"].blocks = {
+            "nav-block": {
+                "@type": "contextNavigation",
+                "variation": "accordion",
+                "portal_type": ["Event"],
+            }
+        }
+
+        data = self._nav(self.portal.subsite["child-a"]["grandchild"])
+        titles = self._titles(data.get("items", []))
+
+        # portal_type=Event (nearest ancestor) matches nothing: no Documents
+        # are listed apart from the injected ancestors of the context page.
+        self.assertNotIn("Child B", titles)
+
+    def test_explicit_portal_type_wins_over_inherited(self):
+        """An explicit portal_type request param beats the inherited one."""
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_types"] = ("web_report",)
+        self._set_ancestor_block(portal_type=["Event"])
+
+        data = self._nav(self.portal.subsite["child-a"], portal_type="Document")
+        titles = self._titles(data.get("items", []))
+
+        self.assertIn("Child B", titles)
+
+    def test_block_without_portal_type_falls_back_to_registry(self):
+        """An ancestor block without portal_type falls through to the
+        plone.side_nav_types registry value."""
+        self._set_ancestor_block()
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_types"] = ("web_report",)
+
+        data = self._nav(self.portal.subsite["child-a"])
+        titles = self._titles(data.get("items", []))
+
+        self.assertNotIn("Child B", titles)
+
+    def test_non_accordion_block_is_not_inherited(self):
+        """Only the accordion variation is rendered as the side menu, so only
+        it carries the config. A non-accordion nav block is ignored and the
+        registry fallback applies."""
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_types"] = ("Document",)
+        self._set_ancestor_block(portal_type=["Event"], variation="default")
+
+        data = self._nav(self.portal.subsite["child-a"])
+        titles = self._titles(data.get("items", []))
+
+        # Documents show via the registry fallback (an inherited Event filter
+        # would match nothing)
+        self.assertIn("Child B", titles)
+
+    def test_nested_nav_block_is_visited(self):
+        """Accordion nav blocks nested in sections/columns (data.blocks) are
+        found."""
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_types"] = ("web_report",)
+        self.portal.subsite.blocks = {
+            "columns-block": {
+                "@type": "columns_block",
+                "data": {
+                    "blocks": {
+                        "nav-in-column": {
+                            "@type": "contextNavigation",
+                            "variation": "accordion",
+                            "portal_type": ["Document"],
+                        }
+                    },
+                    "blocks_layout": {"items": ["nav-in-column"]},
+                },
+            }
+        }
+
+        data = self._nav(self.portal.subsite["child-a"])
+        titles = self._titles(data.get("items", []))
+
+        self.assertIn("Child B", titles)
+
+    def test_inheritance_stops_without_view_permission_on_ancestor(self):
+        """The aq_chain walk stops at the first non-viewable ancestor.
+
+        Anonymous can see the published child page but not the private
+        subsite, so the subsite block config must not be inherited and the
+        plone.side_nav_types fallback applies instead.
+        """
+        registry = getUtility(IRegistry)
+        registry["plone.side_nav_types"] = ("Document",)
+        self._set_ancestor_block(portal_type=["Event"])
+        workflow = self.portal.portal_workflow
+        workflow.doActionFor(self.portal.subsite["child-a"], "publish")
+        workflow.doActionFor(self.portal.subsite["child-b"], "publish")
+        workflow.doActionFor(self.portal.subsite["child-a"]["grandchild"], "publish")
+
+        logout()
+        data = self._nav(self.portal.subsite["child-a"])
+        titles = self._titles(data.get("items", []))
+
+        # Documents show via the registry fallback, not the private
+        # ancestor's Events.
+        self.assertIn("Child A", titles)
+        self.assertIn("Child B", titles)
+        self.assertIn("Grandchild", titles)
