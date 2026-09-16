@@ -6,9 +6,11 @@ field values from parent objects when the current object has none.
 """
 
 from Acquisition import aq_base
+from AccessControl.SecurityManagement import getSecurityManager
 from plone.registry.interfaces import IRegistry
 from plone.dexterity.interfaces import IDexterityContent
 from plone.dexterity.utils import iterSchemata
+from plone.restapi.blocks import visit_blocks
 from Products.CMFPlone.interfaces import IPloneSiteRoot
 from zope.schema import getFields
 from zope.security import checkPermission
@@ -87,6 +89,58 @@ def get_inherited_field_value(context, field_name):
                     return (value, None if is_local else obj)
 
     return (None, None)
+
+
+def get_inherited_nav_config(context):
+    """Find the lateral navigation config of the nearest ancestor.
+
+    Traverse the acquisition chain (bounded by the site root) and return the
+    data of the first ancestor holding a ``contextNavigation`` block with the
+    ``accordion`` variation, i.e. the block EEA renders as the lateral (side)
+    menu. Blocks only apply to the page they are defined on, so descendant
+    pages look them up here to inherit their configuration (e.g.
+    ``portal_type``).
+
+    All (nested) blocks of each page are visited with
+    ``plone.restapi.blocks.visit_blocks``.
+
+    The current object itself is part of the chain, so a block defined on it
+    is returned as well; callers must only use the result for request
+    parameters that were not explicitly passed.
+
+    Returns:
+        dict: the block data, or None when no ancestor provides one.
+    """
+    security_manager = getSecurityManager()
+    for obj in context.aq_chain:
+        # Stop at site root
+        if IPloneSiteRoot.providedBy(obj):
+            break
+
+        # Only check Dexterity content
+        if not IDexterityContent.providedBy(obj):
+            continue
+
+        # Security check - ensure user can view the object, stopping at the
+        # first ancestor the current user is not allowed to see
+        if not security_manager.checkPermission("zope2.View", obj):
+            break
+
+        blocks = getattr(aq_base(obj), "blocks", None)
+        if not blocks:
+            continue
+
+        # Visit all (nested) blocks; only the accordion variation is
+        # rendered as the side menu, so only it carries the config
+        for block in visit_blocks(obj, blocks):
+            if (
+                isinstance(block, dict)
+                and block.get("@type") == "contextNavigation"
+                and block.get("variation") == "accordion"
+            ):
+                return block
+
+    return None
 
 
 class InheritableMixin:
