@@ -1,11 +1,8 @@
-"""Expose EEA-specific fields through the Subsite endpoint."""
+"""Expose EEA-specific fields through the Subsite expansion."""
 
 from collective.volto.subsites.content.subsite import ISubsite
 from collective.volto.subsites.restapi.services.subsite.get import (
     Subsite as BaseSubsite,
-)
-from collective.volto.subsites.restapi.services.subsite.get import (
-    SubsiteGet as BaseSubsiteGet,
 )
 from plone.restapi.interfaces import IFieldSerializer
 from plone.restapi.serializer.converters import json_compatible
@@ -34,11 +31,3 @@ class Subsite(BaseSubsite):
         serializer = queryMultiAdapter((field, subsite, self.request), IFieldSerializer)
         data[json_compatible(name)] = serializer()
         return data
-
-
-class SubsiteGet(BaseSubsiteGet):
-    """Return the EEA-customized Subsite data."""
-
-    def reply(self):
-        subsite = Subsite(self.context, self.request)
-        return subsite(expand=True)["subsite"]
