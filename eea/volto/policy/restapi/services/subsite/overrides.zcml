@@ -1,0 +1,24 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:cache="http://namespaces.zope.org/cache"
+    xmlns:plone="http://namespaces.plone.org/plone">
+
+  <plone:service
+      method="GET"
+      name="@subsite"
+      for="zope.interface.Interface"
+      factory="eea.volto.policy.restapi.services.subsite.get.SubsiteGet"
+      permission="zope2.View"
+      />
+
+  <adapter
+      factory="eea.volto.policy.restapi.services.subsite.get.Subsite"
+      name="subsite"
+      />
+
+  <cache:ruleset
+      ruleset="plone.content.dynamic"
+      for="eea.volto.policy.restapi.services.subsite.get.SubsiteGet"
+      />
+
+</configure>

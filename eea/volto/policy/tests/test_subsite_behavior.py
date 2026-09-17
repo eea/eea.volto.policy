@@ -20,6 +20,22 @@ class SubsiteLogoMainBehaviorTest(unittest.TestCase):
         self.assertFalse(field.required)
         self.assertEqual(field.title, "Use as main logo")
 
+    def test_subsite_restapi_customization_is_available(self):
+        try:
+            from collective.volto.subsites.restapi.services.subsite.get import (
+                Subsite as BaseSubsite,
+            )
+            from collective.volto.subsites.restapi.services.subsite.get import (
+                SubsiteGet as BaseSubsiteGet,
+            )
+            from eea.volto.policy.restapi.services.subsite.get import Subsite
+            from eea.volto.policy.restapi.services.subsite.get import SubsiteGet
+        except ImportError:
+            self.skipTest("collective.volto.subsites is not installed")
+
+        self.assertTrue(issubclass(Subsite, BaseSubsite))
+        self.assertTrue(issubclass(SubsiteGet, BaseSubsiteGet))
+
 
 def test_suite():
     """Test suite."""
