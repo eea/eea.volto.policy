@@ -18,5 +18,12 @@
       provides=".enhanced_navigation.IEnhancedNavigationBehavior"
       />
 
+  <plone:behavior
+      name="eea.subsite_logo_main"
+      title="EEA Subsite main logo"
+      description="Allow a subsite logo to replace the EEA header logo"
+      provides=".subsite.ISubsiteLogoMain"
+      />
+
 
 </configure>
