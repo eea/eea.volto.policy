@@ -89,10 +89,7 @@ class TestContextNavigationWorkflow(unittest.TestCase):
 
     def _top_level_titles(self, context, **params):
         """Return top-level navigation item titles for easy order checks."""
-        return [
-            item["title"]
-            for item in self._nav(context, **params).get("items", [])
-        ]
+        return [item["title"] for item in self._nav(context, **params).get("items", [])]
 
     def test_manager_sees_draft_siblings_despite_workflow_filter(self):
         """A user with view permission sees draft siblings in the nav."""
@@ -176,9 +173,7 @@ class TestContextNavigationWorkflow(unittest.TestCase):
 
     def test_sort_on_sortable_title_ascending(self):
         """sort_on=sortable_title orders items alphabetically."""
-        titles = self._top_level_titles(
-            self.portal.section, sort_on="sortable_title"
-        )
+        titles = self._top_level_titles(self.portal.section, sort_on="sortable_title")
         self.assertEqual(
             titles,
             ["Apple", "Draft Child", "Mango", "Published Child", "Zebra"],
@@ -198,9 +193,7 @@ class TestContextNavigationWorkflow(unittest.TestCase):
 
     def test_sort_order_without_sort_on_is_ignored(self):
         """sort_order alone does not change the default folder order."""
-        titles = self._top_level_titles(
-            self.portal.section, sort_order="descending"
-        )
+        titles = self._top_level_titles(self.portal.section, sort_order="descending")
         self.assertEqual(
             titles,
             ["Published Child", "Draft Child", "Zebra", "Apple", "Mango"],
@@ -208,9 +201,7 @@ class TestContextNavigationWorkflow(unittest.TestCase):
 
     def test_invalid_sort_on_falls_back_to_folder_order(self):
         """An unknown catalog index is ignored rather than raising."""
-        titles = self._top_level_titles(
-            self.portal.section, sort_on="not_an_index"
-        )
+        titles = self._top_level_titles(self.portal.section, sort_on="not_an_index")
         self.assertEqual(
             titles,
             ["Published Child", "Draft Child", "Zebra", "Apple", "Mango"],
