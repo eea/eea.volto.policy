@@ -36,6 +36,24 @@ class IEEANavigationPortlet(original_get.INavigationPortlet):
         ),
     )
 
+    sort_on = schema.TextLine(
+        title=_("Sort on"),
+        description=_(
+            "Catalog index to sort navigation items by, "
+            "e.g. sortable_title, effective, created, modified, "
+            "getObjPositionInParent. Leave empty for folder order."
+        ),
+        required=False,
+        default="",
+    )
+
+    sort_order = schema.TextLine(
+        title=_("Sort order"),
+        description=_("Sort order: ascending or descending"),
+        required=False,
+        default="",
+    )
+
 
 class IEEAContextNavigationSchema(restapi_bbb.INavigationSchema):
     """Custom schema for context navigation"""
@@ -161,6 +179,16 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
             # EEA: start the navtree at the navigation root so that the
             # whole tree (up to bottomLevel) is returned, not an empty result.
             self.query["path"]["navtree_start"] = 1
+
+        # EEA: optional sorting from query params; validated, silent fallback
+        sort_on = (data.sort_on or "").strip()
+        if sort_on:
+            catalog = api.portal.get_tool("portal_catalog")
+            if sort_on in catalog.indexes():
+                self.query["sort_on"] = sort_on
+                sort_order = (data.sort_order or "").strip().lower()
+                if sort_order in ("descending", "reverse"):
+                    self.query["sort_order"] = "descending"
 
 
 class EEANavtreeStrategy(original_get.NavtreeStrategy):
