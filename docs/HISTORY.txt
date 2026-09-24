@@ -3,8 +3,10 @@ Changelog
 
 13.8 - (2026-09-21)
 ---------------------------
-* Change: Release
+* Change: Add Subsite Behaviour, Expose main logo setting in Subsite REST response
   [tedw87]
+* Feature: Add support for sort_on and sort_order through portal_actions
+  [nileshgulia1]
 
 13.7 - (2026-08-18)
 ---------------------------
