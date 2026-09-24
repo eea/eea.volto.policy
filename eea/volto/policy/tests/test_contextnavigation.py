@@ -38,6 +38,13 @@ class TestContextNavigationWorkflow(unittest.TestCase):
         section.invokeFactory("Document", "published-child", title="Published Child")
         section.invokeFactory("Document", "draft-child", title="Draft Child")
 
+        section.invokeFactory("Document", "sort-zebra", title="Zebra")
+        section.invokeFactory("Document", "sort-apple", title="Apple")
+        section.invokeFactory("Document", "sort-mango", title="Mango")
+        self.portal.portal_workflow.doActionFor(section["sort-zebra"], "publish")
+        self.portal.portal_workflow.doActionFor(section["sort-apple"], "publish")
+        self.portal.portal_workflow.doActionFor(section["sort-mango"], "publish")
+
         # Publish the section and one child; leave the other private.
         self.portal.portal_workflow.doActionFor(section, "publish")
         self.portal.portal_workflow.doActionFor(section["published-child"], "publish")
@@ -79,6 +86,10 @@ class TestContextNavigationWorkflow(unittest.TestCase):
         return EEAContextNavigation(context, self.request)(expand=True)[
             "contextnavigation"
         ]
+
+    def _top_level_titles(self, context, **params):
+        """Return top-level navigation item titles for easy order checks."""
+        return [item["title"] for item in self._nav(context, **params).get("items", [])]
 
     def test_manager_sees_draft_siblings_despite_workflow_filter(self):
         """A user with view permission sees draft siblings in the nav."""
@@ -151,3 +162,47 @@ class TestContextNavigationWorkflow(unittest.TestCase):
         applyProfile(self.portal, "eea.volto.policy:to_13")
 
         self.assertEqual(registry.get("plone.side_nav_depth"), 6)
+
+    def test_default_order_is_folder_order(self):
+        """Without sort params items keep their folder position."""
+        titles = self._top_level_titles(self.portal.section)
+        self.assertEqual(
+            titles,
+            ["Published Child", "Draft Child", "Zebra", "Apple", "Mango"],
+        )
+
+    def test_sort_on_sortable_title_ascending(self):
+        """sort_on=sortable_title orders items alphabetically."""
+        titles = self._top_level_titles(self.portal.section, sort_on="sortable_title")
+        self.assertEqual(
+            titles,
+            ["Apple", "Draft Child", "Mango", "Published Child", "Zebra"],
+        )
+
+    def test_sort_on_sortable_title_descending(self):
+        """sort_order=descending reverses the sort."""
+        titles = self._top_level_titles(
+            self.portal.section,
+            sort_on="sortable_title",
+            sort_order="descending",
+        )
+        self.assertEqual(
+            titles,
+            ["Zebra", "Published Child", "Mango", "Draft Child", "Apple"],
+        )
+
+    def test_sort_order_without_sort_on_is_ignored(self):
+        """sort_order alone does not change the default folder order."""
+        titles = self._top_level_titles(self.portal.section, sort_order="descending")
+        self.assertEqual(
+            titles,
+            ["Published Child", "Draft Child", "Zebra", "Apple", "Mango"],
+        )
+
+    def test_invalid_sort_on_falls_back_to_folder_order(self):
+        """An unknown catalog index is ignored rather than raising."""
+        titles = self._top_level_titles(self.portal.section, sort_on="not_an_index")
+        self.assertEqual(
+            titles,
+            ["Published Child", "Draft Child", "Zebra", "Apple", "Mango"],
+        )
