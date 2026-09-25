@@ -50,6 +50,14 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="to_13"
+      title="eea.volto.policy to 13"
+      directory="profiles/to_13"
+      description="Upgrade profile to 13.0 for side navigation depth registry setting."
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <utility
       factory=".setuphandlers.HiddenProfiles"
       name="eea.volto.policy-hiddenprofiles"
