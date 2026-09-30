@@ -49,6 +49,9 @@ The addon changes behavior in these areas:
     `File` items, and allows intentionally empty title values.
   - Uses `level <= bottomLevel` recursion, effectively showing one extra
     level compared to stricter recursion.
+  - Supports a per-content-type child sort (`children_sort_type`,
+    `children_sort_on`, `children_sort_order`): only the children of the
+    listed types are reordered, every other child keeps its folder position.
 
 - `restapi/services/breadcrumbs/get.py` + `browser/breadcrumbs.py`
   (`expand=breadcrumbs`):
