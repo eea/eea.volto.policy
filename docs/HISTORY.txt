@@ -3,7 +3,7 @@ Changelog
 
 14.1 - (2026-09-30)
 ---------------------------
-* Change: Release
+* Change: Add children sort_order and sort_on for given portal_types to sort
   [nileshgulia1]
 
 14.0 - (2026-09-30)
