@@ -89,8 +89,10 @@ class CatalogNavigationTabs(BrowserView):
         else:
             query["sort_order"] = "ascending"
 
-        if navigation_settings.filter_on_workflow:
-            query["review_state"] = navigation_settings.workflow_states_to_show
+        # EEA: navigation must respect the user's view permissions, not a
+        # hard-coded workflow state filter (e.g. published only). The
+        # catalog security filtering (allowedRolesAndUsers) already hides
+        # items the current user is not allowed to view.
 
         query["is_default_page"] = False
 
