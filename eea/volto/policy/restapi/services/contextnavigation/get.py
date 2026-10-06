@@ -14,6 +14,7 @@ from plone.app.layout.navigation.root import getNavigationRoot
 from plone.app.dexterity import _
 from plone.restapi.services.contextnavigation import get as original_get
 from plone.restapi.interfaces import IExpandableElement, IPloneRestapiLayer
+from plone.i18n.normalizer.interfaces import IIDNormalizer
 from plone.registry.interfaces import IRegistry
 from plone.restapi import bbb as restapi_bbb
 from plone.restapi.bbb import safe_hasattr
@@ -36,6 +37,60 @@ class IEEANavigationPortlet(original_get.INavigationPortlet):
         value_type=schema.Choice(
             source="plone.app.vocabularies.ReallyUserFriendlyTypes"
         ),
+    )
+
+    sort_on = schema.TextLine(
+        title=_("Sort on"),
+        description=_(
+            "Catalog index to sort navigation items by, "
+            "e.g. sortable_title, effective, created, modified, "
+            "getObjPositionInParent. Leave empty for folder order."
+        ),
+        required=False,
+        default="",
+    )
+
+    sort_order = schema.TextLine(
+        title=_("Sort order"),
+        description=_("Sort order: ascending or descending"),
+        required=False,
+        default="",
+    )
+
+    children_sort_type = schema.Tuple(
+        title=_("Sort children of these content types"),
+        description=_(
+            "Only the children whose content type is listed here are sorted "
+            "with 'Sort children on'. Other children keep their folder "
+            "position. Leave empty to keep folder order everywhere."
+        ),
+        required=False,
+        default=(),
+        missing_value=(),
+        value_type=schema.Choice(
+            source="plone.app.vocabularies.ReallyUserFriendlyTypes"
+        ),
+    )
+
+    children_sort_on = schema.TextLine(
+        title=_("Sort children on"),
+        description=_(
+            "Catalog index used to sort the children of the content types "
+            "above, e.g. effective, created, modified, sortable_title. "
+            "Leave empty to keep folder order."
+        ),
+        required=False,
+        default="",
+    )
+
+    children_sort_order = schema.TextLine(
+        title=_("Sort children order"),
+        description=_(
+            "Sort order applied to the children sorted by 'Sort children on': "
+            "ascending or descending"
+        ),
+        required=False,
+        default="",
     )
 
 
@@ -164,6 +219,16 @@ class EEAContextNavigationQueryBuilder(original_get.QueryBuilder):
             # whole tree (up to bottomLevel) is returned, not an empty result.
             self.query["path"]["navtree_start"] = 1
 
+        # EEA: optional sorting from query params; validated, silent fallback
+        sort_on = (data.sort_on or "").strip()
+        if sort_on:
+            catalog = api.portal.get_tool("portal_catalog")
+            if sort_on in catalog.indexes():
+                self.query["sort_on"] = sort_on
+                sort_order = (data.sort_order or "").strip().lower()
+                if sort_order in ("descending", "reverse"):
+                    self.query["sort_order"] = "descending"
+
 
 class EEANavtreeStrategy(original_get.NavtreeStrategy):
     """Custom NavtreeStrategy for context navigation"""
@@ -264,6 +329,62 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
         )
         return tree
 
+    @memoize
+    def child_sort_index(self):
+        """Catalog index used to sort matching children, or None."""
+        index = (getattr(self.data, "children_sort_on", "") or "").strip()
+        if not index:
+            return None
+        catalog = api.portal.get_tool("portal_catalog")
+        return index if index in catalog.indexes() else None
+
+    @memoize
+    def child_sort_types(self):
+        """Normalized content types whose children get the dedicated sort."""
+        types = getattr(self.data, "children_sort_type", ()) or ()
+        if isinstance(types, str):
+            types = [types]
+        normalizer = getUtility(IIDNormalizer)
+        return {normalizer.normalize(name) for name in types if name}
+
+    def sortChildren(self, children):
+        """Sort the children matching child_sort_types among themselves.
+
+        Only the matching children are reordered; every other child keeps
+        its folder position. Children without a value for the sort index are
+        kept at the end of the sorted group.
+        """
+        index = self.child_sort_index()
+        types = self.child_sort_types()
+        if not index or not types:
+            return children
+
+        slots = [
+            position
+            for position, node in enumerate(children)
+            if node.get("normalized_portal_type") in types
+        ]
+        if len(slots) < 2:
+            return children
+
+        selected = [children[position] for position in slots]
+        with_value = [
+            node for node in selected if getattr(node["item"], index, None) is not None
+        ]
+        without_value = [
+            node for node in selected if getattr(node["item"], index, None) is None
+        ]
+        order = (getattr(self.data, "children_sort_order", "") or "").strip().lower()
+        with_value.sort(
+            key=lambda node: getattr(node["item"], index),
+            reverse=order in ("descending", "reverse"),
+        )
+
+        sorted_children = list(children)
+        for position, node in zip(slots, with_value + without_value):
+            sorted_children[position] = node
+        return sorted_children
+
     def recurse(self, children, level, bottomLevel):
         """Recurse through the navigation tree"""
         res = []
@@ -273,7 +394,7 @@ class EEANavigationPortletRenderer(original_get.NavigationPortletRenderer):
 
         thumb_scale = self.thumb_scale()
 
-        for node in children:
+        for node in self.sortChildren(children):
             brain = node["item"]
             is_file = node["portal_type"] == "File"
 

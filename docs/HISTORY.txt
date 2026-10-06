@@ -1,7 +1,7 @@
 Changelog
 =========
 
-13.8-dev0 - (unreleased)
+14.2-dev0 - (unreleased)
 ---------------------------
 * Fix: Lateral navigation (``@contextnavigation``) does not respect user view
   permissions: drop the hard-coded review state filter so users with view
@@ -18,6 +18,28 @@ Changelog
   ``portal_type`` filter can now be inherited from the nearest ancestor
   page holding a ``contextNavigation`` (accordion) block.
   [avoinea]
+
+14.1 - (2026-09-30)
+---------------------------
+* Change: Add children sort_order and sort_on for given portal_types to sort
+  [nileshgulia1]
+
+14.0 - (2026-09-30)
+---------------------------
+* Change: Revert to no subsite logo behavior, not needed 
+  [tedw87]
+
+13.9 - (2026-09-29)
+---------------------------
+* Change: Release - Restore subsite expansion adapter for subsite_logo_main
+  [tedw87]
+
+13.8 - (2026-09-21)
+---------------------------
+* Change: Add Subsite Behaviour, Expose main logo setting in Subsite REST response
+  [tedw87]
+* Feature: Add support for sort_on and sort_order through portal_actions
+  [nileshgulia1]
 
 13.7 - (2026-08-18)
 ---------------------------

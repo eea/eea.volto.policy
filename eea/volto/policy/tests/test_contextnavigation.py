@@ -2,6 +2,7 @@
 
 import unittest
 
+from DateTime import DateTime
 from plone.app.testing import (
     TEST_USER_ID,
     TEST_USER_NAME,
@@ -37,6 +38,13 @@ class TestContextNavigationWorkflow(unittest.TestCase):
 
         section.invokeFactory("Document", "published-child", title="Published Child")
         section.invokeFactory("Document", "draft-child", title="Draft Child")
+
+        section.invokeFactory("Document", "sort-zebra", title="Zebra")
+        section.invokeFactory("Document", "sort-apple", title="Apple")
+        section.invokeFactory("Document", "sort-mango", title="Mango")
+        self.portal.portal_workflow.doActionFor(section["sort-zebra"], "publish")
+        self.portal.portal_workflow.doActionFor(section["sort-apple"], "publish")
+        self.portal.portal_workflow.doActionFor(section["sort-mango"], "publish")
 
         # Publish the section and one child; leave the other private.
         self.portal.portal_workflow.doActionFor(section, "publish")
@@ -79,6 +87,10 @@ class TestContextNavigationWorkflow(unittest.TestCase):
         return EEAContextNavigation(context, self.request)(expand=True)[
             "contextnavigation"
         ]
+
+    def _top_level_titles(self, context, **params):
+        """Return top-level navigation item titles for easy order checks."""
+        return [item["title"] for item in self._nav(context, **params).get("items", [])]
 
     def test_manager_sees_draft_siblings_despite_workflow_filter(self):
         """A user with view permission sees draft siblings in the nav."""
@@ -151,6 +163,169 @@ class TestContextNavigationWorkflow(unittest.TestCase):
         applyProfile(self.portal, "eea.volto.policy:to_13")
 
         self.assertEqual(registry.get("plone.side_nav_depth"), 6)
+
+    def test_default_order_is_folder_order(self):
+        """Without sort params items keep their folder position."""
+        titles = self._top_level_titles(self.portal.section)
+        self.assertEqual(
+            titles,
+            ["Published Child", "Draft Child", "Zebra", "Apple", "Mango"],
+        )
+
+    def test_sort_on_sortable_title_ascending(self):
+        """sort_on=sortable_title orders items alphabetically."""
+        titles = self._top_level_titles(self.portal.section, sort_on="sortable_title")
+        self.assertEqual(
+            titles,
+            ["Apple", "Draft Child", "Mango", "Published Child", "Zebra"],
+        )
+
+    def test_sort_on_sortable_title_descending(self):
+        """sort_order=descending reverses the sort."""
+        titles = self._top_level_titles(
+            self.portal.section,
+            sort_on="sortable_title",
+            sort_order="descending",
+        )
+        self.assertEqual(
+            titles,
+            ["Zebra", "Published Child", "Mango", "Draft Child", "Apple"],
+        )
+
+    def test_sort_order_without_sort_on_is_ignored(self):
+        """sort_order alone does not change the default folder order."""
+        titles = self._top_level_titles(self.portal.section, sort_order="descending")
+        self.assertEqual(
+            titles,
+            ["Published Child", "Draft Child", "Zebra", "Apple", "Mango"],
+        )
+
+    def test_invalid_sort_on_falls_back_to_folder_order(self):
+        """An unknown catalog index is ignored rather than raising."""
+        titles = self._top_level_titles(self.portal.section, sort_on="not_an_index")
+        self.assertEqual(
+            titles,
+            ["Published Child", "Draft Child", "Zebra", "Apple", "Mango"],
+        )
+
+
+class TestContextNavigationChildrenSort(unittest.TestCase):
+    """Only the children of the configured content types are re-sorted."""
+
+    layer = EEA_VOLTO_POLICY_INTEGRATION_TESTING
+
+    def setUp(self):
+        self.portal = self.layer["portal"]
+        self.request = self.layer["request"]
+        login(self.portal, TEST_USER_NAME)
+        setRoles(self.portal, TEST_USER_ID, ["Manager"])
+        self.populateSite()
+
+    def addChild(self, parent, id_, title, portal_type, effective=None):
+        """Publish a child and give it a deterministic effective date."""
+        parent.invokeFactory(portal_type, id_, title=title)
+        child = parent[id_]
+        self.portal.portal_workflow.doActionFor(child, "publish")
+        if effective is not None:
+            child.setEffectiveDate(DateTime(effective))
+            child.reindexObject()
+        return child
+
+    def populateSite(self):
+        """A folder mixing Documents and News Items in folder order."""
+        self.portal.invokeFactory("Document", "news-section", title="News Section")
+        section = self.portal["news-section"]
+        self.portal.portal_workflow.doActionFor(section, "publish")
+
+        self.addChild(section, "a-document", "A Document", "Document")
+        self.addChild(
+            section,
+            "b-news-old",
+            "B News Old",
+            "News Item",
+            "2020-01-01T00:00:00+00:00",
+        )
+        self.addChild(section, "c-document", "C Document", "Document")
+        self.addChild(
+            section,
+            "d-news-new",
+            "D News New",
+            "News Item",
+            "2024-01-01T00:00:00+00:00",
+        )
+        self.addChild(
+            section,
+            "e-news-mid",
+            "E News Mid",
+            "News Item",
+            "2022-01-01T00:00:00+00:00",
+        )
+
+    def _titles(self, **params):
+        """Top-level titles, with both fixture types allowed in the query."""
+        self.request.form.clear()
+        self.request.form["expand.contextnavigation.portal_type"] = "Document,News Item"
+        for key, value in params.items():
+            self.request.form[f"expand.contextnavigation.{key}"] = value
+        data = EEAContextNavigation(self.portal["news-section"], self.request)(
+            expand=True
+        )["contextnavigation"]
+        return [item["title"] for item in data.get("items", [])]
+
+    def test_default_order_is_folder_order(self):
+        """Without a children sort the folder order is kept."""
+        self.assertEqual(
+            self._titles(),
+            ["A Document", "B News Old", "C Document", "D News New", "E News Mid"],
+        )
+
+    def test_children_of_type_sorted_ascending(self):
+        """News Items are sorted by effective, Documents keep their slot."""
+        self.assertEqual(
+            self._titles(
+                children_sort_type="News Item",
+                children_sort_on="effective",
+            ),
+            ["A Document", "B News Old", "C Document", "E News Mid", "D News New"],
+        )
+
+    def test_children_of_type_sorted_descending(self):
+        """children_sort_order=descending reverses only the sorted group."""
+        self.assertEqual(
+            self._titles(
+                children_sort_type="News Item",
+                children_sort_on="effective",
+                children_sort_order="descending",
+            ),
+            ["A Document", "D News New", "C Document", "E News Mid", "B News Old"],
+        )
+
+    def test_children_sort_without_type_is_ignored(self):
+        """children_sort_on alone does not reorder anything."""
+        self.assertEqual(
+            self._titles(children_sort_on="effective"),
+            ["A Document", "B News Old", "C Document", "D News New", "E News Mid"],
+        )
+
+    def test_children_sort_invalid_index_is_ignored(self):
+        """An unknown catalog index falls back to the folder order."""
+        self.assertEqual(
+            self._titles(
+                children_sort_type="News Item",
+                children_sort_on="not_an_index",
+            ),
+            ["A Document", "B News Old", "C Document", "D News New", "E News Mid"],
+        )
+
+    def test_children_sort_type_without_matches_is_ignored(self):
+        """A type that has no children changes nothing."""
+        self.assertEqual(
+            self._titles(
+                children_sort_type="Event",
+                children_sort_on="effective",
+            ),
+            ["A Document", "B News Old", "C Document", "D News New", "E News Mid"],
+        )
 
 
 class TestContextNavigationPortalType(unittest.TestCase):
