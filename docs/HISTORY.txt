@@ -3,6 +3,10 @@ Changelog
 
 14.2-dev0 - (unreleased)
 ---------------------------
+* Feature: enrich serialized internal Image blocks with the permission-safe
+  live Image title, lazily classify legacy alt provenance, and remove the
+  transient title again during deserialization (issue #305021).
+  [razvanMiu]
 
 14.1 - (2026-09-30)
 ---------------------------
