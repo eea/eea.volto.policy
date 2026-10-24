@@ -151,10 +151,16 @@ def _normalized_alt(value):
     return " ".join(value.split())
 
 
+def _composed_metadata(title, description):
+    if title and description:
+        return f"{title}: {description}"
+    return title or description or ""
+
+
 @implementer(IBlockFieldSerializationTransformer)
 @adapter(IBlocks, IBrowserRequest)
 class ImageBlockSerializationTransformer:
-    """Expose permission-safe live Image title and infer legacy alt source."""
+    """Expose permission-safe live Image metadata and infer legacy alt source."""
 
     # Must inspect stored resolveuid values before RESTAPI's order-1 resolver.
     order = 0
@@ -166,9 +172,11 @@ class ImageBlockSerializationTransformer:
 
     def __call__(self, value):
         block = copy.deepcopy(value)
-        # Treat this key as transient even if older or direct API writes managed
-        # to persist it. Re-add it only after resolving and permission-checking.
+        # Treat these keys as transient even if older or direct API writes managed
+        # to persist them. Re-add them only after resolving and permission-checking.
         block.pop("image_title", None)
+        block.pop("image_description", None)
+        block.pop("image_metadata", None)
         target = resolve_internal_image(self.context, block.get("url"))
         if target is None or not IImage.providedBy(target):
             return block
@@ -176,20 +184,24 @@ class ImageBlockSerializationTransformer:
             return block
 
         title = str(getattr(target, "title", "") or "").strip()
-        if not title:
+        description = str(getattr(target, "description", "") or "").strip()
+        metadata = _composed_metadata(title, description)
+        if not metadata:
             return block
         block["image_title"] = title
+        block["image_description"] = description
+        block["image_metadata"] = metadata
 
         source = block.get("alt_source")
-        if source not in ("image-title", "custom"):
+        if source not in ("image-metadata", "custom"):
             alt = _normalized_alt(block.get("alt"))
-            if not alt or alt == _normalized_alt(title):
-                source = "image-title"
+            if not alt or alt == _normalized_alt(metadata):
+                source = "image-metadata"
             else:
                 source = "custom"
             block["alt_source"] = source
 
-        if source == "image-title":
+        if source == "image-metadata":
             block["alt"] = ""
         return block
 
@@ -197,7 +209,7 @@ class ImageBlockSerializationTransformer:
 @implementer(IBlockFieldDeserializationTransformer)
 @adapter(IBlocks, IBrowserRequest)
 class ImageBlockDeserializationTransformer:
-    """Prevent transient live Image titles from being persisted in blocks."""
+    """Prevent transient live Image metadata from being persisted in blocks."""
 
     order = 0
     block_type = "image"
@@ -209,6 +221,8 @@ class ImageBlockDeserializationTransformer:
     def __call__(self, value):
         block = copy.deepcopy(value)
         block.pop("image_title", None)
+        block.pop("image_description", None)
+        block.pop("image_metadata", None)
         return block
 
 

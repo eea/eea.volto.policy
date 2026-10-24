@@ -10,8 +10,10 @@ from zope.interface import alsoProvides
 
 
 class ImageBlockTransformerTest(unittest.TestCase):
-    def _image(self, title="Wetland bird"):
-        image = SimpleNamespace(title=title, portal_type="Image")
+    def _image(self, title="Wetland bird", description="A bird stands in reeds."):
+        image = SimpleNamespace(
+            title=title, description=description, portal_type="Image"
+        )
         alsoProvides(image, IImage)
         return image
 
@@ -47,7 +49,7 @@ class ImageBlockTransformerTest(unittest.TestCase):
         self.assertEqual(ResolveUIDSerializer.order, 1)
         self.assertEqual(InternalURLPrefixSerializationTransformer.order, 10000)
 
-    def test_empty_legacy_alt_follows_viewable_image_title_without_mutation(self):
+    def test_empty_legacy_alt_follows_viewable_image_metadata_without_mutation(self):
         original = {
             "@type": "image",
             "url": "resolveuid/abc123",
@@ -63,25 +65,30 @@ class ImageBlockTransformerTest(unittest.TestCase):
                 "@type": "image",
                 "url": "resolveuid/abc123",
                 "alt": "",
-                "alt_source": "image-title",
+                "alt_source": "image-metadata",
                 "image_title": "Wetland bird",
+                "image_description": "A bird stands in reeds.",
+                "image_metadata": "Wetland bird: A bird stands in reeds.",
             },
         )
         self.assertEqual(original, stored)
 
-    def test_legacy_alt_equal_to_title_normalizes_to_image_title_source(self):
+    def test_legacy_alt_equal_to_metadata_normalizes_to_image_metadata_source(self):
         result = self._serialize(
             {
                 "@type": "image",
                 "url": "resolveuid/abc123",
-                "alt": "  Wetland   bird ",
+                "alt": "Wetland bird: A bird stands in reeds.",
             },
             image=self._image(),
         )
 
-        self.assertEqual(result["alt_source"], "image-title")
+        self.assertEqual(result["alt_source"], "image-metadata")
         self.assertEqual(result["alt"], "")
         self.assertEqual(result["image_title"], "Wetland bird")
+        self.assertEqual(
+            result["image_metadata"], "Wetland bird: A bird stands in reeds."
+        )
 
     def test_legacy_alt_different_from_title_remains_custom(self):
         result = self._serialize(
@@ -96,6 +103,9 @@ class ImageBlockTransformerTest(unittest.TestCase):
         self.assertEqual(result["alt_source"], "custom")
         self.assertEqual(result["alt"], "Heron beside green reeds")
         self.assertEqual(result["image_title"], "Wetland bird")
+        self.assertEqual(
+            result["image_metadata"], "Wetland bird: A bird stands in reeds."
+        )
 
     def test_case_or_punctuation_difference_remains_custom(self):
         for alt in ("wetland bird", "Wetland bird."):
@@ -142,6 +152,9 @@ class ImageBlockTransformerTest(unittest.TestCase):
         self.assertEqual(result["alt"], "Preserved custom value")
         self.assertTrue(result["decorative"])
         self.assertEqual(result["image_title"], "Wetland bird")
+        self.assertEqual(
+            result["image_metadata"], "Wetland bird: A bird stands in reeds."
+        )
 
     def test_private_image_title_is_not_exposed(self):
         result = self._serialize(
@@ -202,7 +215,7 @@ class ImageBlockTransformerTest(unittest.TestCase):
         get.assert_not_called()
         context.restrictedTraverse.assert_not_called()
 
-    def test_deserializer_strips_only_transient_image_title(self):
+    def test_deserializer_strips_only_transient_image_metadata(self):
         from eea.volto.policy.restapi.blocks import (
             ImageBlockDeserializationTransformer,
         )
@@ -216,6 +229,8 @@ class ImageBlockTransformerTest(unittest.TestCase):
                 "alt_source": "custom",
                 "decorative": True,
                 "image_title": "Transient title",
+                "image_description": "Transient desc",
+                "image_metadata": "Transient metadata",
             }
         )
 
