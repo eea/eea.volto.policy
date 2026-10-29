@@ -8,6 +8,16 @@
   <include package=".serializer" />
   <include package=".services" />
   
+  <!-- Image-title enrichment runs before RESTAPI resolveuid serialization. -->
+  <subscriber
+    provides="plone.restapi.interfaces.IBlockFieldSerializationTransformer"
+    factory=".blocks.ImageBlockSerializationTransformer"
+    for="plone.restapi.behaviors.IBlocks zope.publisher.interfaces.browser.IBrowserRequest" />
+  <subscriber
+    provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"
+    factory=".blocks.ImageBlockDeserializationTransformer"
+    for="plone.restapi.behaviors.IBlocks zope.publisher.interfaces.browser.IBrowserRequest" />
+
   <!--  URL prefix normalization -->
   <subscriber
     provides="plone.restapi.interfaces.IBlockFieldDeserializationTransformer"

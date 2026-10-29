@@ -1,6 +1,13 @@
 Changelog
 =========
 
+14.2 - (2026-10-29)
+---------------------------
+* Feature: enrich serialized internal Image blocks with the permission-safe
+  live Image title, lazily classify legacy alt provenance, and remove the
+  transient title again during deserialization (issue #305021).
+  [razvanMiu]
+
 14.1 - (2026-09-30)
 ---------------------------
 * Change: Add children sort_order and sort_on for given portal_types to sort
