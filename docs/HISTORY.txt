@@ -1,6 +1,11 @@
 Changelog
 =========
 
+14.3 - (2026-10-30)
+---------------------------
+* Change: Support composed image metadata and alt provenance in image blocks - refs #305021
+  [razvanMiu]
+
 14.2 - (2026-10-29)
 ---------------------------
 * Feature: enrich serialized internal Image blocks with the permission-safe

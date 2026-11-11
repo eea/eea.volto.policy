@@ -5,6 +5,7 @@ from Acquisition import aq_inner
 from plone import api
 from plone.registry.interfaces import IRegistry
 from plone.restapi.interfaces import IExpandableElement
+from plone.restapi.serializer.converters import json_compatible
 from plone.restapi.services import Service
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import utils
@@ -161,7 +162,12 @@ class CatalogNavigationTabs(BrowserView):
                 "description": item.Description,
                 "review_state": item.review_state,
             }
-            result.append(data)
+            # Catalog brains return the ``Missing`` sentinel for metadata
+            # columns that were never indexed (e.g. ``review_state`` for
+            # content that is not covered by a workflow). Such values are
+            # not JSON serializable, so normalize them to ``null`` before
+            # returning them.
+            result.append(json_compatible(data))
 
         return result
 
